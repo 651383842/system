@@ -105,7 +105,7 @@
               modal2:false,
               okValue:0,//值为0无法执行，为1可以执行
               messageStr:'',
-              studentPageUrl:'index.html#'+'login/main/studentHome',
+              studentPageUrl:'#login/main/studentHome',
               yearSelect:"选择学期",
               weekSelect:'选择周数',
               years:[
@@ -179,6 +179,18 @@
             }, {"Content-Type": "application/json"}).then(function (response) {
               this.course1 = response.body.studentCurriculum[0];
               this.courses2 = response.body.studentDetailCurriculum;
+
+              var count=0;
+              for(var a in this.course1){
+                if(this.course1[a]!=null){
+                  count++;
+                }
+              }
+              if(count==0){
+                this.modal2=true;
+                this.messageStr="无对应课表数据！";
+                this.okValue=0;
+              }
             });
           }
         }

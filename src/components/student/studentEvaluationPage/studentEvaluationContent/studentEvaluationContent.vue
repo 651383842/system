@@ -66,7 +66,7 @@
         okValue:0,//值为0无法执行，为1可以执行
         messageStr:'',
         picked:true,
-        studentPageUrl:'index.html#'+'login/main/studentHome',
+        studentPageUrl:'#/login/main/studentHome',
         applications: [
           { id:'1', teacher: '1.教师上课认真程度：'},
           { id:'2', teacher: '2.教室课堂气氛：'},

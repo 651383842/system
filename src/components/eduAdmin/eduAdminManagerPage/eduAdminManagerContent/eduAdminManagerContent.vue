@@ -146,7 +146,7 @@
         modal2:false,
         okValue:0,//值为0无法执行，为1可以执行
         messageStr:'',
-        eduAdminPageUrl:'index.html#'+'login/main/eduAdminHome',
+        eduAdminPageUrl:'#/login/main/eduAdminHome',
         teacherSelects:[
           'teacherSelect1',
           'teacherSelect2',
@@ -180,19 +180,19 @@
           '五年制',
         ],
         grades:[
-          /*
+
           '一年级',
           '二年级',
-          */
+
         ],
         courses: [
-          /*
+
           '课程01',
           '课程02',
           '课程03',
           '课程04',
           '课程05',
-          */
+
         ],
         informations: [
           //未完成课表
@@ -208,12 +208,12 @@
           */
         ],
         terms:[
-          /*
+
           '2016-2017-1',
           '2016-2017-2',
           '2017-2018-1',
           '2017-2018-2',
-          */
+
         ],
         times:[
           '周一',
@@ -316,6 +316,11 @@
     },
     //年制选择
     yearClick:function(){
+
+      this.grades=[];
+      this.gradeSelect="选择年级（必选项）";
+      this.courses=[];
+      this.courseSelect="选择课程（必选项）";
       var year=0;
       if(this.yearSelect=="三年制") {
         year = 3;
@@ -331,6 +336,8 @@
     },
     //年级选择
     gradeClick:function(){
+      this.courses=[];
+      this.courseSelect="选择课程（必选项）";
       var year=0;
       if(this.yearSelect=="选择年制（必选项）"){
           this.modal2=true;
@@ -361,7 +368,7 @@
         return;
       }
 
-      if(this.gradeSelect='选择年级（必选项）'){
+      if(this.gradeSelect=='选择年级（必选项）'){
         this.modal2=true;
         this.messageStr="未选择年级！";
         this.okValue=0;

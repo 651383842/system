@@ -32,7 +32,7 @@
     name: 'testInfo',
     data () {
       return {
-        eduAdminPageUrl:'index.html#'+'login/main/eduAdminHome',
+        eduAdminPageUrl:'#/login/main/eduAdminHome',
         tests: [],
       }
     },

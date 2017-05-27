@@ -34,7 +34,7 @@
     name: 'testInfo',
     data () {
       return {
-        studentPageUrl:'index.html#'+'login/main/studentHome',
+        studentPageUrl:'#/login/main/studentHome',
         tests: [],
       }
     },

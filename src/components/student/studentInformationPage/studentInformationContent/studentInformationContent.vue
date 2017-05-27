@@ -65,7 +65,7 @@
         name: 'studentInformationPage',
         data () {
             return {
-              studentPageUrl:'index.html#'+'login/main/studentHome',
+              studentPageUrl:'#/login/main/studentHome',
               buttonShow:false,
               selected:'身份证照',
               filePathRequest:'./studentManage/uploadStudentIDcardPhoto',

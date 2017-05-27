@@ -41,7 +41,7 @@
         name: 'studentChangPasswordContent',
         data () {
             return {
-              studentPageUrl:'index.html#'+'login/main/studentHome',
+              studentPageUrl:'#/login/main/studentHome',
               nowPassword:'',
               newPassword:'',
               newPasswordAgain:'',

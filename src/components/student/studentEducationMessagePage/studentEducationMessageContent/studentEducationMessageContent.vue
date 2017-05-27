@@ -38,7 +38,7 @@
     name: 'educationMessage',
     data () {
       return {
-        studentPageUrl:'index.html#'+'login/main/studentHome',
+        studentPageUrl:'#/login/main/studentHome',
         selected:'选择状态',
         informations: [],
       }

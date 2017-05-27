@@ -37,7 +37,7 @@
         name: 'myTeacherPage',
         data () {
             return {
-              studentPageUrl:'index.html#'+'login/main/studentHome',
+              studentPageUrl:'#/login/main/studentHome',
               teachers: [],
             }
         },
