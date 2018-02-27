@@ -120,7 +120,7 @@
     margin-left: 5rem;
   }
   #user{
-    /*用户姓名*/
+    /*用户姓名 */
     color: black;
     text-decoration: none;
     font-size: 1rem;

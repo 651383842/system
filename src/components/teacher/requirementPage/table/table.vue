@@ -7,11 +7,11 @@
     </div>
     <div id="sel">
       <span>请选择每周不上课的时间：</span>
-      <select  v-model="option2value" >
-        <option v-for="option2 in options2"  :value="option2.value">
+      <Select  v-model="option2value" multiple style="width: 26rem">
+        <Option v-for="option2 in options2"  :value="option2.value" :key="option2.value">
           {{option2.text}}
-        </option>
-      </select>
+        </Option>
+      </Select>
       <button @click="chooseDia(option2value)" class="am-btn am-btn-success am-radius" >提交</button>
     </div>
     <div id="back">
@@ -22,7 +22,7 @@
        <tr>
          <th width="20%">申请教师</th>
          <th width="20%">申请学期</th>
-         <th width="20%">申请内容</th>
+         <th width="20%">申请内容(星期)</th>
          <th width="20%">教务反馈</th>
          <th width="20%">申请时间</th>
        </tr>
@@ -89,9 +89,8 @@
         name: 'table',
         data () {
             return {
-              option2value:'',
+              option2value:[],
               options2:[
-                {text:'选择星期几',value:'0'},
                 {text:'星期一',value:'1'},
                 {text:'星期二',value:'2'},
                 {text:'星期三',value:'3'},
@@ -117,45 +116,55 @@
               }else if(response.body.tableList[i].acdeminreply == "1"){
                 this.tableList[i].acdeminreply="审核通过";
               }else{ this.tableList[i].acdeminreply="审核不通过";}
+              switch (response.body.tableList[i].appContent)
+              {
+                case 1:
+                    this.tableList[i].appContent = "星期一";
+                    break;
+                case 2:
+                  this.tableList[i].appContent = "星期二";
+                  break;
+                case 3:
+                  this.tableList[i].appContent = "星期三";
+                  break;
+                case 4:
+                  this.tableList[i].appContent = "星期四";
+                  break;
+                case 5:
+                  this.tableList[i].appContent = "星期五";
+                  break;
+              }
             }
           },
           function(error){
-          console.log("审核通过error:");
-          console.log(error);
         });
       },
       methods:{
         chooseDia:function(option2value){
           this.ooption2value=option2value;
-          if(option2value==''){
+          if(option2value=='0'){
             this.modal3 =true;
           }else{
             this.modal1 = true;
           }
-
         },
         //与后端交互 所选星期几
         chooseDay:function(value){
           this.modal1 = false;
           this.$http.post('./teacherRestApplyHandle',{
-//          this.$http.post('../jsonphp/requirement.php',{
           "appTeacherCommand": value
           },{"Content-Type":"application/json"}).then(function (response) {
-              console.log("结果");
-              console.log(response.body);
             if(response.body.result=="1")
             {this.$Message.success('操作成功！');
               var t=setTimeout(" location.reload();",2000)
             }
             else
-//            {this.$Message.error('操作失败！');}
-            { this.modal2 = true;}
+            {
+                this.modal2 = true;
+            }
             },
             function(error){
-              console.log("结果error:");
-              console.log(error);
             });
-//            location.reload();
         }
       }
     }

@@ -3,7 +3,7 @@
     <div  class="positionBar">
       <span>您当前的位置：</span>
       <span><a href="#/login/main/eduAdminHome" class="returnHome">首页</a></span>
-      <span>><a href="#/teacher/class/classList" class="returnHome">班级管理</a></span>
+      <span>><a href="#/teacher/classList" class="returnHome">班级管理</a></span>
       <span>>学生个人信息</span>
     </div>
     <div id="selfInformation">
@@ -23,7 +23,7 @@
           <tr><td>体重</td><td><input type="text" readonly class="inputStyle" v-model="teacherMessage.weight"/></td><td>教学班</td><td><input type="text" class="inputStyle"  readonly v-model="teacherMessage.className"/></td></tr>
           <tr><td>身高</td><td><input type="text" readonly class="inputStyle" v-model="teacherMessage.height"/></td><td>专业</td><td><input type="text" class="inputStyle"  readonly v-model="teacherMessage.specialityName"/></td></tr>
           <tr><td>学号</td><td><input type="text" readonly class="inputStyle"  v-model="teacherMessage.studentId"/></td><td>政治面貌</td><td><input type="text" class="inputStyle" readonly v-model="teacherMessage.politicalStatus"/></td></tr>
-          <tr><td>学习形式</td><td><input type="text" readonly class="inputStyle" v-model="teacherMessage.studyMode"/></td><td>备注</td><td><input type="text" readonly class="inputStyle"/></td></tr>
+          <tr><td>学习年制</td><td><input type="text" readonly class="inputStyle" v-model="teacherMessage.studyMode"/></td><td>备注</td><td><input type="text" readonly class="inputStyle"/></td></tr>
         </table>
         <div class="updatePicture" align="center">
           <!--<select class="selectStyle" v-model="selected" @change="selectChange">-->
@@ -56,7 +56,7 @@
       //打开页面获取信息
       beforeMount:function() {
         var thisURL = document.URL;
-        var studentId =thisURL.split("?")[1];
+        var studentId =thisURL.split("checkStudentInfo?")[1];
         this.$http.post('./studentManage/getStudentDetailInfoByStudentId',JSON.stringify({
           "studentId":studentId
         }),{"Content-Type":"application/json"}).then(function (response) {

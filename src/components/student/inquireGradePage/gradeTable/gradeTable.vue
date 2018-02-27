@@ -114,7 +114,6 @@
         }
         this.studentScoreList=a;
       },function(error){
-        console.log("获取error");
       });
     },
     //页面初始化执行，在beforeMount之后，初始化下拉框学期数组
@@ -128,6 +127,7 @@
           a.push(response.body.yearTerm[i].startYearSemester);
         }
         this.terms= a;//把后端反馈的学期信息灌注到学期数组
+        this.termEle = response.body.currentYearTerm;
       });
     },
     methods:{

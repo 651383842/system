@@ -1,7 +1,6 @@
 <template>
   <div id="couArrangeTable_topBar" class="topBarDiv am-btn-group">
     <button id="topBarButton" class="am-btn am-btn-success" @click="hrefClick(1)">课程设置</button>
-    <button class="am-btn am-btn-success" @click="hrefClick(2)">合课设置</button>
     <button class="am-btn am-btn-success btn-active" @click="hrefClick(3)">排课执行</button>
   </div>
 </template>
@@ -27,10 +26,8 @@
 //          根据权限显示导航栏按钮
           if(this.authorityList[i] == "14"){
             buttons[0].style.display = "block";
-          }else if(this.authorityList[i] == "9"){
-            buttons[1].style.display = "block";
           }else if(this.authorityList[i] == "7"){
-            buttons[2].style.display = "block";
+            buttons[1].style.display = "block";
           }
         }
       }catch(e){}

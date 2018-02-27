@@ -1,7 +1,10 @@
 <template>
   <div id="class_topBar" class="topBarDiv am-btn-group">
-    <a href="#/teacher/class/classList">
+    <a href="#/teacher/classList">
       <button id="checkCouButton" class="topBarButton am-btn am-btn-success btn-active" >班级列表</button>
+    </a>
+    <a href="#/teacher/seeScore">
+      <button  class="topBarButton am-btn am-btn-success">班级成绩</button>
     </a>
   </div>
 </template>
@@ -32,6 +35,7 @@
         for(var i=0;i<this.authorityList.length;i++){
           if(this.authorityList[i]=="54"){
             buttons[0].style.display="block";
+            buttons[1].style.display="block";
           }
         }
       }catch(e){}

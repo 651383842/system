@@ -10,6 +10,8 @@
 		<div class="leftPart">
 			<span>当前学年学期：</span>
 			<span class="textBlue">{{preSemester}}</span>
+      <span>成绩录入时间：</span>
+      <span class="textBlue">{{startEvaTeachTime}}到{{endEvaTeachTime}}</span>
 		</div>
 		<div class="rightPart">
 			<span>温馨提示：</span>
@@ -33,10 +35,10 @@
 								<th width="18%">课程名称</th>
 								<th width="9%">导出成绩</th>
 							</tr>
-						</thead>				
+						</thead>
 						<tbody>
 							<tr v-for="(data, index) in scoreInputList" >
-								<td class="textBtn" :value="data.courseAssociationId"><a :href="'#/teacher/class/gradesInput?courseAssociationId='+data.courseAssociationId">成绩输入</a></td>
+								<td class="textBtn" @click="gradeinputClick(data.courseAssociationId)"><a>成绩输入</a></td>
 								<td v-text="index + 1"></td>
 								<!-- <td>{{preSemester}}</td> -->
 								<td v-text="data.teacherName"></td>
@@ -70,10 +72,12 @@ export default {
 	name: 'tchGrdPutBody',
 	data () {
 		return {
-			preSemester: '',
+      endEvaTeachTime:'-',
+      startEvaTeachTime:'-',
+			preSemester: '-',
 			// warmPrompt: '按排课信息输入成绩（若单科成绩输入时间长，请15分钟保持一次）',
 			scoreInputList: [
-				// {courseAssociationId: '1', semester: '2016-2017学年第一学期', teacherName: '何平', className: '对口高职2015护理（9+3）1班', courseName: '护理管理学'}
+//				 {courseAssociationId: '91698815649', semester: '2016-2017学年第一学期', teacherName: '何平', className: '对口高职2015护理（9+3）1班', courseName: '护理管理学'}
 			],
 			modalResult: false,
 			remindResult: ''
@@ -84,25 +88,54 @@ export default {
         this.$http.post('./getTeachScoreList',{},{
             "Content-Type":"application/json"
         }).then(function(response){
-            console.log("获取申请:");
-            console.log(response.body);
             var data = response.body;
-            this.preSemester = data.currentSemester;	// 返回当前学期
-			this.scoreInputList = data.scoreInputList;
+            this.startEvaTeachTime = response.body.startScoreInputTime;
+            this.endEvaTeachTime = response.body.endScoreInputTime;
+			      this.scoreInputList = data.scoreInputList;
         },function(error){
-            console.log("获取申请error:");
-            console.log(error);
         });
+
+          this.$http.post('./getCurrentYearAndSemester',{},{//获取当前学期周数
+            "Content-Type":"application/json"
+          }).then(function(response){
+            var data = response.body;
+            if(data.yearAndSemester.split('.')[1] =='1')
+            {
+              this.preSemester = data.yearAndSemester.split('.')[0]+'学年（上）';
+            }else
+            {
+              this.preSemester = data.yearAndSemester.split('.')[0]+'学年（下）';
+            }
+          },function(error){});
     },
 	methods: {
 		// 导出功能
 		exportFormatBtn: function (index) {
 			location.href = "./downloadScoreList?courseAssociationId="+this.scoreInputList[index].courseAssociationId;
 		},
-    	resultOk: function () {
-    		this.modalResult = false;
-    		this.remindResult = '1';
-    	}
+    resultOk: function () {
+      this.modalResult = false;
+      this.remindResult = '1';
+    },
+    gradeinputClick:function (courseAssociationId) {
+		  if(this.startEvaTeachTime ==""||this.startEvaTeachTime==null||this.endEvaTeachTime==""||this.endEvaTeachTime==null)
+      {
+        this.$Message.error("成绩录入时间未定！");
+        return;
+      }
+      var today = new Date().getTime();
+      var start = this.startEvaTeachTime.split('-');
+      var end = this.endEvaTeachTime.split('-');
+      var startDate = new Date().setFullYear(start[0],start[1]-1,start[2]);
+      var endtDate = new Date().setFullYear(end[0],end[1]-1,end[2]);
+      if(today>=startDate&&today<=endtDate)
+      {
+        window.location.href='#/teacher/class/gradesInput?courseAssociationId='+courseAssociationId;
+      }else
+      {
+        this.$Message.error("未到成绩录入时间！");
+      }
+    }
 	}
 }
 </script>
@@ -112,6 +145,7 @@ export default {
 	margin: 0 5rem;
 	float: left;
 }
+
 .rightPart {
 	margin: 0 5rem;
 	float: right;

@@ -4,7 +4,7 @@
     <span>您的当前位置：</span>
     <span><a href="#/login/main/eduAdminHome" class="returnHome">首页</a></span>
     <!-- <span> > <a href="#/login/main/eduAdminHome?eduAdmin" class="returnHome">教务公告</a></span> -->
-      <span> > <a href="#/eduAdmin/information/noticeManage" class="returnHome">公告管理</a></span>
+      <spanb v-show="ctlMsg"> > <a href="#/eduAdmin/information/noticeManage" class="returnHome">公告管理</a></spanb>
     <span> > 公告信息</span>
   </div>
     <div id="notifyBoard" style="padding: 0.6rem 5rem;background-color: #f3f3f3">
@@ -37,6 +37,7 @@
         name: '',
         data () {
             return {
+              ctlMsg:true,
               announcementId:'',
               announcementName:'',
               announcementTime:'',
@@ -48,13 +49,16 @@
         },
       beforeMount:function(){
         var thisURL = document.URL;
-        this.announcementId = thisURL.split("?")[1];
+        this.announcementId = thisURL.split("notifyInformation?")[1].split("&")[0].split("=")[1];
+        if(thisURL.split("notifyInformation?")[1].split("&")[1].split("=")[1]=="Stu")
+        {
+            this.ctlMsg = false;
+        }
         this.$http.post('./announcementManage/getAnnouncementInfo',{
           "announcementId":this.announcementId
         },{
           "Content-Type":"application/json"
         }).then(function (response) {
-          console.log(response);
           this.announcementName = response.body.announcementName;
           this.announcementTime = response.body.announcementTime;
           this.announcementType = response.body.announcementType;

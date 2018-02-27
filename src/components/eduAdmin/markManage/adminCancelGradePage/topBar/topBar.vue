@@ -4,6 +4,7 @@
     <a :href="gradeCheckUrl"><button id="gradeCheckBtn" class="topBarButton am-btn am-btn-success">{{ gradeCheckBtn }}</button></a>
     <a :href="gradeCancelUrl"><button id="gradeCancelBtn" class="topBarButton am-btn am-btn-success btn-active">{{ gradeCancelBtn }}</button></a>
     <a :href="makeupInputUrl"><button id="makeupInputBtn" class="topBarButton am-btn am-btn-success">{{ makeupInputBtn }}</button></a>
+    <a href="#/eduAdmin/gradeManage/seeScore"><button id="makeupInputBtn" class="topBarButton am-btn am-btn-success">结业成绩</button></a>
   </div>
 </template>
 
@@ -38,8 +39,10 @@
           }else if (this.authorityList[i] == "32") {
             buttons[2].style.display = "block";
           }else if (this.authorityList[i] == "31") {
-            buttons[2].style.display = "block";
-          }
+            buttons[3].style.display = "block";}
+          else if(this.authorityList[i] == "68"){
+              buttons[4].style.display = "block";
+            }
         }
       }catch(e) {}
     },

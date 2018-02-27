@@ -16,7 +16,7 @@
         <span>请提前2天申请，若当前时间是17：00后，则顺延一天</span>
       </div>
       <div id="adjTop2">
-        <span>{{teacher}}老师，您在【{{year}}学年第{{semester}}学期】共上【{{stopLessonNum}}】个班的课，在调课补课时您所选上课时已过冲突筛选请留意。</span>
+        <span>{{teacher}}老师，您在【{{year}}学年第{{semester}}学期】共停了【{{stopLessonNum}}】门课，在调课补课时您所选上课时已过冲突筛选请留意。</span>
       </div>
       <div class="adjShowDiv">
         <table class="table table-hover table-bordered" cellspacing="1">
@@ -98,7 +98,7 @@
           </tbody>
       </table>
       <div style="text-align: center">
-      <button  class="am-btn am-btn-success am-radius" @click="saveDia(selected1,selected3,selected4,message2)">保存</button>
+      <button  class="am-btn am-btn-success am-radius" @click="saveDia(selected1,selected3,selected4,message2)">提交</button>
       <button class="am-btn am-btn-success am-radius" @click="cancel">取消</button>
       </div>
     </div>
@@ -145,6 +145,20 @@
         <button id="modalBtn" @click="modal1 = false">取消</button>
       </div>
     </Modal>
+     <Modal
+       v-model="modal2"
+       width="400"
+       :mask-closable="false"
+       id="modalBody"
+       :styles="{top:'10rem'}">
+       <div style="font-size: 1.1rem;text-align: center;">
+         <p>你确定取消编辑吗？</p>
+       </div>
+       <div slot="footer" style="text-align: center">
+         <button id="modalBtn" @click="cancelOK">确定</button>
+         <button id="modalBtn" @click="modal2 = false">取消</button>
+       </div>
+     </Modal>
   </div>
   </div>
 </template>
@@ -163,6 +177,7 @@ export default {
 			stopLessonNum:'',
       applicationList:'',
 			seenS:false,
+      modal2:false,
 			tableList: [],
 			selected1: '选择周数',
       selected2: '选择星期',
@@ -182,7 +197,9 @@ export default {
 		}
 	},
   beforeMount:function(){
-    this.$http.post('./makeUpLessionApplication.action',{},
+    this.$http.post('./makeUpLessionApplication.action',{
+        flag:0
+      },
 //      this.$http.post('../jsonphp/makeup.php',{},
       {"Content-Type":"application/json"}).then(function (response) {
         console.log(response);
@@ -219,9 +236,15 @@ export default {
       },
       //点击申请补课 进行填写申请内容
       show:function(index){
+          if(this.seenS)
+          {
+              this.$Message.warning("正在编辑中！");
+              return;
+          }
+        var txt = document.getElementById('show'+index);
+        txt.innerHTML = "编辑中...";
         this.seenS=true;
         this.change=index;
-//        this.$http.post('../jsonphp/makeup.php',{
           this.$http.post('./makeUpLessionApplication/application-button.action',{
           "teacherName": this.tableList[index].teacherName,
           "courseId":this.tableList[index].courseId,
@@ -235,16 +258,12 @@ export default {
             "courseAssociationId":this.tableList[index].courseAssociationId,
             "teacherId":this.tableList[index].teacherId
         },{"Content-Type":"application/json"}).then(function (response) {
-            console.log("传递:");
-            console.log(response.body);
             for(var x=0;x<response.body.selectiveWeekSet.length;x++){
               this.options1.push(response.body.selectiveWeekSet[x]);}
             for(var n=0;n<response.body.selectiveClassroomSet.length;n++){
               this.options4.push(response.body.selectiveClassroomSet[n]);}
           },
           function(error){
-            console.log("传递error:");
-            console.log(error);
           });
       },
       //选择周数与教室  与后端交互传过来剩下的下拉的内容
@@ -272,14 +291,11 @@ export default {
 //           }
            this.options3=response.body.selectiveList;
          },function(error){
-           console.log("获取error:");
-           console.log(error);
          })
         }
       },
       //保存
       saveSel:function(sele1,sele3,sele4,message){
-        console.log(sele3);
         this.modal1=false;
         var weekday = sele3.split("-")[0];
         var lessonNum = sele3.split("-")[1];
@@ -306,18 +322,20 @@ export default {
             {this.$Message.success('操作成功！');
               var t=setTimeout(" location.reload();",3000)
             }
-            console.log("保存:");
-            console.log(response.body);
           },
           function(error){
-            console.log("保存error:");
-            console.log(error);
           });
         this.seenS=false;
       },
       //取消
       cancel:function(){
-        location.reload();
+        this.modal2 = true;
+      },
+      cancelOK:function () {
+        this.modal2 = false;
+        this.seenS=false;
+        var txt = document.getElementById('show'+this.change);
+        txt.innerHTML = "申请补课";
       }
     }
 

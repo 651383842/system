@@ -13,9 +13,14 @@
 			<span class="blankSpan">上课班级：{{classes}}</span>
 		</div>
 		<div class="rpart">
-			<span id="uploadBtn">
+			<span>
 				<Upload
 					ref="upload"
+          :data="{'courseAssociationId': courseAssociationId,
+                 'usualRate': usualRate,
+			            'halfRate': halfRate,
+			            'finalRate': finalRate,
+			            'practiceRate': practiceRate}"
 					:show-upload-list="false"
 					:format="['xls', 'xlsx']"
 					:max-size="5120"
@@ -24,9 +29,7 @@
 		            :on-success="handleSuccess"
 		            :on-error="handleError"
 					action="./importScoreList">
-					<!-- :data="{'courseAssociationId': this.courseAssociationId}" -->
-		            <!-- :on-progress="handleProgress" -->
-					<button class="am-btn am-btn-success am-radius rightBtn">导入</button>
+            <button style="height: 2.4rem" class="am-btn am-btn-success am-radius rightBtn" id="uploadBtn">导入</button>
 				</Upload>
 			</span>
 			<span>
@@ -45,16 +48,16 @@
 				<div class="submitGrade" id="submitGrade" v-show="inputGradeRate">
 					<span>比率设置：</span>
 					<span>
-						平时比率：<input v-model="usualRate" readonly="true" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">%
+						平时比率：<input @blur="saveAllBtns()" v-model="usualRate" readonly="true" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">%
 					</span>
 					<span>
-						期中比率：<input v-model="halfRate" readonly="true" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">%
+						期中比率：<input @blur="saveAllBtns()" v-model="halfRate" readonly="true" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">%
 					</span>
 					<span>
-						期末比率：<input v-model="finalRate" readonly="true" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">%
+						期末比率：<input @blur="saveAllBtns()" v-model="finalRate" readonly="true" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">%
 					</span>
 					<span>
-						实验比率：<input v-model="practiceRate" readonly="true" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">%
+						实验比率：<input @blur="saveAllBtns()" v-model="practiceRate" readonly="true" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">%
 					</span>
 				</div>
 				<!-- <div class="select-button">
@@ -74,6 +77,7 @@
 								<th width="10%">期末成绩</th>
 								<th width="10%">实验成绩</th>
 								<th width="10%">总成绩</th>
+                <th width="10%">结业成绩</th>
 								<!-- <th>成绩备注</th> -->
 							</tr>
 						</thead>
@@ -82,18 +86,19 @@
 								<td v-text="areTestScore.studentId"></td>
 								<td v-text="areTestScore.studentName"></td>
 								<td>
-									<input id="input1" type="text" :value="areTestScore.ususallyGrade" readonly="true" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+									<input @blur="saveAllBtns()" id="input1" type="number" :value="areTestScore.ususallyGrade" readonly="true">
 								</td>
 								<td>
-									<input id="input2" type="text" :value="areTestScore.halfGrade" readonly="true" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+									<input @blur="saveAllBtns()" id="input2" type="number" :value="areTestScore.halfGrade" readonly="true">
 								</td>
 								<td>
-									<input id="input3" type="text" :value="areTestScore.finalExamGrade" readonly="true" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+									<input @blur="saveAllBtns()" id="input3" type="number" :value="areTestScore.finalExamGrade" readonly="true">
 								</td>
 								<td>
-									<input id="input4" type="text" :value="areTestScore.practiceGrade" readonly="true" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+									<input  @blur="saveAllBtns()" id="input4" type="number" :value="areTestScore.practiceGrade" readonly="true">
 								</td>
-								<td v-text="areTestScore.finalGrade"></td>
+								<td v-html="areTestScore.finalGrade"></td>
+                <td v-html="areTestScore.endGrade"></td>
 								<!-- <td v-text="areTestScore.comment"></td> -->
 							</tr>
 						</tbody>
@@ -157,10 +162,9 @@ export default {
 			halfRate: '0',		//期中比率
 			finalRate: '0',		//期末比率
 			practiceRate: '0',	//实验比率
-	        // 学生正考成绩列表
 			scoreList: [
-				// {studentId: '15303010503', studentName: '谢兴月', ususallyGrade: '98', halfGrade: '75', finalExamGrade: '86', practiceGrade: '96'},
-				// {studentId: '15303010503', studentName: '谢兴月', ususallyGrade: '98', halfGrade: '75', finalExamGrade: '86', practiceGrade: '96'}
+				 //{studentId: '15303010503', studentName: '谢兴月', ususallyGrade: '98', halfGrade: '75', finalExamGrade: '86', practiceGrade: '96',finalGrade:''},
+				 //{studentId: '15303010503', studentName: '谢兴月', ususallyGrade: '98', halfGrade: '75', finalExamGrade: '86', practiceGrade: '96',finalGrade:''}
 			],
 			modalOperation: false,
 			modalResult: false,
@@ -171,44 +175,46 @@ export default {
 	},
 	beforeMount: function() {
 		var modifyFlag = null;
-		//分割成字符串  
-		var thisURL = document.URL; 
-        var getval =thisURL.split('?')[1];
+		//分割成字符串
+		var thisURL = document.URL;
+        var getval =thisURL.split('gradesInput?')[1];
         this.courseAssociationId = getval.split("=")[1];
-        // alert(courseAssociationId);
-        
         this.$http.post('./getTeachScore',{
         	"courseAssociationId": this.courseAssociationId
         },{
             "Content-Type":"application/json"
         }).then(function(response){
-            console.log("获取申请:");
-            console.log(response.body);
             var data = response.body;
             this.inputLesson = data.canModifyCourInfo.courseName;
             this.classes = data.canModifyCourInfo.className;
             this.scoreList = data.scoreList;
+            for(var i=0;i<this.scoreList.length;i++)
+            {
+                if(this.scoreList.endGrade==-1)
+                {
+                  this.scoreList.endGrade = '-';
+                }
+            }
+            this.usualRate=data.scoreRate.usuallyRate; 		//平时比率
+            this.halfRate=data.scoreRate.halfRate;			//期中比率
+            this.finalRate=data.scoreRate.finalExamRate;			//期末比率
+            this.practiceRate=data.scoreRate.practiceRate;		//实验比率
 	        modifyFlag = data.canModifyCourInfo.canModifyGrade;
 	        if (modifyFlag == false) {
-	        	// this.buttonShow = true;
-	        	// this.submitShow = true;
-	        	var submitBtn = document.getElementById("submitBtn")
-	        	submitBtn.disabled = true;
-	        	submitBtn.className = 'hideBtn';
-	        	var saveAllBtn = document.getElementById("saveAllBtn")
-	        	saveAllBtn.disabled = true;
-	        	saveAllBtn.className = 'hideBtn';
-	        	var compileBtn = document.getElementById("compileBtn")
-	        	compileBtn.disabled = true;
-	        	compileBtn.className = 'hideBtn';
-	        	var uploadBtn = document.getElementById("uploadBtn")
-	        	uploadBtn.disabled = true;
-	        	uploadBtn.className = 'hideBtn';
+	        	var ssubmitBtn = document.getElementById("submitBtn")
+	        	ssubmitBtn.disabled = true;
+	        	ssubmitBtn.className = 'hideBtn';
+	        	var ssaveAllBtn = document.getElementById("saveAllBtn")
+	        	ssaveAllBtn.disabled = true;
+	        	ssaveAllBtn.className = 'hideBtn';
+	        	var scompileBtn = document.getElementById("compileBtn")
+	        	scompileBtn.disabled = true;
+	        	scompileBtn.className = 'hideBtn';
+	        	var suploadBtn = document.getElementById("uploadBtn")
+	        	suploadBtn.disabled = true;
+	        	suploadBtn.className = 'hideBtn';
 	        }
-        },function(error){
-            console.log("获取申请error:");
-            console.log(error);
-        });
+        },function(error){});
     },
 	methods: {
 		// 编辑修改补考成绩*****************************************************************
@@ -219,12 +225,24 @@ export default {
     		var input = inputGroup.getElementsByTagName("input");
     		// alert(input.length)
     		for (var j = 0; j < inputRate.length; j++) {
-    			inputRate[j].readOnly = false;
-    			inputRate[j].style.border = "0.1rem solid #d4d4d9";
+    		    if(inputRate[j].readOnly == false)
+            {
+              inputRate[j].readOnly = true;
+              inputRate[j].style.border = "none";
+            }else {
+              inputRate[j].readOnly = false;
+              inputRate[j].style.border = "0.1rem solid #d4d4d9";
+            }
     		}
     		for (var i = 0; i < input.length; i++) {
-    			input[i].readOnly = false;
-    			input[i].style.border = "0.1rem solid #d4d4d9";
+          if(input[i].readOnly == false)
+          {
+            input[i].readOnly = true;
+            input[i].style.border = "none";
+          }else {
+            input[i].readOnly = false;
+            input[i].style.border = "0.1rem solid #d4d4d9";
+          }
     		}
     	},
 		// 保存所有数据并提交******************************************************
@@ -240,37 +258,57 @@ export default {
 			var finalRate = Number(this.finalRate);
 			var practiceRate = Number(this.practiceRate);
 			var allRate = usualRate+halfRate+finalRate+practiceRate;
-			// console.log(allRate);
-			// console.log(input.length);
 			for (var i = 0; i < this.scoreList.length; i++) {
 				this.scoreList[i].ususallyGrade = input[0+i*4].value;
     			this.scoreList[i].halfGrade = input[1+i*4].value;
     			this.scoreList[i].finalExamGrade = input[2+i*4].value;
     			this.scoreList[i].practiceGrade = input[3+i*4].value;
+          this.scoreList[i].finalGrade = Math.round(this.scoreList[i].ususallyGrade*usualRate*0.01+
+            this.scoreList[i].halfGrade*halfRate*0.01+this.scoreList[i].finalExamGrade*finalRate*0.01+
+            this.scoreList[i].practiceGrade*practiceRate*0.01);
     			// 判断是否有空值
-    			if (input[i].value == "") {
-    				emptyNum++;
-				}else if (input[i].value>100) {
-					wrongNum++;
-				}
     		}
+    		for(var j=0;j<input.length;j++)
+        {
+          if (input[j].value  =="") {
+            emptyNum++;
+          }else if (input[j].value  >100 || input[j].value  <0) {
+            wrongNum++;
+          }
+        }
 			// 判断所有比率之和为100，输入非空判断
 			if (allRate=='100' && emptyNum=='0' && wrongNum=='0' && this.usualRate!='' && this.halfRate!='' && this.finalRate!='' && this.practiceRate!='') {
 				this.modalOperation = true;
 	    		this.opertaionBool = '1';
 	    	}else if (allRate != '100') {
 	    		this.modalResult = true;
-                this.remindResult = '6';
+          this.remindResult = '6';
 	    	}else if (wrongNum != '0') {
     			this.modalResult = true;
                 this.remindResult = '8';
 	    	}else {
 	    		this.modalResult = true;
-                this.remindResult = '7';
+          this.remindResult = '7';
 	    	}
-	    	// console.log(emptyNum)
-	    	console.log(wrongNum)
 		},
+    saveAllBtns: function () {
+      var submitGrade = document.getElementById("submitGrade");
+      var inputGroup = document.getElementById("inputGroup");
+      var input = inputGroup.getElementsByTagName("input");
+      var usualRate = Number(this.usualRate);
+      var halfRate = Number(this.halfRate);
+      var finalRate = Number(this.finalRate);
+      var practiceRate = Number(this.practiceRate);
+      for (var i = 0; i < this.scoreList.length; i++) {
+        this.scoreList[i].ususallyGrade = input[0+i*4].value;
+        this.scoreList[i].halfGrade = input[1+i*4].value;
+        this.scoreList[i].finalExamGrade = input[2+i*4].value;
+        this.scoreList[i].practiceGrade = input[3+i*4].value;
+        this.scoreList[i].finalGrade = Math.round(this.scoreList[i].ususallyGrade*usualRate*0.01+
+          this.scoreList[i].halfGrade*halfRate*0.01+this.scoreList[i].finalExamGrade*finalRate*0.01+
+          this.scoreList[i].practiceGrade*practiceRate*0.01);
+      }
+    },
 		saveOk: function () {
     		this.modalOperation = false;
 			var submitGrade = document.getElementById("submitGrade");
@@ -299,15 +337,10 @@ export default {
 			},{
 	            "Content-Type":"application/json"
 	        }).then(function(response){
-	            console.log("获取申请:");
-	            console.log(response.body);
 	            var data = response.body;
 	            if(data.result == "1") {
                     this.$Message.success('保存成功！');
-                    // saveResult = data.result;
-                    // window.location.reload();
                 }else {
-                    // this.$Message.error('操作失败！请重试');
                     this.modalResult = true;
                     this.remindResult = '4';
                 }
@@ -315,22 +348,6 @@ export default {
 	            console.log("获取申请error:");
 	            console.log(error);
 	        });
-
-	        // // 通过判断是否保存成功，若成功则获取计算后总成绩
-	        // if (saveResult == "1") {
-	        //     // this.scoreList = data.scoreList;
-	        //     this.$http.post('./getTeachScore',{},{
-		       //      "Content-Type":"application/json"
-		       //  }).then(function(response){
-		       //      console.log("获取申请:");
-		       //      console.log(response.body);
-		       //      var data = response.body;
-		       //      this.scoreList = data.scoreList;
-		       //  },function(error){
-		       //      console.log("获取申请error:");
-		       //      console.log(error);
-		       //  });
-	        // }
 		},
 		// 提交正考成绩，提交后不可再修改************************************************************
 		submitBtn: function () {
@@ -345,20 +362,23 @@ export default {
 			var finalRate = Number(this.finalRate);
 			var practiceRate = Number(this.practiceRate);
 			var allRate = usualRate+halfRate+finalRate+practiceRate;
-			// console.log(allRate);
-			// console.log(input.length);
 			for (var i = 0; i < this.scoreList.length; i++) {
 				this.scoreList[i].ususallyGrade = input[0+i*4].value;
     			this.scoreList[i].halfGrade = input[1+i*4].value;
     			this.scoreList[i].finalExamGrade = input[2+i*4].value;
     			this.scoreList[i].practiceGrade = input[3+i*4].value;
-    			// 判断是否有空值
-    			if (input[i].value == "") {
-    				emptyNum++;
-				}else if (input[i].value>100) {
-					wrongNum++;
-				}
+        this.scoreList[i].finalGrade = Math.round(this.scoreList[i].ususallyGrade*usualRate*0.01+
+          this.scoreList[i].halfGrade*halfRate*0.01+this.scoreList[i].finalExamGrade*finalRate*0.01+
+          this.scoreList[i].practiceGrade*practiceRate*0.01);
     		}
+      for(var j=0;j<input.length;j++)
+      {
+        if (input[j].value =="") {
+          emptyNum++;
+        }else if (input[j].value  >100 || input[j].value  <0) {
+          wrongNum++;
+        }
+      }
 			// 判断所有比率之和为100，输入非空判断
 			if (allRate=='100' && emptyNum=='0' && wrongNum=='0' && this.usualRate!='' && this.halfRate!='' && this.finalRate!='' && this.practiceRate!='') {
 	    		this.modalOperation = true;
@@ -390,8 +410,6 @@ export default {
 			},{
 	            "Content-Type":"application/json"
 	        }).then(function(response){
-	            console.log("获取申请:");
-	            console.log(response.body);
 	            var data = response.body;
 	            if(data.result == "1") {
                     this.$Message.success('提交成功！成绩将不可再修改。');
@@ -405,7 +423,7 @@ export default {
 	        },function(error){
 	            console.log("获取申请error:");
 	            console.log(error);
-	        });	
+	        });
 		},
     	cancel: function () {
     		this.modalOperation = false;
@@ -433,19 +451,17 @@ export default {
         },
         handleSuccess:function(res){
             this.scoreList = res.scoreList;
-          // if(res.result=='1'){
-          //   // this.$Message.success("上传成功！");
-          // }else {
-          // 	this.modalResult = true;
-          // 	this.uploadResult = '0';
-          // 	setTimeout(() => {
-          //       this.modalResult = false;
-          //   }, 3000);
-          // }
+           if(res.result=='1'){
+             this.$Message.success("上传成功,2s后刷新！");
+             setTimeout("window.location.reload()",2000)
+           }else {
+           	this.modalResult = true;
+           	this.uploadResult = '0';
+           }
         },
         handleError:function(res){
-            console.log("获取申请error:");
-	        console.log(error);
+          this.modalResult = true;
+          this.uploadResult = '0';
         }
 	}
 }

@@ -14,14 +14,16 @@
           :max-size="2048"
           :on-format-error="handleFormatError"
           :on-exceeded-size="handleSizeError"
-          :on-progress="handleProgress"
           :on-success="handleSuccess"
           :on-error="handleError"
           action="./teacherManage/uploadTeacherInfo">
+          <!--:on-progress="handleProgress"-->
         <button type="ghost" id="leadIn" class="am-btn am-btn-success am-radius buttonWM">上传</button>
         </Upload>
       </span>
-      <span><button id="leadOut" class="am-btn am-btn-success am-radius buttonWM" @click="downloadClick">下载</button></span>
+      <span><button id="leadOut" class="am-btn am-btn-success am-radius buttonWM" @click="downloadClick">下载全部</button></span>
+      <span><button id="addTch" class="am-btn am-btn-success am-radius buttonWM" @click="modalAdd = true">新增教师</button></span>
+      <span style="margin-left: 10rem;">共检索到{{tchSize}}条记录</span>
       <!--查找，上传，下载按钮-->
     </div>
     <div>
@@ -38,28 +40,29 @@
         </div>
       </modal>
     </div>
-    <!--文件上传失败信息弹窗-->
+    <!--文件上传失败信 息弹窗-->
     <div id="tchTable" style="padding: 0.6rem 5rem;background-color: #f3f3f3">
       <table id="eduAdminTchTableSy" class="operationTable" style="table-layout: fixed;">
         <!--table-layout: fixed;固定表格格局-->
         <thead>
         <tr>
-          <th width="10%">教师号</th>
-          <th width="10%">姓名</th>
-          <th width="20%">身份证号</th>
-          <th width="8%">性别</th>
-          <th width="10%">手机号码</th>
-          <th width="8%">聘用校区</th>
-          <th width="8%">教学职称</th>
-          <th width="8%">工作职称</th>
-          <th width="8%">教师类型</th>
+          <th width="10%">教师编号</th>
+          <th width="6%">姓名</th>
+          <th width="15%">身份证号</th>
+          <th width="3%">性别</th>
+          <th width="8%">手机号码</th>
+          <th width="10%">聘用校区</th>
+          <th width="10%">教学职称</th>
+          <th width="12%">工作职称</th>
+          <th width="6%">是否双师</th>
+          <th width="10%">教师类型</th>
           <th width="10%">操作</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="(teacherSimpleInfo,index) in teacherSimpleInfoList" :id="'inputTable'+index">
           <td><input :id="index + 'input1'" :value="teacherSimpleInfo.teacherId" readonly="readonly" style="border: none"></td>
-          <td><input :id="index + 'input2'" :value="teacherSimpleInfo.teacherName" readonly="readonly" style="border: none"></td>
+          <td><input :id="index + 'input2'" v-model="teacherSimpleInfo.teacherName" readonly="readonly" style="border: none"></td>
           <td><input :id="index + 'input3'" :value="teacherSimpleInfo.teacherIdcard" readonly="readonly" style="border: none"></td>
           <td><input :id="index + 'input4'" :value="teacherSimpleInfo.teacherGender" readonly="readonly" style="border: none"></td>
           <td><input :id="index + 'input5'" :value="teacherSimpleInfo.phoneNumber" readonly="readonly" style="border: none"></td>
@@ -96,6 +99,15 @@
             </select>
           </td>
           <td>
+            <span v-if="teacherSimpleInfo.isDoubleTeacher=='true'"><input value="是" readonly="readonly" style="border: none;"></span>
+            <span v-else-if="teacherSimpleInfo.isDoubleTeacher=='false'"><input value="否" readonly="readonly" style="border: none;"></span>
+            <span v-else><input value="无" readonly="readonly" style="border: none;"></span>
+            <select :id="index + 'select'" class="selectWM" v-model="isDoubleTeacher" style="display: none">
+              <option value="true">是</option>
+              <option value="false">否</option>
+            </select>
+          </td>
+          <td>
             <span v-if="teacherSimpleInfo.teacherType==='1'"><input value="在职" readonly="readonly" style="border: none;"></span>
             <span v-else-if="teacherSimpleInfo.teacherType==='2'"><input value="离职" readonly="readonly" style="border: none;"></span>
             <span v-else><input value="外聘" readonly="readonly" style="border: none;"></span>
@@ -125,7 +137,7 @@
           <button v-if="operateMsg==='1'" id="modalBtn" @click="saveOk()">确定</button>
           <button v-else-if="operateMsg==='2'" id="modalBtn" @click="cancelOk()">确定</button>
           <button v-else id="modalBtn" @click="deleteOk()">确定</button>
-          <button id="modalBtn" @click="operateCancel">取消</button>
+          <button id="modalBtn" @click="modalOperateBool =false">取消</button>
         </div>
       </modal>
       <!--用户修改，取消修改教师信息，删除教师时，弹窗确认-->
@@ -140,6 +152,82 @@
         </div>
       </modal>
       <!--弹窗提示确认保存修改，删除失败信息-->
+      <Modal
+        v-model="modalAdd"
+        width="520"
+        :mask-closable="false"
+        id="modalBody"
+        :styles="{top:'10rem'}">
+        <!--对话框宽400px，显示隐藏绑定属性变量，不允许点击遮罩层关闭对话框，对话框距离页面顶端10rem-->
+        <div>
+          <span style="font-size: medium;padding: 0.5rem">教师编号:</span>
+          <input placeholder="教师编号（必填）" style="width: 8rem;text-align: left" v-model="newTch.teacherId">
+          <span style="font-size: medium;padding: 0.5rem">教师姓名:</span>
+          <input placeholder="教师姓名（必填）" style="width: 8rem;text-align: left" v-model="newTch.teacherName">
+        </div>
+        <div style="margin: 0.2rem 0">
+          <span style="font-size: medium;padding: 0.5rem">身份证:</span>
+          <input placeholder="教师身份证号码（必填）" style="width: 11.6rem;text-align: left" v-model="newTch.teacherIDcard">
+          <span style="font-size: medium;padding: 0.5rem">性别:</span>
+          <select style="width: 7.4rem" v-model="newTch.teacherGender">
+            <option value="" disabled>选择性别</option>
+            <option value="男">男</option>
+            <option value="女">女</option>
+          </select>
+        </div>
+        <div style="margin: 0.2rem 0">
+          <span style="font-size: medium;padding: 0.5rem">手机号码:</span>
+          <input placeholder="教师手机号码" style="width: 8rem;text-align: left" type="number" v-model="newTch.contactNumber">
+          <span style="font-size: medium;padding: 0.5rem">聘用校区:</span>
+          <select style="width: 8rem" v-model="newTch.hireCampus">
+            <option value="">选择校区</option>
+            <option value="1">校本部</option>
+            <option value="2">新校区</option>
+          </select>
+        </div>
+        <div style="margin: 0.2rem 0">
+          <span style="font-size: medium;padding: 0.5rem">教学职称:</span>
+          <select style="width: 8rem" v-model="newTch.currentWorkTitle">
+            <option value="5">无</option>
+            <option value="1">助教</option>
+            <option value="2">讲师</option>
+            <option value="3">副教授</option>
+            <option value="4">教授</option>
+          </select>
+          <span style="font-size: medium;padding: 0.5rem">工作职称:</span>
+          <select style="width: 8rem" v-model="newTch.currentWorkDuty">
+            <option value="10">无</option>
+            <option value="1">医师</option>
+            <option value="2">主治医师</option>
+            <option value="3">副主任医师</option>
+            <option value="4">主任医师</option>
+            <option value="5">护士</option>
+            <option value="6">护师</option>
+            <option value="7">主管护师</option>
+            <option value="8">副主任护师</option>
+            <option value="9">主任护师</option>
+          </select>
+        </div>
+        <div style="margin: 0.2rem 0">
+          <span style="font-size: medium;padding: 0.5rem">是否双师:</span>
+          <select style="width: 8rem" v-model="newTch.isDoubleTeacher">
+            <option value="" disabled>选择双师型</option>
+            <option value="true">是</option>
+            <option value="false">否</option>
+          </select>
+          <span style="font-size: medium;padding: 0.5rem">教师类型:</span>
+          <select style="width: 8rem" v-model="newTch.teacherType">
+            <option value="" disabled>选择类型</option>
+            <option value="1">在职</option>
+            <option value="2">离职</option>
+            <option value="3">外聘</option>
+          </select>
+        </div>
+        <div slot="footer" style="text-align: center">
+          <button id="modalBtn" @click="addTchOK()">新增</button>
+          <button id="modalBtn" @click="modalAdd = false">取消</button>
+        </div>
+      </Modal>
     </div>
   </div>
 </template>
@@ -149,8 +237,25 @@
         name: '',
         data () {
             return {
+              tchSize:0,
+              modalAdd:false,
+              newTch:
+                {
+                  teacherId:'',
+                  teacherName:'',
+                  teacherIDcard:'',
+                  teacherGender:'',
+                  currentWorkTitle:'5',
+                  currentWorkDuty:'10',
+                  isDoubleTeacher:'',
+                  hireCampus:'',
+                  contactNumber:'',
+                  teacherType:''
+                },
               teacherinfoKey: {
                 teacherName: '',
+                teacherNameList:[],
+                teacherNames: '',
                 teacherId:''
             },
               hireCampusList:[
@@ -166,6 +271,7 @@
                 '1:在职','2:离职','3:外聘'
               ],
               hireCampusEle:'',
+              isDoubleTeacher:'',
               currentWorkTitleEle:'',
               currentWorkDutyEle:'',
               teacherTypeEle:'',
@@ -177,8 +283,8 @@
               operateMsg:'',
               resultMsg:'1',
               teacherSimpleInfoList:[
-                  {teacherId:'11234567',teacherName:'何平',teacherIdcard:'321281199503285555',teacherGender:'男',phoneNumber:'15680991111',hireCampus:'1',currentWorkTitle:'1',currentWorkDuty:'3',teacherType:'1'},
-                  {teacherId:'21234567',teacherName:'何平',teacherIdcard:'321281199503285555',teacherGender:'男',phoneNumber:'15680991111',hireCampus:'2',currentWorkTitle:'3',currentWorkDuty:'7',teacherType:'2'}
+//                  {isDoubleTeacher:'false',teacherId:'11234567',teacherName:'何平何平',teacherIdcard:'321281199503285555',teacherGender:'男',phoneNumber:'15680991111',hireCampus:'1',currentWorkTitle:'1',currentWorkDuty:'3',teacherType:'1'},
+//                  {isDoubleTeacher:'true',teacherId:'21234567',teacherName:'何平',teacherIdcard:'321281199503285555',teacherGender:'男',phoneNumber:'15680991111',hireCampus:'2',currentWorkTitle:'3',currentWorkDuty:'7',teacherType:'2'}
                 ]
             }
         },
@@ -188,11 +294,63 @@
         }).then(function (response) {
           console.log(response);
           this.teacherSimpleInfoList = response.body.teacherSimpleInfoList;
+          this.tchSize = this.teacherSimpleInfoList.length;
         },function(error){
           console.log("获取error");
         });
       },
       methods:{
+            addTchOK:function () {
+                if(this.newTch.teacherId==""||this.newTch.teacherName==""||this.newTch.teacherIDcard=="")
+                {
+                  this.$Message.warning("请填写完整的教师信息！");
+                  return;
+                }
+              if(this.newTch.teacherGender=='')
+              {
+                this.$Message.warning("请选择性别！");
+                return;
+              }
+              if(this.newTch.hireCampus=='')
+              {
+                this.$Message.warning("请选择聘用校区！");
+                return;
+              }
+              if(this.newTch.isDoubleTeacher=='')
+              {
+                this.$Message.warning("请选择双师型！");
+                return;
+              }
+              if(this.newTch.teacherType=='')
+              {
+                this.$Message.warning("请选择教师类型！");
+                return;
+              }
+              this.$http.post('./teacherManage/addTeacherForOne',{
+                "teacherId":this.newTch.teacherId,
+                "teacherName":this.newTch.teacherName,
+                "teacherIDcard":this.newTch.teacherIDcard,
+                "teacherGender":this.newTch.teacherGender,
+                "currentWorkTitle":this.newTch.currentWorkTitle,
+                "currentWorkDuty":this.newTch.currentWorkDuty,
+                "isDoubleTeacher":this.newTch.isDoubleTeacher,
+                "hireCampus":this.newTch.hireCampus,
+                "contactNumber":this.newTch.contactNumber,
+                "teacherType":this.newTch.teacherType
+              },{
+                "Content-Type":"application/json"
+              }).then(function (response) {
+                var result = response.body.result;
+                if(result === "0"){
+                  this.$Message.error("新增失败，请输入正确的教师信息！");
+                }else{
+                  this.$Message.success("新增成功！");
+                  this.modalAdd = false;
+                }
+              },function(error){
+                this.$Message.warning("网络错误！");
+              });
+            },
         tchNameClick:function(){
           this.teacherinfoKey.teacherId = "";
         },
@@ -211,9 +369,10 @@
             console.log(response);
             var result = response.body.result;
             if(result === "0"){
-              alert("请输入正确的教师信息！");
+              this.$Message.warning("查询结果为空！");
             }else{
               this.teacherSimpleInfoList = response.body.teacherSimpleInfoList;
+              this.tchSize = this.teacherSimpleInfoList.length;
             }
           },function(error){
             console.log("获取error");
@@ -264,6 +423,9 @@
         editClick: function(index){
           var inputTable = document.getElementById("inputTable"+index);
           var input = inputTable.getElementsByTagName("input");
+          input[1].removeAttribute("readOnly");
+          input[1].style.color = "#ff3438";
+          this.teacherNames = input[1].value;
           var select = inputTable.getElementsByTagName("select");
           var editImg = document.getElementById("editImg"+index);
           var saveImg = document.getElementById("saveImg"+index);
@@ -293,8 +455,9 @@
               this.teacherTypeEle = this.teacherTypeList[i4];
             }
           }
+          this.isDoubleTeacher = this.teacherSimpleInfoList[index].isDoubleTeacher;
 //          用户点击编辑图标时，下拉框内默认为当前用户信息
-          for(var i = 5;i<9;i++){
+          for(var i = 5;i<10;i++){
             input[i].style.display = "none";
             select[i-5].style.display = "inline";
           }
@@ -305,6 +468,13 @@
         },
 //        修改教师信息
         saveClick:function(index){
+          var inputTable = document.getElementById("inputTable"+index);
+          var input = inputTable.getElementsByTagName("input");
+          if(input[1].value == "")
+          {
+              this.$Message.error("教师姓名不能为空！");
+              return;
+          }
           this.modalOperateBool = true;
           this.operateMsg = "1";
           this.index = index;
@@ -336,31 +506,37 @@
           var teacherTypeSplit = this.teacherTypeEle.split(":");
           this.$http.post('./teacherManage/editTeacherInfo',{
             "teacherId":input[0].value,
+            "teacherName":input[1].value,
             "hireCampus":hireCampusSplit[0],
             "currentWorkTitle":currentWorkTitleSplit[0],
             "currentWorkDuty":currentWorkDutySplit[0],
-            "teacherType":teacherTypeSplit[0]
+            "teacherType":teacherTypeSplit[0],
+            "isDoubleTeacher":select[3].value
           },{
             "Content-Type":"application/json"
           }).then(function (response) {
-            console.log(response);
             this.resultMsg=response.body.result;
             if(this.resultMsg==='1'){
               this.teacherSimpleInfoList[this.index].hireCampus = hireCampusSplit[0];
               this.teacherSimpleInfoList[this.index].currentWorkTitle = currentWorkTitleSplit[0];
               this.teacherSimpleInfoList[this.index].currentWorkDuty = currentWorkDutySplit[0];
               this.teacherSimpleInfoList[this.index].teacherType = teacherTypeSplit[0];
+              this.teacherSimpleInfoList[this.index].isDoubleTeacher = select[3].value;
               this.$Message.success("保存成功！");
             }else{
               this.modalResultBool = true;
+              this.teacherSimpleInfoList[this.index].teacherName=this.teacherNames;
             }
           },function(error){
-            console.log("获取error");
+            this.modalResultBool = true;
+            this.teacherSimpleInfoList[this.index].teacherName=this.teacherNames;
           });
-          for(var i = 5;i<9;i++){
+          for(var i = 5;i<10;i++){
             input[i].style.display = "inline";
             select[i-5].style.display = "none";
           }
+          input[1].readOnly = "readOnly";
+          input[1].style.color = "#030203";
           this.modalOperateBool = false;
           editImg.style.display = "inline";
           saveImg.style.display = "none";
@@ -371,12 +547,15 @@
         cancelOk: function(){
           var inputTable = document.getElementById("inputTable"+this.index);
           var input = inputTable.getElementsByTagName("input");
+          input[1].readOnly = "readOnly";
+          input[1].style.color = "#030203";
+          this.teacherSimpleInfoList[this.index].teacherName=this.teacherNames;
           var select = inputTable.getElementsByTagName("select");
           var editImg = document.getElementById("editImg"+this.index);
           var saveImg = document.getElementById("saveImg"+this.index);
           var deleteImg = document.getElementById("deleteImg"+this.index);
           var restoreImg = document.getElementById("restoreImg"+this.index);
-          for(var i = 5;i<9;i++){
+          for(var i = 5;i<10;i++){
             input[i].style.display = "inline";
             select[i-5].style.display = "none";
           }
@@ -393,10 +572,10 @@
           },{
             "Content-Type":"application/json"
           }).then(function (response) {
-            console.log(response);
             this.resultMsg=response.body.result;
             if(this.resultMsg==='1'){
               this.teacherSimpleInfoList.splice(this.index,1);
+              this.tchSize -=1;
               this.$Message.success("删除成功！");
             }else{
               this.modalResultBool = true;
@@ -407,10 +586,6 @@
           this.modalOperateBool = false;
         },
 //        删除教师及其所有信息
-        operateCancel:function(){
-          this.modalOperateBool = false;
-        },
-//        取消掉保存，删除，取消保存等操作
         resultOk: function(){
           this.modalResultBool = false;
         }

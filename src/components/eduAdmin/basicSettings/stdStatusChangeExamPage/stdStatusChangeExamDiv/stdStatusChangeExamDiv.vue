@@ -13,6 +13,7 @@
           <option value="3">退学申请</option>
           <option value="4">复学申请</option>
         </select>
+        <span style="margin-left: 15rem;">未毕业年级中共退学{{ dropoutNumber }}人，休学{{ quitNumber }}人</span>
       </div>
     </div>
     <div id="tableDiv">
@@ -133,6 +134,10 @@
       return {
         applicationType: "2",
 //        申请类型
+        dropoutNumber: 0,
+//        未毕业年级的所有退学人数
+        quitNumber: 0,
+//        未毕业年级的所有休学人数
         applications: [
           /*{
             "schoolYearType": "3",
@@ -196,6 +201,15 @@
     },
     beforeMount: function() {
 //    页面dom加载前获取后端数据
+      this.$http.post('./stateManage/getNoGraduationOfGrade',{},{
+        "Content-Type":"application/json"
+      }).then(function(response){
+        var data = response.body;
+        this.dropoutNumber = data.dropoutNumber;
+        this.quitNumber = data.quitNumber;
+      },function(error){
+        this.$Message.error('连接失败，请重试！');
+      });//获取未毕业年级的所有退学以及休学人数
       this.$http.post('./stateManage/getApplyQuitStudentList',{},{
         "Content-Type":"application/json"
       }).then(function(response){

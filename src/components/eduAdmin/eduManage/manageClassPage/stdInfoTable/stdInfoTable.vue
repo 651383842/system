@@ -11,8 +11,9 @@
       <!--学号，姓名输入框-->
       <span><button id="searchFor" class="am-btn am-btn-success am-radius buttonWM" @click="searchChangeInfo()">查询</button></span>
       <span><button id="leadOut" class="am-btn am-btn-success am-radius buttonWM" @click="leadOutInfo()">下载</button></span>
-      <span><a href="#/eduAdmin/person/eduAdminManageClass/stdStatusChangeExam"><button id="checkOut" class="am-btn am-btn-success am-radius buttonWM">异动审核</button></a></span>
+      <span><a href="#/eduAdmin/person/eduAdminManageClass/stdStatusChangeExam"><button id="checkOut" class="am-btn am-btn-success am-radius buttonWM" style="width: 6.5rem">异动审核</button></a></span>
       <!--查询,导出按钮-->
+      <span style="margin-left: 10rem;">未毕业年级中共退学{{ dropoutNumber }}人，休学{{ quitNumber }}人</span>
     </div>
     <div id="stdInfoTable" style="padding: 0.6rem 5rem;background-color: #f3f3f3">
       <table id="stdInfoTableSy" class="normalTable" style="table-layout: fixed;">
@@ -61,17 +62,30 @@
                 '3',
                 '5'
               ],
+              dropoutNumber: 0,
+//        未毕业年级的所有退学人数
+              quitNumber: 0,
+//        未毕业年级的所有休学人数
               statechangeKey:{
                 schoolYearType:'0',
                 studentId:'',
                 studentName:''
               },
               statechangeinfoStrList:[
-                  {schoolYearType:'3',specialityName:'护理',className:'护理3班',studentId:'1530310503',studentName:'谢兴月',changeType:'1',changeReason:'请假一学期',changeDate:'2016.03.01'}
+                 // {schoolYearType:'3',specialityName:'护理',className:'护理3班',studentId:'1530310503',studentName:'谢兴月',changeType:'1',changeReason:'请假一学期',changeDate:'2016.03.01'}
                 ]
             }
         },
       beforeMount:function() {
+        this.$http.post('./stateManage/getNoGraduationOfGrade',{},{
+          "Content-Type":"application/json"
+        }).then(function(response){
+          var data = response.body;
+          this.dropoutNumber = data.dropoutNumber;
+          this.quitNumber = data.quitNumber;
+        },function(error){
+          this.$Message.error('连接失败，请重试！');
+        });//获取未毕业年级的所有退学以及休学人数
         this.$http.post('./stateManage/getAllStateChangeInfo',{},{
           "Content-Type":"application/json"
         }).then(function (response) {
@@ -95,15 +109,18 @@
           },{
             "Content-Type":"application/json"
           }).then(function (response) {
-            console.log(response);
             var result = response.body.result;
             if(result === "0"){
-              this.$Message.error("请输入正确的教师信息！");
+              this.$Message.error("请输入正确的信息！");
             }else{
               var temp = response.body.statechangeinfoStrList;
               this.statechangeinfoStrList.splice(0,this.statechangeinfoStrList.length);
               for(var i=0;i<temp.length;i++){
                 this.statechangeinfoStrList.push(temp[temp.length-i-1]);
+              }
+              if(temp.length == 0)
+              {
+                this.$Message.error("查询结果为空！");
               }
             }
           },function(error){

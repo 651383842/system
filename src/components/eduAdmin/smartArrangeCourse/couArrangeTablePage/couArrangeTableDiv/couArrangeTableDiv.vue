@@ -7,6 +7,7 @@
           <!--使用form表单进行文件下载-->
           <button id="exportButton" class="am-btn am-btn-success am-radius" type="submit" style="margin-left: 1.4rem">导出</button>
         </form>
+        <button class="am-btn am-btn-success am-radius" style="margin-left: 10rem" @click="moda2 = true">跳转到培养方案</button>
       </div>
     </div>
     <div class="positionBar">
@@ -15,8 +16,7 @@
       <span> > 智能排课 > 排课执行</span>
     </div>
     <div id="mainDiv">
-      <p id="tableTipP">显示当前智能排课结果生成的课表；支持调换选定的两门课程；重新排课之后可能会由于程序运行时间问题，需要等待并刷新页面。</p>
-      <p id="tableInfoP">当前排课课表：</p>
+      <p>※同一班级可拖动调整课程,此功能请使用Chrome、FireFox、360(极速模式)、Microsoft Edge浏览器打开</p>
       <tableDiv :queryCourse="queryCourse"></tableDiv><!--表格组件-->
     </div>
 
@@ -36,6 +36,37 @@
         <button id="modalBtn" @click="closeModal()">取消</button>
       </div>
     </Modal>
+    <Modal
+      v-model="moda2"
+      width="400"
+      :mask-closable="false"
+      id="modalBody"
+      :closable="closable"
+      :styles="{top:'10rem'}">
+      <!--对话框宽400px，显示隐藏绑定属性变量，不允许点击遮罩层关闭对话框，对话框距离页面顶端10rem-->
+      <div style="font-size: 1.1rem;text-align: center;">
+        <p>确定取消所作的更改，跳转到培养方案吗?</p>
+      </div>
+      <div slot="footer" style="text-align: center">
+        <router-link to="/eduAdmin/plan/eduAdminEduPlan"><button  id="modalBtn">确定</button></router-link>
+        <button id="modalBtn" @click="moda2 = false">取消</button>
+      </div>
+    </Modal>
+    <Modal
+      v-model="moda3"
+      width="400"
+      :mask-closable="false"
+      id="modalBody"
+      :closable="closable"
+      :styles="{top:'10rem'}">
+      <!--对话框宽400px，显示隐藏绑定属性变量，不允许点击遮罩层关闭对话框，对话框距离页面顶端10rem-->
+      <div style="font-size: 1.1rem;text-align: center;">
+        <p>{{ modalMessage }}</p>
+      </div>
+      <div slot="footer" style="text-align: center">
+        <button id="modalBtn" @click="moda3 = false">确定</button>
+      </div>
+    </Modal>
   </div>
 </template>
 <script>
@@ -45,13 +76,15 @@
     data () {
       return {
         modal: false,
+        moda2: false,
+        moda3: false,
 //        对话框显隐
         modalMessage: "您确定进行智能排课吗?",
         loading: false,
 //        异步关闭对话框
         closable: false,
 //        取消esc关闭对话框和左上角×
-        isClose: true
+        isClose: true,
 //        是否允许关闭对话框
       }
     },
@@ -62,23 +95,34 @@
       restartArrangeClick: function(){
         this.modalMessage = '正在智能排课中……';
         this.loading = true;
-//        开启等待动态效果
         this.isClose = false;
-//        不允许关闭对话框,防止误操作
         this.$http.post('./acdeminArrangeCurriculum',{},{
           "Content-Type":"application/json"
         }).then(function(response){
-          location.reload();
+            if(response.body.result == '0')//排课后端返回失败
+            {
+              this.modalMessage =  response.body.err_msg;
+              this.isClose = true;
+              this.loading = false;
+              this.modal = false;
+              this.moda3 = true;
+              return;
+            }else if(response.body.result == '1')
+            {
+              this.$Message.success("智能排课成功！");
+              setTimeout("location.reload(true)", 2000);
 //          排课成功刷新页面
-          this.modal = false;
-          this.isClose = true;
-          this.loading = false;
-          this.modalMessage =  "您确定进行智能排课吗?";
+              this.modal = false;
+              this.isClose = true;
+              this.loading = false;
+              this.modalMessage =  "您确定进行智能排课吗?";
+            }
         },function(error){
-          this.modalMessage =  "排课失败，请重试！";
+          this.modalMessage =  "连接失败，请重试！";
+          this.modal = false;
+          this.moda3 = true;
+          this.loading = false;
           this.isClose = true;
-//        允许关闭对话框
-          this.$Message.error("连接失败，请重试！");
         });
       }, //重新智能排课
       closeModal: function () {

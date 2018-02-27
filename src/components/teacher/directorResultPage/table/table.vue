@@ -3,7 +3,7 @@
     <div  class="positionBar">
       <span>您当前的位置：</span>
       <span><a href="#/login/main/eduAdminHome" class="returnHome">首页</a></span>
-      <span> > <a href="#/teacher/teach/director" class="returnHome">督导反馈</a></span>
+      <span> > <a href="#/teacher/director" class="returnHome">督导反馈</a></span>
       <span> > 督导结果</span>
     </div>
     <div id="table">
@@ -18,38 +18,31 @@
         <tbody>
         <tr>
           <td>督导日期</td>
-          <td colspan=3><input v-model="SuperviseTime" class="big" type="text"></td>
+          <td colspan=3><input v-model="SuperviseTime" class="big" type="text" placeholder="请输入日期"></td>
         </tr>
         <tr><td rowspan=8>评分</td>
-             <td>学生出勤情况</td><td><input v-model="AttendanceInfo" class="sma" type="text"></td></tr>
-        <tr><td>授课内容</td> <td><input v-model="TeachContent" class="sma" type="text"></td></tr>
-        <tr><td>教师素养得分</td> <td><input v-model="TeacherQualityScored" class="sma" type="number"></td></tr>
-        <tr><td>教学目标得分</td> <td><input v-model="TeachGoalsScored" class="sma" type="number"></td></tr>
-        <tr><td>教学内容得分</td> <td><input v-model="TeachContentScored" class="sma" type="number"></td></tr>
-        <tr><td>教学方法得分</td> <td><input v-model="TeachMethodsScored" class="sma" type="number"></td></tr>
-        <tr><td>教学常规得分</td> <td><input v-model="TeachRoutineScored" class="sma" type="number"></td></tr>
-        <tr><td>教学内容得分</td> <td><input v-model="TeachEffectScored" class="sma" type="number"></td></tr>
+             <td>学生出勤情况</td><td><input v-model="AttendanceInfo" class="sma" type="text" placeholder="请输入出勤情况"></td></tr>
+        <tr><td>授课内容</td> <td><input v-model="TeachContent" class="sma" type="text" placeholder="请输入授课内容"></td></tr>
+        <tr><td>教师素养得分</td> <td><input v-model="TeacherQualityScored" class="sma" type="number" placeholder="请输入得分（0-100）"></td></tr>
+        <tr><td>教学目标得分</td> <td><input v-model="TeachGoalsScored" class="sma" type="number" placeholder="请输入得分（0-100）"></td></tr>
+        <tr><td>教学内容得分</td> <td><input v-model="TeachContentScored" class="sma" type="number" placeholder="请输入得分（0-100）"></td></tr>
+        <tr><td>教学方法得分</td> <td><input v-model="TeachMethodsScored" class="sma" type="number" placeholder="请输入得分（0-100）"></td></tr>
+        <tr><td>教学常规得分</td> <td><input v-model="TeachRoutineScored" class="sma" type="number" placeholder="请输入得分（0-100）"></td></tr>
+        <tr><td>教学内容得分</td> <td><input v-model="TeachEffectScored" class="sma" type="number" placeholder="请输入得分（0-100）"></td></tr>
         <tr><td>督导员意见</td>
-             <td colspan=3><input v-model="CommentsInfo" class="big" type="text"></td>
+             <td colspan=3><input v-model="CommentsInfo" class="big" type="text" placeholder="请输入您的意见"></td>
         </tr>
-        <!--<tr>-->
-          <!--<td >教务人员意见(教务人员填写)</td>-->
-          <!--<td colspan=3><input style="display: none" v-model="ForwardInfo" readonly class="big" type="text"></td>-->
-        <!--</tr>-->
-        <!--<tr><td>教师反馈</td>-->
-          <!--<td colspan=3><input class="big" type="text"></td>-->
-        <!--</tr>-->
         </tbody>
       </table>
       <div style="text-align: center">
-      <button class="am-btn am-btn-success am-radius" @click="saveDia(SuperviseTime,AttendanceInfo,TeachContent,TeacherQualityScored,
+      <button v-show="subBtn" class="am-btn am-btn-success am-radius" @click="saveDia(SuperviseTime,AttendanceInfo,TeachContent,TeacherQualityScored,
       TeachGoalsScored,TeachContentScored,TeachMethodsScored,TeachRoutineScored,TeachEffectScored,CommentsInfo,ForwardInfo)">提交</button>
       <button class="am-btn am-btn-success am-radius" @click="cancel()">返回</button>
       </div>
     </div>
     <div id="grey"></div>
     <div id="recordTable">
-      <table class="table table-hover table-bordered" cellspacing="1">
+      <table class="operationTable">
         <thead>
         <tr id="recordTr">
           <th class="recordTh">督导时间</th>
@@ -109,6 +102,20 @@
           <button id="modalBtn" @click="modal3 = false">确定</button>
         </div>
       </Modal>
+      <Modal
+        v-model="modal4"
+        width="400"
+        :mask-closable="false"
+        id="modalBody"
+        :styles="{top:'10rem'}">
+        <div style="font-size: 1.1rem;text-align: center;">
+          <p>得分不合法！</p>
+        </div>
+        <div slot="footer" style="text-align: center">
+          <!--<button id="modalBtn" @click="cancel()">确定</button>-->
+          <button id="modalBtn" @click="modal4 = false">确定</button>
+        </div>
+      </Modal>
   </div>
   </div>
 </template>
@@ -120,6 +127,7 @@
       return {
 //        tableList:[{supervisionTime:"0102",upTime:"0103"},{supervisionTime:"0102",upTime:"0103"}],
         tableList:'',
+        subBtn:true,
         SuperviseTime:'',
         AttendanceInfo:'',
         TeachContent:'',
@@ -134,6 +142,7 @@
         modal1: false,
         modal2: false,
         modal3: false,
+        modal4:false,
         oSuperviseTime:'',
         oAttendanceInfo:'',
         oTeachContent:'',
@@ -150,63 +159,88 @@
     //打开页面
     beforeMount:function(){
       var thisURL = document.URL;
-      console.log(thisURL);
-      var id =thisURL.split("?")[1];
+      var id =thisURL.split("directorResult?")[1];
       var idArr = id.split("&");
-      var courseId =idArr[1];
-      var classId =idArr[0];
-      var teacherId =idArr[2];
-      console.log(courseId);
-      console.log(teacherId);
+      var courseId =idArr[1].split("=")[1];
+      var classId =idArr[2].split("=")[1];
+      var teacherId =idArr[3].split("=")[1];
       this.$http.post('./teachingSupervision/getSupervisionRecord',{
-//        this.$http.post('../jsonphp/result.php',{
         "courseId":courseId,
         "classId":classId,
         "teacherId":teacherId
       },
         {"Content-Type":"application/json"}).then(function (response) {
-          console.log(response);
           this.tableList=response.body.supervisionRecordList;
-//          this.SuperviseTime=response.body.SuperviseTime;
-//          this.AttendanceInfo=response.body.AttendanceInfo;
-//          this.TeachContent=response.body.TeachContent;
-//          this.TeacherQualityScored=response.body.TeacherQualityScored;
-//          this.TeachGoalsScored=response.body.TeachGoalsScored;
-//          this.TeachContentScored=response.body.TeachContentScored;
-//          this.TeachMethodsScored=response.body.TeachMethodsScored;
-//          this.TeachRoutineScored=response.body.TeachRoutineScored;
-//          this. TeachEffectScored=response.body.TeachEffectScored;
-//          this. CommentsInfo=response.body.CommentsInfo;
-//          this. ForwardInfo=response.body.ForwardInfo;
+          this.SuperviseTime=response.body.supervisionInfoList[0].superviseTime;
+          this.AttendanceInfo=response.body.supervisionInfoList[0].attendanceInfo;
+          this.TeachContent=response.body.supervisionInfoList[0].teachContent;
+          this.TeacherQualityScored=response.body.supervisionInfoList[0].teacherQualityScored;
+          this.TeachGoalsScored=response.body.supervisionInfoList[0].teachGoalsScored;
+          this.TeachContentScored=response.body.supervisionInfoList[0].teachContentScored;
+          this.TeachMethodsScored=response.body.supervisionInfoList[0].teachMethodsScored;
+          this.TeachRoutineScored=response.body.supervisionInfoList[0].teachRoutineScored;
+          this. TeachEffectScored=response.body.supervisionInfoList[0].teachEffectScored;
+          this. CommentsInfo=response.body.supervisionInfoList[0].commentsInfo;
+          this. ForwardInfo=response.body.supervisionInfoList[0].forwardInfo;
         },
         function(error){
-          console.log("获取error:");
-          console.log(error);
         });
+    },
+    mounted:function () {
+      var thisURL = document.URL;
+      var id =thisURL.split("directorResult?")[1];
+      var idArr = id.split("&");
+      if(idArr[0].split("=")[1]=='r')
+      {
+          this.subBtn = false;
+        var inputs = document.getElementsByTagName("input");
+        for(var i= 0;i<inputs.length;i++)
+        {
+          inputs[i].disabled="disabled";
+        }
+
+      }else if(idArr[0].split("=")[1]=='w')
+      {
+          var date = new Date();
+          this.SuperviseTime = date.toLocaleDateString();
+      }
     },
     methods: {
       //打开保存对话框
       saveDia:function(SuperviseTime,AttendanceInfo,TeachContent,TeacherQualityScored,
                        TeachGoalsScored,TeachContentScored,TeachMethodsScored,TeachRoutineScored,TeachEffectScored,CommentsInfo,ForwardInfo){
+        if(SuperviseTime==''||AttendanceInfo==''||TeachContent==''||CommentsInfo==''||TeacherQualityScored==''||
+            TeachGoalsScored==''||TeachContentScored==''||TeachMethodsScored==''||TeachRoutineScored==''||TeachEffectScored==''){
+          this.modal3 = true;
+          return;
+        } else{
+          this.oCommentsInfo=CommentsInfo;
           this.oSuperviseTime=SuperviseTime;
           this.oAttendanceInfo=AttendanceInfo;
           this.oTeachContent=TeachContent;
-          this.oTeacherQualityScored=TeacherQualityScored;
-          this.oTeachGoalsScored=TeachGoalsScored;
-          this.oTeachContentScored=TeachContentScored;
-          this.oTeachMethodsScored=TeachMethodsScored;
-          this.oTeachRoutineScored=TeachRoutineScored;
-          this.oTeachEffectScored=TeachEffectScored;
-          this.oCommentsInfo=CommentsInfo;
           this.oForwardInfo=ForwardInfo;
-          if(SuperviseTime==''||AttendanceInfo==''||TeachContent==''||TeacherQualityScored==''||
-            TeachGoalsScored==''||TeachContentScored==''||TeachMethodsScored==''||TeachRoutineScored==''||
-            TeachEffectScored==''||CommentsInfo==''){
-            this.modal3 = true;
-          }else{
-            this.modal1 = true;
+        }
+        try
+        {
+          this.oTeacherQualityScored = parseInt(TeacherQualityScored);
+          this.oTeachGoalsScored = parseInt(TeachGoalsScored);
+          this.oTeachContentScored = parseInt(TeachContentScored);
+          this.oTeachMethodsScored = parseInt(TeachMethodsScored);
+          this.oTeachRoutineScored = parseInt(TeachRoutineScored);
+          this.oTeachEffectScored = parseInt(TeachEffectScored);
+          if(this.oTeacherQualityScored>100||this.oTeacherQualityScored<=0||this.oTeachGoalsScored>100||this.oTeachGoalsScored<=0
+            ||this.oTeachContentScored>100||this.oTeachContentScored<=0||this.oTeachMethodsScored>100||this.oTeachMethodsScored<=0
+            ||this.oTeachRoutineScored>100||this.oTeachRoutineScored<=0||this.oTeachEffectScored>100||this.oTeachEffectScored<=0)
+          {
+            this.modal4 = true;
+            return;
           }
-
+        }catch(e)
+          {
+            this.modal4 = true;
+            return;
+          }
+        this.modal1 = true;
       },
       //打开取消对话框
       cancelDia:function(){
@@ -217,16 +251,11 @@
                     TeachGoalsScored,TeachContentScored,TeachMethodsScored,TeachRoutineScored,TeachEffectScored,CommentsInfo,ForwardInfo){
         this.modal1=false;
         var thisURL = document.URL;
-        var id =thisURL.split("?")[1];
+        var id =thisURL.split("directorResult?")[1];
         var idArr = id.split("&");
-        var courseId =idArr[1];
-        var classId =idArr[0];
-        var teacherId =idArr[2];
-//        var id =thisURL.split("?")[1];
-//        var courseId =id.split("*")[0];
-//        var classId =id.split("*")[1];
-//        var teacherId =id.split("*")[2];
-//        this.$http.post('../jsonphp/result.php',{
+        var courseId =idArr[1].split("=")[1];
+        var classId =idArr[2].split("=")[1];
+        var teacherId =idArr[3].split("=")[1];
         this.$http.post('./teachingSupervision/addSupervision',{
           "courseId":courseId,
           "classId":classId,
@@ -243,20 +272,21 @@
           "commentsInfo":CommentsInfo,
           "forwardInfo":ForwardInfo
         },{"Content-Type":"application/json"}).then(function (response) {
-            console.log("传递:");
-            console.log(response.body);
             if(response.body.result=="1")
-            {this.$Message.success('操作成功！');
-              var t=setTimeout(" location.reload();",3000)}
+            {
+                this.$Message.success('保存成功！');
+                setTimeout("window.history.back(-1);",3000);
+            }else
+            {
+              this.$Message.error('保存失败！');
+            }
           },
           function(error){
-            console.log("传递error:");
-            console.log(error);
+            this.$Message.error('网络错误！');
           });
       },
       //返回上一页面
       cancel:function(){
-//        location.reload();
         window.history.back(-1);
       }
     }

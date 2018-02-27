@@ -23,22 +23,22 @@
           <table class="headTr">
             <thead>
               <tr>
-                <th width="%20">临床工作单位</th>
-                <th width="%20">工作岗位</th>
+                <th width="%25">临床工作单位</th>
+                <th width="%25">工作岗位</th>
                 <th width="%20">开始时间</th>
                 <th width="%20">结束时间</th>
-                <th width="%20">操作</th>
+                <th width="%10">操作</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(data,index) in tableList" :key="data.workExperienceId">
-                <td width="%20"><input readonly onkeyup="this.value=this.value.replace(/\s+/g,'')"  :id="'clinicWorkUnit'+index" type="text" v-model.lazy="data.clinicWorkUnit"></td>
-                <td width="%20"><input readonly onkeyup="this.value=this.value.replace(/\s+/g,'')"  :id="'workPost'+index" type="text" v-model.lazy="data.workPost"></td>
+                <td width="%25"><input style="width: 10rem;" readonly onkeyup="this.value=this.value.replace(/\s+/g,'')"  :id="'clinicWorkUnit'+index" type="text" v-model.lazy="data.clinicWorkUnit"></td>
+                <td width="%25"><input style="width: 10rem;" readonly onkeyup="this.value=this.value.replace(/\s+/g,'')"  :id="'workPost'+index" type="text" v-model.lazy="data.workPost"></td>
                 <!--<td width="%20"><input readonly onkeyup="this.value=this.value.replace(/\s+/g,'')"  :id="'startTime'+index" type="text" v-model.lazy="data.startTime"></td>-->
-                <td width="20%"><Date-picker v-model.lazy="data.startTime" :id="'startTime'+index" type="date" placeholder="选择日期" style="width: 6rem;margin-left: 1rem;"></Date-picker></td>
+                <td style="align:center" width="20%"><Date-picker v-model.lazy="data.startTime" :id="'startTime'+index" type="date" placeholder="选择日期" style="width: 6rem;margin-left: 1rem;"></Date-picker></td>
                 <!--<td width="%20"><input readonly onkeyup="this.value=this.value.replace(/\s+/g,'')"  :id="'endTime'+index" type="text" v-model.lazy="data.endTime"></td>-->
                 <td width="20%"><Date-picker v-model.lazy="data.endTime" :id="'endTime'+index" type="date" placeholder="选择日期" style="width: 6rem;margin-left: 1rem;"></Date-picker></td>
-                <td width="%20">
+                <td width="%10">
                   <img title="保存" @click="operationClick(index,'save')" class='img'style="display:none;" :src="imgSrc1" :id="'save'+index">
                   <img title="取消" @click="operationClick(index,'edit')"class='img'style="display:none;" :src="imgSrc2" :id="'edit'+index">
                   <img title="编辑" @click="chang(index)" class='img' style="display:inline;" :src="imgSrc3" :id="'chang'+index">
@@ -79,7 +79,7 @@
         id="modalBody"
         :styles="{top:'10rem'}">
         <div style="font-size: 1.1rem;text-align: center;">
-          <p>您确定删除该课程吗？?</p>
+          <p>您确定要删除该临床经验吗？</p>
         </div>
         <div slot="footer" style="text-align: center">
           <button id="modalBtn" @click="del(operationIndex)">确定</button>
@@ -158,14 +158,10 @@
       },
       beforeMount: function () {
         this.$http.post('./teacherManage/getTeacherWorkInfo',{},
-//        this.$http.post('../jsonphp/experience.php', {},
           {"Content-Type": "application/json"}).then(function (response) {
-            console.log(response);
             this.tableList = response.body.workexperienceList;
           },
           function (error) {
-            console.log("获取error:");
-            console.log(error);
           });
       },
       methods: {
@@ -270,9 +266,13 @@
         //删除
         del: function (index) {
           this.modal2 = false;
-          console.log(this.tableList[index].workExperienceId);
-              this.$http.post('./teacherManage/deleteTeacherWorkInfo',{
-//          this.$http.post('../jsonphp/experience.php', {
+          if(this.tableList[index].workExperienceId =="")
+          {
+            this.tableList.splice(index, 1);
+            this.$Message.success('操作成功！');
+            return;
+          }
+          this.$http.post('./teacherManage/deleteTeacherWorkInfo',{
             "workExperienceId": this.tableList[index].workExperienceId
           }, {"Content-Type": "application/json"}).then(function (response) {
             if (response.body.result == '1') {
@@ -280,8 +280,6 @@
               this.tableList.splice(index, 1);
             }
           }, function (error) {
-            console.log("传递error:");
-            console.log(error);
           });
         },
         //进行编辑

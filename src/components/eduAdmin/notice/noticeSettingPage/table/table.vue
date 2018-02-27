@@ -12,11 +12,11 @@
         <div id="top">
           <div>
             <span>*标题:</span>
-            <input id="title" v-model="announcementName" type="text">
+            <input style="width: 30rem " id="title" v-model="announcementName" type="text" placeholder="必填">
           </div>
-          <div>
+          <div style="margin-left: 0.5rem">
             <span>*发布类别:</span>
-            <select v-model="announcementType">
+            <select v-model="announcementType" style="height: 2rem;width: 6rem">
               <option  v-for="data in options" :value="data.value">
               {{data.option}}
               </option>
@@ -35,7 +35,7 @@
               <input v-model="announcementName" name="announcementName" readonly style="display: none">
               <input v-model="announcementType"  name="announcementType"  readonly style="display: none">
               <textarea v-model="announcementContent"  name="announcementContent"  readonly style="display: none"></textarea>
-              <span style="position: relative;" class="am-btn am-btn-success am-radius" @click="dia(announcementContent)">发布</span>
+              <span style="position: relative;" class="am-btn am-btn-success am-radius" @click="dia()">发布</span>
               <button id="sub" style="display: none" type="submit"></button>
               <Modal
                 v-model="modal1"
@@ -100,7 +100,7 @@
       return {
         content:'',
         announcementName:'',
-        announcementType:'',
+        announcementType:'1',
         announcementContent:'',
         modal1:false,
         modal2:false,
@@ -120,9 +120,8 @@
 //        });
 //    },
     methods: {
-      dia: function (announcementContent) {
-
-//        this.announcementContent=announcementContent.replace('<br />','/n');
+      dia: function () {
+        this.announcementContent=this.announcementContent.replace(/\n|\r\n/g,"<br>");
         if(this.announcementName==''||this.announcementType==''||this.announcementContent==''){
           this.modal2 = true;
         }else{
@@ -130,7 +129,7 @@
         }
       },
       subm:function(){
-        this.announcementContent=announcementContent.replace(/\n|\r\n/g,"<br>");
+        this.announcementContent=this.announcementContent.replace(/\n|\r\n/g,"<br>");
         document.getElementById("sub").click();
       }
 //      publish: function () {
@@ -176,7 +175,6 @@
   }
   #top{
     display:flex;
-    justify-content: space-between;
     padding: 1rem 4.3rem;
   }
   select{

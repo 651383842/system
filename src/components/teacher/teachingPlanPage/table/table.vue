@@ -7,8 +7,9 @@
     </div>
     <div id="sel">
       <select  @change="chooseTerm(option2)" v-model="option2">
-        <option v-for="option2 in semesterList" :value="option2">
-          {{ option2 }}
+        <option value="" disabled>请选择学期</option>
+        <option v-for="option in semesterList" :value="option.semValue">
+          {{ option.semName }}
         </option>
       </select>
 
@@ -34,7 +35,14 @@
           <td v-text="data.courseName"></td>
           <td v-text="data.coursewareType"></td>
           <td v-text="data.uploadTime"></td>
-          <td><form action="./courseTeachPlan/leaderDownloadTeachPlan" method="get"><input v-model="data.teacherId" name="teacherId" readonly style="display: none"><input v-model="data.courseId" name="courseId" readonly style="display: none"><input v-model="data.type" name="coursewareType" readonly style="display: none"><button class="am-btn am-btn-success am-radius" :id="'down'+index" type="submit">下载</button></form></td>
+          <td>
+            <form action="./courseTeachPlan/leaderDownloadTeachPlan" method="get">
+            <input v-model="data.teacherId" name="teacherId" readonly style="display: none">
+            <input v-model="data.courseId" name="courseId" readonly style="display: none">
+            <input value="0" name="coursewareType" readonly style="display: none">
+            <button class="am-btn am-btn-success am-radius" :id="'down'+index" type="submit">下载</button>
+          </form>
+          </td>
           <td ><button :id="'buttonOne'+index" @click="successDia(index)" title="通过" class="circle" >√</button>
               <button :id="'buttonTwo'+index" @click="failDia(index)" title="不通过" class="circle" >×</button>
               <!--<img  height="30" width="30"  :src="Src1">-->
@@ -43,19 +51,6 @@
         </tr>
         </tbody>
       </table>
-        <!--<Upload-->
-        <!--ref="upload"-->
-        <!--:show-upload-list="false"-->
-        <!--:format="['xls','xlsx']"-->
-        <!--:max-size="2048"-->
-        <!--:on-format-error="handleFormatError"-->
-        <!--:on-exceeded-size="handleSize"-->
-        <!--:on-success="handleSuccess"-->
-        <!--:on-progress="handleProgress"-->
-        <!--:on-error="handleError"-->
-        <!--action="../updateTest/updata.php">-->
-          <!--<i-button id="ibutton" type="ghost">上传文件</i-button>-->
-        <!--</Upload>-->
     </div>
     </div>
     <Modal
@@ -98,51 +93,27 @@
             return {
               Src1:icon1,
               Src2:icon2,
-              option2:'2016.1',
-              semesterList: [
-              ],
+              option2:'',
+              semesterList: [],
               tableList:[],
               modal1:false,
               modal2:false,
               oindex:''
-//              tableList:[{teacherId:"1"},{teacherId:"2"}]
             }
+      },
+      beforeMount: function () {
+        this.$http.post('./getCurrentYearAndSemester',{},{//获取当前学期周数
+          "Content-Type":"application/json"
+        }).then(function(response){
+          this.generateSemester();
+          var data = response.body;
+          this.option2 = data.yearAndSemester;
+        },function(error){});
       },
       //打开页面判断状态 auditStatus
       mounted:function(){
-////        this.$http.post('../jsonphp/teachingPlan.php',{},{"Content-Type":"application/json"}).then(function (response) {
-//            this.$http.post('./courseTeachPlan/showTeachPlan',{},{"Content-Type":"application/json"}).then(function (response) {
-//            this.tableList = response.body.tableList;
-//            this.semesterList = response.body.semesterList;
-//            this.option2 = response.body.currentSemester;
-//            for( var i=0;i<this.tableList.length;i++){
-//              console.log(this.tableList[i]);
-//              if(this.tableList[i].auditStatus =="0")
-//              {
-//                var buttonTwo = document.getElementById("buttonTwo"+i);
-//                buttonTwo.style.display = "none";
-//                var buttonOne = document.getElementById("buttonOne"+i);
-//                buttonOne.disabled = "true";
-//                buttonOne.style.backgroundColor="white";
-//                buttonOne.style.border="grey solid thin";
-//                buttonOne.style.color="grey";
-//              }else if(this.tableList[i].auditStatus =="1"){
-//                var buttonTwoo = document.getElementById("buttonTwo"+i);
-//                buttonTwoo.style.display = "none";
-//                var buttonOnee = document.getElementById("buttonOne"+i);
-//                buttonOnee.disabled = "true";
-//                buttonOnee.style.backgroundColor="white";
-//                buttonOnee.style.border="grey solid thin";
-//                buttonOnee.style.color="grey";
-//              }
-//            }
-//        },
-//        this.$http.post('../testPhp/teachingPlan.php',{},{"Content-Type":"application/json"}).then(function (response) {
-//        this.$http.post('../jsonphp/teachingPlan.php',
         this.$http.post('./courseTeachPlan/showTeachPlan',
           {},{"Content-Type":"application/json"}).then(function (response) {
-            console.log(response.body.tableList);
-//            this.tableList = response.body.tableList;
             for(var n=0;n<response.body.tableList.length;n++){
               this.tableList.push({"teacherName":response.body.tableList[n].teacherName,"teacherId":response.body.tableList[n].teacherId,"courseId":response.body.tableList[n].courseId,
                 "courseName":response.body.tableList[n].courseName,"coursewareType":response.body.tableList[n].coursewareType,"auditStatus":response.body.tableList[n].auditStatus,
@@ -157,7 +128,6 @@
             }
             this.$nextTick(function () {
               for (var i = 0; i < this.tableList.length; i++) {
-                console.log(this.tableList[i]);
                 if (this.tableList[i].auditStatus == "0") {
                   var buttonOne = document.getElementById("buttonOne"+i);
                   buttonOne.style.display = "none";
@@ -177,41 +147,30 @@
                 }
               }
             });
-            this.semesterList = response.body.semesterList;
-            this.option2 = response.body.currentSemester;
           },
           function(error){
-            console.log("获取教学计划error:");
-            console.log(error);
           });
       },
-//      mounted:function(){
-//        for( var i=0;i<this.tableList.length;i++){
-//          console.log(this.tableList[i]);
-//          if(this.tableList[i].auditStatus =="0")
-//          {alert(i);
-//            var buttonTwo = document.getElementById("buttonTwo"+i);
-//            buttonTwo.style.display = "none";
-//            var buttonOne = document.getElementById("buttonOne"+i);
-//            buttonOne.disabled = "true";
-//            buttonOne.style.backgroundColor="white";
-//            buttonOne.style.border="grey solid thin";
-//            buttonOne.style.color="grey";
-//          }else if(this.tableList[i].auditStatus =="1"){
-//            var buttonTwoo = document.getElementById("buttonTwo"+i);
-//            buttonTwoo.style.display = "none";
-//            var buttonOnee = document.getElementById("buttonOne"+i);
-//            buttonOnee.disabled = "true";
-//            buttonOnee.style.backgroundColor="white";
-//            buttonOnee.style.border="grey solid thin";
-//            buttonOnee.style.color="grey";
-//          }
-//        }
-//      },
       methods:{
         successDia:function(index){
           this.oindex=index;
           this.modal1 = true;
+        },
+        generateSemester:function () {
+          var nDate = new Date();
+          var nYear = parseInt(nDate.getFullYear())+1;
+          var stl="";
+          var st2="";
+          for(var i=1;i<=4;i++)
+          {
+            stl = nYear-1+'-'+nYear+'.'+'1';
+            st2 = nYear-1+'-'+nYear+'学年（上）';
+            this.semesterList.push({semName:st2,semValue:stl});
+            stl = nYear-1+'-'+nYear+'.'+'2';
+            st2 = nYear-1+'-'+nYear+'学年（下）';
+            this.semesterList.push({semName:st2,semValue:stl});
+            nYear--;
+          }
         },
         failDia:function(index){
           this.oindex=index;
@@ -226,19 +185,14 @@
          {
            type=1;
          }
-//          alert(this.tableList[index].teacherId);
-//          this.$http.post('../jsonphp/teachingPlan.php',{
           this.modal1 = false;
           this.$http.post('./courseTeachPlan/doCheckTeachPlan',
-//            this.$http.post('../jsonphp/teachingPlan.php',
             {
               "teacherId": this.tableList[index].teacherId,
               "courseId": this.tableList[index].courseId,
               "coursewareType":type,
               "msg": "1"
           },{"Content-Type":"application/json"}).then(function(response){
-              console.log("审核通过:");
-              console.log(response.body);
               var buttonTwo = document.getElementById("buttonTwo"+index);
               buttonTwo.style.display = "none";
               var buttonOne = document.getElementById("buttonOne"+index);
@@ -248,8 +202,6 @@
               buttonOne.style.color="grey";
             },
             function(error){
-              console.log("审核通过error:");
-              console.log(error);
             });
       },
         //不通过
@@ -262,7 +214,6 @@
          {
            type=1;
          }
-//            this.$http.post('../jsonphp/teachingPlan.php',
               this.$http.post('./courseTeachPlan/doCheckTeachPlan',
                 {
                   "teacherId": this.tableList[index].teacherId,
@@ -281,98 +232,38 @@
               buttonTwo.style.color="grey";
             },
               function(error){
-                console.log("审核不通过error:");
-                console.log(error);
               });
-
-//        handleFormatError:function(){
-//          this.$Message.error('文件格式错误！限制格式为'+this.$refs.upload.format,3);
-//        },
-//        handleSize:function(){
-//          this.$Message.error('文件大小超出范围！限制最大（KB）为'+this.$refs.upload.maxSize,3);
-//        },
-//        handleError: function (res) {
-//          var msg=document.getElementsByClassName("ivu-message-notice");
-//          if(msg[0].parentNode){
-////            结束进度条
-//            this.$Loading.finish();
-////            移除“正在上传......”的msg
-//          msg[0].parentNode.removeChild(msg[0]);
-//          }
-//          this.$Message.error('文件上传失败！'+res,3);
-//        },
-//        handleProgress:function(){
-//          this.$Loading.start();
-//          this.$Message.loading('正在上传中',0);
-//        },
-//        handleSuccess:function(res){
-//          this.$Loading.finish();
-//          var msg=document.getElementsByClassName("ivu-message-notice");
-//          msg[0].parentNode.removeChild(msg[0]);
-//          this.$Message.success('文件上传成功！',3);
-//          console.log(res);
-//        }
       },
-//       download:function(index){
-//         //待修改
-//         var type;
-//         if(this.tableList[index].coursewareType=="教学计划"){
-//           type="0";
-//         }else if(this.tableList[index].coursewareType=="课件（教案）")
-//         {
-//           type="1";
-//         }
-//         this.$http.post('./courseTeachPlan/leaderDownloadTeachPlan',{
-//           "teacherId": this.tableList[index].teacherId,
-//           "coursewareType":type
-//         },{"Content-Type":"application/json"}).then(function (response) {
-//             console.log("下载:");
-//             location.href='./'
-//         },
-//         function(error){
-//           console.log("下载error:");
-//           console.log(error);
-//         });
-//       },
         //选择学期
         chooseTerm:function(value){
-//          this.$http.post('./jsonphp/teachingPlan.php',{
           this.$http.post('./courseTeachPlan/showTeachPlan',{
             "semester":value
           },{"Content-Type":"application/json"}).then(function (response) {
-//              this.tableList = response.body.tableList;
-//              this.semesterList = response.body.semesterList;
-//              this.option2 = value;
               this.tableList = response.body.tableList;
-              this.$nextTick(function () {
-                for (var i = 0; i < this.tableList.length; i++) {
-                  console.log(this.tableList[i]);
-                  if (this.tableList[i].auditStatus == "0") {
-                    var buttonOne = document.getElementById("buttonOne"+i);
-                    buttonOne.style.display = "none";
-                    var buttonTwo = document.getElementById("buttonTwo"+i);
-                    buttonTwo.disabled = "true";
-                    buttonTwo.style.backgroundColor="white";
-                    buttonTwo.style.border="grey solid thin";
-                    buttonTwo.style.color="grey";
-                  } else if (this.tableList[i].auditStatus == "1") {
-                    var buttonTwoo = document.getElementById("buttonTwo" + i);
-                    buttonTwoo.style.display = "none";
-                    var buttonOnee = document.getElementById("buttonOne" + i);
-                    buttonOnee.disabled = "true";
-                    buttonOnee.style.backgroundColor = "white";
-                    buttonOnee.style.border = "grey solid thin";
-                    buttonOnee.style.color = "grey";
-                  }
+              if(this.tableList.length == 0)
+              {
+                  this.$Message.warning("当前学期没有授课计划！");
+              }
+              for (var i = 0; i < this.tableList.length; i++) {
+                if (this.tableList[i].auditStatus == "0") {
+                  var buttonOne = document.getElementById("buttonOne"+i);
+                  buttonOne.style.display = "none";
+                  var buttonTwo = document.getElementById("buttonTwo"+i);
+                  buttonTwo.disabled = "true";
+                  buttonTwo.style.backgroundColor="white";
+                  buttonTwo.style.border="grey solid thin";
+                  buttonTwo.style.color="grey";
+                } else if (this.tableList[i].auditStatus == "1") {
+                  var buttonTwoo = document.getElementById("buttonTwo" + i);
+                  buttonTwoo.style.display = "none";
+                  var buttonOnee = document.getElementById("buttonOne" + i);
+                  buttonOnee.disabled = "true";
+                  buttonOnee.style.backgroundColor = "white";
+                  buttonOnee.style.border = "grey solid thin";
+                  buttonOnee.style.color = "grey";
                 }
-              });
-              this.semesterList = response.body.semesterList;
-              console.log("选择:");
-              console.log(response.body);
-            },
-            function(error){
-              console.log("error:");
-              console.log(error);
+              }
+            }, function(error){
             });
         }
 

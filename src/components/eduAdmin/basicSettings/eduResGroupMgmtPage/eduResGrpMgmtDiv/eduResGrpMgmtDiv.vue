@@ -32,7 +32,7 @@
             <!--教研组编号取消显示-->
             类别：
             <select id="typeSelect" v-model="targroupType">
-              <option disabled></option>
+              <option disabled value="">选择类别</option>
               <option>普通课程</option>
               <option>基础专业</option>
               <option>临床</option>
@@ -42,7 +42,7 @@
               <!--keyup监听enter按键，回车触发添加-->
               组长：
               <select id="leaderSelect">
-                <option selected disabled></option>
+                <option selected disabled value="">选择组长</option>
                 <option v-for="teacher in teachers">{{ teacher }}</option>
               </select>
               <span class="tipSpan" @click="addPerson('leader')"><img src="./images/addCircle.png" title="添加"></span>
@@ -54,7 +54,7 @@
             <p id="memberP">
               组员：
               <select id="memberSelect">
-                <option selected disabled></option>
+                <option selected disabled value="">选择组员</option>
                 <option v-for="teacher in teachers">{{ teacher }}</option>
               </select>
               <span class="tipSpan" @click="addPerson('member')"><img src="./images/addCircle.png" title="添加"></span>

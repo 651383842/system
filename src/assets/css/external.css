@@ -7,6 +7,78 @@ html {
   color: #3399ff;
   cursor: pointer;
 }
+.gradePlanP{
+  position: absolute;
+  height: 1.7rem;
+  width: 10rem;
+  padding-top: 0.3rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color:#FFF;
+  cursor: default;
+}
+.gradePlanTitle1
+{
+  font-size: 1rem;
+  padding:0.4rem 0;
+  position: absolute;
+  color:white;
+  text-align: center;
+}
+.gradePlanTitle2
+{
+  font-size: 1rem;
+  padding:0.4rem 7rem;
+  position: absolute;
+  color:white;
+  text-align: center;
+}
+.gradePlanTitle3
+{
+  font-size: 1rem;
+  padding:0.4rem 15rem;
+  position: absolute;
+  color:white;
+  text-align: center;
+}
+.gradePlanDiv{
+  position: relative;
+  /*background-color: #158064;*/
+  background-color: #1fa573;
+  border-top:1px solid #ececec;
+  height: 2rem;
+  width: 100%;
+}
+.gradeButton{
+  float: right;
+  margin-top: 0.3rem;
+  margin-right: 5rem;
+  background-color: #1fa573;
+  font-size: 0.8rem;
+  color:#FFF;
+  text-align: center;
+  border-radius: 0.5rem;
+  padding-bottom: 0.1rem;
+  height: 1.4rem;
+  min-width: 5rem;
+  border-color: white;
+  border-style: solid;
+  border-width: 0.1rem;
+  /*更改button的边框属性*/
+}
+
+
+.gradePlanImg:hover{
+  background-color: #00a539;
+}
+.amButtom{
+  /*折叠按钮*/
+  cursor: pointer;
+}
+.gradePlanImg{
+  width: 2rem;
+  height: 2rem;
+}
 .textBtn a:hover,
 .textBtn a:focus {
   color: #5cadff;
@@ -181,11 +253,35 @@ html {
 }
 .tableSelect select {
   margin-right: 1.4rem;
-  width: 10rem;
+  width: 11.5rem;
   font-size: 0.9rem;
   outline: none;
 }
 .tableSelect button {
+  width: 5.6rem;
+  margin: 0 0.7rem;
+  outline: none;
+}
+
+.tableSelect span {
+  width: 5.6rem;
+  margin: 0 0.7rem;
+  float: right;
+}
+
+.tableGrade {
+  margin: 0.8rem 5rem;
+  /*height: 3.5rem;
+  line-height: 3.5rem;
+  overflow: hidden;*/
+}
+.tableGrade select {
+  margin-right: 1.4rem;
+  width: 11.5rem;
+  font-size: 0.9rem;
+  outline: none;
+}
+.tableGrade button {
   width: 5.6rem;
   margin: 0 0.7rem;
   outline: none;
@@ -232,10 +328,39 @@ html {
   background-color: #ececec;
   width: 100%;
 }
+.tableinput{
+  width: 2.5rem;
+  border-style: none;
+  text-align: center
+}
+
+.bantableinput{
+  width: 5rem;
+  border-style: none;
+  text-align: center
+}
+
 .normalTable th, td {
   background-color: white;
   font-size: 0.9rem;
   height: 2rem;
+}
+
+.arrangeTable
+{
+  text-align: center;
+  background-color: #ececec;
+  width: 100%;
+}
+.arrangeTable th, td {
+  background-color: white;
+  font-size: 0.9rem;
+  height: 2rem;
+}
+.arrangeTable tr>td {
+  background-color: white;
+  font-size: 0.9rem;
+  height: 4rem;
 }
 
 /************有操作的表格（有border）operationTable************/

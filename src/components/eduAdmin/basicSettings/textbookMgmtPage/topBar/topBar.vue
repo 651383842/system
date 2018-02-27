@@ -15,7 +15,6 @@
       <div id="buttonDiv">
         <span class="operationSpan"><form action="./textbookManage/exportTextbookInfoTemplet" method="get"><button class="am-btn am-btn-success am-radius" type="submit">下载模版</button></form></span>
         <span id="uploadSpan" class="operationSpan">
-          <!--<button id="uploadButton" class="am-btn am-btn-success am-radius" @click="uploadClick">导入</button>-->
           <Upload
               id="upload"
               ref="uploadForTextbook"
@@ -25,7 +24,6 @@
               :on-format-error="handleFormatError"
               :on-exceeded-size="handleSize"
               :on-success="handleSuccess"
-              :on-progress="handleProgress"
               :on-error="handleError"
               action="./textbookManage/uploadTextbookInfo">
               <!--action="../updateTest/updata.php">-->
@@ -142,10 +140,10 @@
           this.$Loading.error();
 //            结束进度条
           if(!!window.ActiveXObject || "ActiveXObject" in window){
-            msg[0].parentNode.innerHTML = "";
+           // msg[0].parentNode.innerHTML = "";
 //                IE浏览器对removeChild实现有问题
           }else{
-            msg[0].parentNode.removeChild(msg[0]);
+            //msg[0].parentNode.removeChild(msg[0]);
           }
 //            移除“正在上传……”的msg
         }
@@ -165,13 +163,13 @@
         if (res.result == 1) {
           this.$Loading.finish();
 //            结束进度条
-          var msg = document.getElementsByClassName("ivu-message-notice");
-          if (!!window.ActiveXObject || "ActiveXObject" in window) {
-            msg[0].parentNode.innerHTML = "";
-//                IE浏览器对removeChild实现有问题
-          } else {
-            msg[0].parentNode.removeChild(msg[0]);
-          }
+//          var msg = document.getElementsByClassName("ivu-message-notice");
+//          if (!!window.ActiveXObject || "ActiveXObject" in window) {
+//            msg[0].parentNode.innerHTML = "";
+////                IE浏览器对removeChild实现有问题
+//          } else {
+//            msg[0].parentNode.removeChild(msg[0]);
+//          }
 //            移除“正在上传……”的msg
           this.$Message.success('上传成功！3s后自动刷新页面！', 3);
           console.log(res);
@@ -180,13 +178,13 @@
         }else{
           this.$Loading.error();
 //            结束进度条
-          var msg = document.getElementsByClassName("ivu-message-notice");
-          if (!!window.ActiveXObject || "ActiveXObject" in window) {
-            msg[0].parentNode.innerHTML = "";
-//                IE浏览器对removeChild实现有问题
-          } else {
-            msg[0].parentNode.removeChild(msg[0]);
-          }
+//          var msg = document.getElementsByClassName("ivu-message-notice");
+//          if (!!window.ActiveXObject || "ActiveXObject" in window) {
+//            msg[0].parentNode.innerHTML = "";
+////                IE浏览器对removeChild实现有问题
+//          } else {
+//            msg[0].parentNode.removeChild(msg[0]);
+//          }
 //            移除“正在上传……”的msg
           this.loadingMsg = false;
           this.errorInfo = res.result;

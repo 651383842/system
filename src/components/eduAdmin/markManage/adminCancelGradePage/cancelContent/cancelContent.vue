@@ -1,4 +1,4 @@
-<template>
+  <template>
 <div>
 	<!-- 导航栏路径跳转返回首页 -->
 	<div class="positionBar">
@@ -8,16 +8,16 @@
 	</div>
 	<!-- 选择课程、教师，进行查询可撤销成绩列表 -->
 	<div class="tableSelect">
+      <select v-model="teacher" @change="teacherClick()">
+        <option disabled value="">选择教师</option>
+        <option v-for="option2 in teacherInfo" :value="option2.teacherId">
+          {{ option2.teacherName }}
+        </option>
+      </select>
 	    <select v-model="course">
 			<option disabled value="">选择课程</option>
 			<option v-for="option1 in courseInfo" :value="option1.courseId">
 				{{ option1.courseName }}
-			</option>
-	    </select>
-	    <select v-model="teacher">
-	    	<option disabled value="">选择教师</option>
-			<option v-for="option2 in teacherInfo" :value="option2.teacherId">
-				{{ option2.teacherName }}
 			</option>
 	    </select>
 		<button class="am-btn am-btn-success am-radius" @click="checkTableBtn()">查询</button>
@@ -43,10 +43,11 @@
 						<td v-text="data.courseName"></td>
 						<td v-text="data.teacherId"></td>
 						<td v-text="data.teacherName"></td>
-						<td v-text="data.classId"></td>
+						<td v-text="data.className"></td>
 						<td v-text="data.commitTime"></td>
 						<td class="textBtn">
 							<a @click="backoutClick(index)">撤销</a>
+              <a @click="exportClick(index)">导出</a>
 						</td>
 					</tr>
 				</tbody>
@@ -104,17 +105,36 @@ export default {
 		this.$http.post('./courseManage/getCourseAndClassInfo',{
             "Content-Type":"application/json"
         }).then(function(response){
-            console.log("获取申请:");
-            console.log(response.body);
             var data = response.body;
             this.courseInfo = data.courseInfo;
             this.teacherInfo = data.teacherInfo;
+            if(data.scoreCommitList.length != 0) {
+              this.scoreCommitList = data.scoreCommitList;
+            }else {
+              this.$Message.warning("没有可执行的操作！");
+            }
         },function(error){
-            console.log("获取申请error:");
-            console.log(error);
         });
 	},
   	methods: {
+      exportClick:function (index) {
+        location.href = './downloadScoreList?courseAssociationId='+ this.scoreCommitList[index].courseAssociationId;
+      },
+      teacherClick:function(){
+        this.$http.post('./teachingSupervision/noSupervisorTeacherClickJson',{
+          "teacherId":this.teacher
+        },{
+          "Content-Type":"application/json"
+        }).then(function (response) {
+          this.courseInfo = response.body.courseList;
+          if(this.courseInfo.length == 0)
+          {
+            this.$Message.warning("该老师没有对应的课程！");
+          }
+        },function(error){
+        });
+        this.course = "";
+      },
   		// 点击查询，回调表单************************************************
   		checkTableBtn: function () {
   			// 判断是否选择，若未选择，则弹窗提示
@@ -128,16 +148,15 @@ export default {
 	  			}, {
 	  				"Content-Type":"application/json"
 	  			}).then(function(response){
-	  				console.log("通过申请:");
-	                console.log(response);
-	                var data = response.body;
-	                if(data.scoreCommitList.length != 0) {
-	                    this.scoreCommitList = data.scoreCommitList;
-	                }else {
-	                    this.$Message.warning("未找到所查询内容！");
-	                    // this.modalResult = true;
-	                    // this.remindResult = '2';
-	                }
+              var data = response.body;
+              if(data.scoreCommitList.length != 0) {
+                  this.scoreCommitList = data.scoreCommitList;
+              }else {
+                  this.scoreCommitList.splice(0,this.scoreCommitList.length);
+                  this.$Message.warning("未找到所查询内容！");
+                  // this.modalResult = true;
+                  // this.remindResult = '2';
+              }
 	  			});
   			}
   		},

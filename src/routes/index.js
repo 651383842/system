@@ -185,6 +185,9 @@ const tchCheckSalary = resolve => require(['../views/teacher/tchCheckSalaryPage/
 const scheduleList = resolve => require(['../views/eduAdmin/tchSalary/scheduleListPage/scheduleListPage.vue'], resolve);
 const seeSigninList = resolve => require(['../views/eduAdmin/tchSalary/seeSigninListPage/seeSigninListPage.vue'], resolve);
 const tchSignin = resolve => require(['../views/teacher/tchSigninPage/tchSigninPage.vue'], resolve);
+const seeScore = resolve => require(['../views/teacher/classListPage/courseScorePage.vue'], resolve);
+const tchseeScore = resolve => require(['../views/eduAdmin/markManage/tchSeeScore/scorePage.vue'], resolve);
+
 //蔡玲双（end）
 
 Vue.use(Router);
@@ -485,6 +488,16 @@ export default new Router({   //将routes里的参数导出
 	    //班主任 班级列表
       path: '/teacher/classList',
       component:classList
+    },
+    {
+      //班主任 结业成绩
+      path: '/teacher/seeScore',
+      component:seeScore
+    },
+    {
+      //教务 结业成绩
+      path: '/eduAdmin/gradeManage/seeScore',
+      component:tchseeScore
     },
     //教师查看督导结果列表**************
     {

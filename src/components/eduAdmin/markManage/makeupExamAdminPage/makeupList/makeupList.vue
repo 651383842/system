@@ -14,7 +14,7 @@
 		</select>
 		<select v-model="selYearTerm">
 			<option disabled value="">选择学期</option>
-			<option v-for="yearTermOne in yearTerm" :value="yearTermOne.startYearSemester">{{yearTermOne.startYearSemester}}</option>
+			<option v-for="yearTermOne in yearTerm" :value="yearTermOne.semValue">{{yearTermOne.semName}}</option>
 		</select>
 		<select v-model="selCourseName">
 			<option disabled value="">选择课程</option>
@@ -55,7 +55,7 @@
 								<td v-text="data.studentId"></td>
 								<td v-text="data.studentName"></td>
 								<td v-text="data.courseName"></td>
-								<td v-text="data.grade"></td>
+								<td v-text="data.finalGrade"></td>
 							</tr>
 						</tbody>
 					</table>
@@ -179,29 +179,24 @@ export default {
 		}
 	},
 	beforeMount: function() {
+    //this.generateSemester();
+    //this.selYearTerm = "2016-2017.1";
 		// 页面初始化，获取学期下拉数据
         this.$http.post('./getYearTermList',{},{
             "Content-Type":"application/json"
         }).then(function(response){
-            console.log("获取申请:");
-            console.log(response.body);
             var data = response.body;
-            this.yearTerm = data.yearTerm;
+            this.generateSemester();
+            this.selYearTerm = data.currentYearTerm;
         },function(error){
-            console.log("获取申请error:");
-            console.log(error);
         });
         // 页面初始化，获取课程下拉数据
         this.$http.post('./courseManage/getCourseAndClassInfoN',{},{
             "Content-Type":"application/json"
         }).then(function(response){
-            console.log("获取申请:");
-            console.log(response.body);
             var data = response.body;
             this.courseInfo = data.courseInfo;
         },function(error){
-            console.log("获取申请error:");
-            console.log(error);
         });
     },
   	methods: {
@@ -211,20 +206,32 @@ export default {
     		this.$http.post('./courseManage/getCourseAndClassInfoN',{},{
 	            "Content-Type":"application/json"
 	        }).then(function(response){
-	            console.log("获取申请:");
-	            console.log(response.body);
 	            var data = response.body.classInfo;
 	            // this.classInfo = [];
 	            if(this.selGradeType==3){
-	            	this.classInfo=(data.three);  
+	            	this.classInfo=(data.three);
 	            }else if(this.selGradeType==5){
 	            	this.classInfo=(data.five);
 	            }
 	        },function(error){
-	            console.log("获取申请error:");
-	            console.log(error);
 	        });
     	},
+      generateSemester:function () {
+        var nDate = new Date();
+        var nYear = parseInt(nDate.getFullYear())+1;
+        var stl="";
+        var st2="";
+        for(var i=1;i<=4;i++)
+        {
+          stl = nYear-1+'-'+nYear+'.'+'1';
+          st2 = nYear-1+'-'+nYear+'学年（上）';
+          this.yearTerm.push({semName:st2,semValue:stl});
+          stl = nYear-1+'-'+nYear+'.'+'2';
+          st2 = nYear-1+'-'+nYear+'学年（下）';
+          this.yearTerm.push({semName:st2,semValue:stl});
+          nYear--;
+        }
+      },
   		// 查找名单***********************************************************************************
   		findBtn: function () {
   			// 判断所有下拉框是否已全选，若未选择，则弹窗提示
@@ -243,11 +250,9 @@ export default {
 		        	"yearTerm": this.selYearTerm,
 		        	"courseId": this.selCourseName,
 		        	"classId": this.selClassId
-		        },{    
+		        },{
 		            "Content-Type":"application/json"
 		        }).then(function(response){
-		            console.log("获取申请:");
-		            console.log(response.body);
 		            var data = response.body;
 		            if (data.makeUpList.length != 0) {
 		            	this.makeUpList = data.makeUpList;
@@ -256,8 +261,6 @@ export default {
 				        this.$Message.warning("未找到所查询内容！");
 				    }
 		        },function(error){
-		            console.log("获取申请error:");
-		            console.log(error);
 	        	});
 	        	// 获取补考申请同意名单*********************************************
 	        	this.$http.post('./findMakeUpAskList',{
@@ -265,11 +268,9 @@ export default {
 		        	"yearTerm": this.selYearTerm,
 		        	"courseId": this.selCourseName,
 		        	"classId": this.selClassId
-		        },{    
+		        },{
 		            "Content-Type":"application/json"
 		        }).then(function(response){
-		            console.log("获取申请:");
-		            console.log(response.body);
 		            var data = response.body;
 		            if (data.makeUpAskList.length != 0) {
 		            	this.makeUpAskList = data.makeUpAskList;
@@ -278,8 +279,6 @@ export default {
 				        this.$Message.warning("未找到所查询内容！");
 				    }
 		        },function(error){
-		            console.log("获取申请error:");
-		            console.log(error);
 		        });
 	    // 		if (findResult != '0') {
 		   //  		this.modalResult = true;
@@ -314,23 +313,18 @@ export default {
 			makeUpAskListPut.push({studentId:this.makeUpAskList[this.index].studentId, courseId:this.makeUpAskList[this.index].courseId});
 			this.$http.post('./makeUpAskAgree',{
 				"makeUpAskList": makeUpAskListPut
-			},{    
+			},{
 	            "Content-Type":"application/json"
 	        }).then(function(response){
-	            console.log("获取申请:");
-	            console.log(response.body);
 	            var data = response.body;
 	            if (data.result == "1") {
 	            	this.$Message.success("补考申请批准！");
-	            	// this.applyResult = '3';
 					this.makeUpAskList.splice(this.index, 1);
 	            }else{
 	            	this.modalResult = true;
 			        this.remindResult = '3';
 			    }
 	        },function(error){
-	            console.log("获取申请error:");
-	            console.log(error);
         	});
   		},
 	    // 单个不同意补考申请**********************************************************
@@ -346,24 +340,18 @@ export default {
 			makeUpAskListPut.push({studentId:this.makeUpAskList[this.index].studentId, courseId:this.makeUpAskList[this.index].courseId});
 			this.$http.post('./makeUpAskDisagree',{
 				"makeUpAskList": makeUpAskListPut
-			},{    
+			},{
 	            "Content-Type":"application/json"
 	        }).then(function(response){
-	            console.log("获取申请:");
-	            console.log(response.body);
 	            var data = response.body;
 	            if (data.result == "1") {
 	            	this.$Message.success("补考申请否决！");
-	            	// this.applyResult = '4';
 					this.makeUpAskList.splice(this.index, 1);
 	            }else{
-			        // this.$Message.error("操作失败！请重试");
 	            	this.modalResult = true;
 			        this.remindResult = '4';
 			    }
 	        },function(error){
-	            console.log("获取申请error:");
-	            console.log(error);
         	});
   		},
   		// 点击提交，所选名单同意申请，并删除**************************************************
@@ -381,11 +369,9 @@ export default {
 	  			this.modal1 = false;
 	            this.$http.post('./makeUpAskAgree',{
 	  				"makeUpAskList": makeUpAskListPut
-	  			},{    
+	  			},{
 		            "Content-Type":"application/json"
 		        }).then(function(response){
-		            console.log("获取申请:");
-		            console.log(response.body);
 		            var data = response.body;
 		            // 请求成功，则清空补考申请名单
 		            if (data.result == "1") {
@@ -396,8 +382,6 @@ export default {
 				        this.remindResult = '3';
 				    }
 		        },function(error){
-		            console.log("获取申请error:");
-		            console.log(error);
 	        	});
   			}
         },
@@ -411,25 +395,19 @@ export default {
 	            this.modal2 = false;
 	            this.$http.post('./makeUpAskDisagree',{
 	  				"makeUpAskList": makeUpAskListPut
-	  			},{    
+	  			},{
 		            "Content-Type":"application/json"
 		        }).then(function(response){
-		            console.log("获取申请:");
-		            console.log(response.body);
 		            var data = response.body;
 		            // 请求成功，则清空补考申请名单
 				    if (data.result == "1") {
 			            this.$Message.success('撤销所有学生补考申请！');
 		            	this.makeUpAskList = [];
-		            	// this.applyResult = '4';
 		            }else{
-				        // this.$Message.error("操作失败！请重试");
 		            	this.modalResult = true;
 				        this.remindResult = '4';
 				    }
 		        },function(error){
-		            console.log("获取申请error:");
-		            console.log(error);
 	        	});
 	        }
         },

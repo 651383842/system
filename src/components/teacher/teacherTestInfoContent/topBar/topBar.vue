@@ -4,16 +4,16 @@
       <button id="manualCouButton" class="topBarButton am-btn am-btn-success">上课签到</button>
     </a>
     <a :href="teacherCourseListUrl">
-      <button class="topBarButton am-btn am-btn-success btn-active">教学计划</button>
+      <button class="topBarButton am-btn am-btn-success">教学计划</button>
     </a>
     <a :href="teacherDirectorUrl">
-      <button class="topBarButton am-btn am-btn-success">教师查看督导结果</button>
+      <button class="topBarButton am-btn am-btn-success">听课反馈</button>
     </a>
     <a :href="teachingEvaluateUrl">
       <button class="topBarButton am-btn am-btn-success">评教结果</button>
     </a>
     <a :href="teacherTestInfoUrl">
-      <button class="topBarButton am-btn am-btn-success">查看考场</button>
+      <button class="topBarButton am-btn am-btn-success btn-active">查看考场</button>
     </a>
   </div>
 </template>

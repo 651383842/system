@@ -14,22 +14,22 @@
            <td class="amButtoms">
              <img :id="'imgSeen'+index" class="iconImg"  :src="iconSrc1">
              <img :id="'imgSeen2'+index" style="display: none" class="iconImg"  :src="iconSrc2">
-             <span  class="subtitle" >{{data.SuperviseTime}}</span>
+             <span  class="subtitle" >{{data.superviseTime}}</span>
            </td>
            <td></td>
            <td></td>
          </tr>
         </thead>
       <tbody :id="'seen'+index" style="display:none;">
-        <tr><td rowspan=8>评分</td><td>学生出勤情况</td><td><input v-model="data.AttendanceInfo" readonly class="sma" type="text"></td></tr>
-        <tr><td>授课内容</td> <td><input v-model="data.TeachContent" readonly class="sma" type="text"></td></tr>
-        <tr><td>教师素养得分</td> <td><input v-model="data.TeacherQualityScored" readonly class="sma" type="number"></td></tr>
-        <tr><td>教学目标得分</td> <td><input v-model="data.TeachGoalsScored" readonly class="sma" type="number"></td></tr>
-        <tr><td>教学内容得分</td> <td><input v-model="data.TeachContentScored" readonly class="sma" type="number"></td></tr>
-        <tr><td>教学方法得分</td> <td><input v-model="data.TeachMethodsScored" readonly class="sma" type="number"></td></tr>
-        <tr><td>教学常规得分</td> <td><input v-model="data.TeachRoutineScored" readonly class="sma" type="number"></td></tr>
-        <tr><td>教学内容得分</td> <td><input v-model="data.TeachEffectScored" readonly class="sma" type="number"></td></tr>
-        <tr><td>督导员意见</td><td colspan=3><input v-model="data.CommentsInfo" readonly class="big" type="text"></td></tr>
+        <tr><td rowspan=8>评分</td><td>学生出勤情况</td><td><input v-model="data.attendanceInfo" readonly class="sma" type="text"></td></tr>
+        <tr><td>授课内容</td> <td><input v-model="data.teachContent" readonly class="sma" type="text"></td></tr>
+        <tr><td>教师素养得分</td> <td><input v-model="data.teacherQualityScored" readonly class="sma" type="number"></td></tr>
+        <tr><td>教学目标得分</td> <td><input v-model="data.teachGoalsScored" readonly class="sma" type="number"></td></tr>
+        <tr><td>教学内容得分</td> <td><input v-model="data.teachContentScored" readonly class="sma" type="number"></td></tr>
+        <tr><td>教学方法得分</td> <td><input v-model="data.teachMethodsScored" readonly class="sma" type="number"></td></tr>
+        <tr><td>教学常规得分</td> <td><input v-model="data.teachRoutineScored" readonly class="sma" type="number"></td></tr>
+        <tr><td>教学内容得分</td> <td><input v-model="data.teachEffectScored" readonly class="sma" type="number"></td></tr>
+        <tr><td>督导员意见</td><td colspan=3><input v-model="data.commentsInfo" readonly class="big" type="text"></td></tr>
         <tr><td >教务人员意见(教务人员填写)</td><td colspan=3><input v-model="data.forwardInfo" readonly class="big" type="text"></td></tr>
         </tbody>
     </table>
@@ -47,17 +47,16 @@
       return {
         iconSrc1:icon1,
         iconSrc2:icon2,
-        tableList:''
+        tableList:[]
       }
     },
     beforeMount:function(){
       var thisURL = document.URL;
-      var courseId =thisURL.split("?")[1];
+      var courseId =thisURL.split("directorResult?")[1];
       this.$http.post('./teachingSupervision/teacherCheckSupResult',{
         "courseAssociationId":courseId
       },
         {"Content-Type":"application/json"}).then(function (response) {
-          console.log(response);
           this.tableList = response.body.result;
           try{
             if(response.body.result.length == 0){
@@ -70,10 +69,7 @@
             }catch (e){}
           });
         },
-        function(error){
-          console.log("获取error:");
-          console.log(error);
-        });
+        function(error){});
     },
     methods:{
       unfoldAlert1: function (index) {

@@ -28,12 +28,18 @@
           <td>{{ application.courseTime }}</td>
           <td>{{ application.appTime }}</td>
           <td>{{ application.reason }}</td>
-          <td>
+          <td v-if="application.operation == 1">
+            <button class="completedOperationBtn" title="已通过">√</button>
+          </td>
+          <td v-else-if="application.operation == 2">
             <button class="operationButton" @click="operation(application.lessonsChangeId,'true',index)" title="通过">√</button>
             <!--<button @click="setTrue(index)">√</button>-->
             <!--申请通过批准-->
             <button class="operationButton" @click="operation(application.lessonsChangeId,'false',index)" title="不通过">×</button>
             <!--申请拒绝-->
+          </td>
+          <td v-else>
+            <button class="completedOperationBtn" title="不通过">×</button>
           </td>
         </tr>
       </tbody>
@@ -91,7 +97,9 @@
     name: 'suspendCouApplyDiv',
     data () {
       return {
-        applications: [],
+        applications: [
+
+        ],
 //        申请信息
         operationIndex: null,
         operationId: null,
@@ -142,10 +150,11 @@
 //          关闭对话框
           var  data = response.body;
           if(data.result == 1) {
-            applications.splice(index, 1);
-//            移除申请
+            this.$Message.success("处理成功！");
+            this.applications[index].operation = 1;
+//            处理完毕，改变申请状态
           }else{
-            this.errorMessage = "操作失败,请重试!";
+            this.$errorMessage = "操作失败,请重试!";
             this.modal3 = true;
 //            打开错误提示
           }
@@ -166,10 +175,11 @@
 //          关闭对话框
           var data = response.body;
           if(data.result == 1) {
-            applications.splice(index, 1);
-//            移除申请
+            this.$Message.success("处理成功！");
+            this.applications[index].operation = 0;
+//            处理完毕，改变申请状态
           }else{
-            this.errorMessage = "操作失败,请重试!";
+            this.$errorMessage = "操作失败,请重试!";
             this.modal3 = true;
 //            打开错误提示
           }
@@ -208,6 +218,15 @@
     background-color: red;
     color: white;
     border: red;
+  }
+  .completedOperationBtn{
+      outline: none;
+      border: thin solid #A6A6A6;
+      background-color: white;
+      color: #A6A6A6;
+      border-radius: 1rem;
+      font-size: 1rem;
+      width: 1.45rem;
   }
   @media screen and (max-width:1025px) {
     html {

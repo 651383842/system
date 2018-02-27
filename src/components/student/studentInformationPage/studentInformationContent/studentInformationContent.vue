@@ -51,7 +51,7 @@
               </select>
             </td>
           </tr>
-          <tr><td>*学制</td><td><input type="text" class="inputStyle" v-model="teacherMessage.studyMode"/></td><td>*备注</td><td><input type="text" class="inputStyle"/></td></tr>
+          <tr><td>备注</td><td colspan="3"><input readonly type="text" class="inputStyle"/></td></tr>
         </table>
         <div class="updatePicture" align="center">
           <select class="selectStyle" v-model="selected" @change="selectChange">
@@ -70,14 +70,21 @@
             :on-format-error="handleFormatError"
             :on-exceeded-size="handleSize"
             :on-success="handleSuccess"
-            :on-progress="handleProgress"
             :on-error="handleError"
             :action="filePathRequest">
+            <!--:on-progress="handleProgress"-->
             <i-button type="ghost" id="updateImage" @click="updateImageClick">上传</i-button><!--修改这个样式改变按钮样式-->
           </Upload>
-          <button id="submit" class="am-btn am-btn-success am-radius" @click="updateInforClick">提交</button>
+          <button id="submit" class="am-btn am-btn-success am-radius" @click="modal1 = true">提交</button>
         </div>
       </div>
+      <Modal v-model="modal1" id="modalBody" :styles="{top:'10rem'}">
+        <p style="text-align:center; font-size:1.1rem;">确认提交修改信息？</p>
+        <div slot="footer" style="text-align:center;">
+          <Button id="modalBtn" @click="updateInforClick">确定</Button>
+          <Button id="modalBtn" @click="modal1 = false">取消</Button>
+        </div>
+      </Modal>
       <Modal v-model="modal2" id="modalBody" :styles="{top:'10rem'}">
         <p style="text-align:center; font-size:1.1rem;">{{ messageStr }}</p>
         <div slot="footer" style="text-align:center;">
@@ -162,13 +169,11 @@
           }
         },
         updateInforClick:function(){//上传个人信息按钮
-
-          //数据不合格校验
+          this.modal1 = false;
           this.numberCheck(this.teacherMessage.weight,"体重数据不合理");
           this.numberCheck(this.teacherMessage.height,"身高数据不合理");
           this.numberCheck(this.teacherMessage.phoneNumber,"手机号码数据不合理");
           this.numberCheck(this.teacherMessage.homeTelephone,"电话号码不合理");
-
           //获取所有学生信息，发送到界面上
           this.$http.post('./studentManage/editStudentDetailInfo', {
             studentId:this.teacherMessage.studentId,
@@ -206,7 +211,6 @@
           }, {"Content-Type": "application/json"}).then(function (response) {
             var data=response.body;
             if(data.result==1){
-              //this.$Message.success('提交成功！');
               this.modal2=true;
               this.messageStr='提交成功！';
             }
@@ -225,10 +229,10 @@
             this.$Loading.error();
 //            移除“正在上传……”的msg
             if(!!window.ActiveXObject || "ActiveXObject" in window){
-              msg[0].parentNode.innerHTML = "";
+              //msg[0].parentNode.innerHTML = "";
 //                IE浏览器对removeChild实现有问题
             }else{
-              msg[0].parentNode.removeChild(msg[0]);
+              //msg[0].parentNode.removeChild(msg[0]);
             }
           }
           this.$Message.error('文件上传失败！'+res,3);
@@ -243,9 +247,9 @@
           this.$Loading.finish();
           var msg = document.getElementsByClassName("ivu-message-notice");
           if(!!window.ActiveXObject || "ActiveXObject" in window){
-            msg[0].parentNode.innerHTML = "";
+            //msg[0].parentNode.innerHTML = "";
           }else{
-            msg[0].parentNode.removeChild(msg[0]);
+            //msg[0].parentNode.removeChild(msg[0]);
           }
           this.$Message.success('上传成功！',3);
           this.loadingMsg = false;

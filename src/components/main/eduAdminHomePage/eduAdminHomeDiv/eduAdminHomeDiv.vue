@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div id="eduAdminHomeDiv">
     <div id="menuDiv">
       <!--角色类型列表，显示当前用户拥有所有角色-->
@@ -16,7 +16,7 @@
       </Menu>
       <!--iview的菜单组件-->
 
-      <button class="am-btn am-btn-success am-radius" id="termStartButton" @click="modal1 = true" v-if="isEduAdmin">设置学期开始时间</button>
+      <button class="am-btn am-btn-success am-radius" id="termStartButton" @click="setTermStartTime" v-if="isEduAdmin">设置学期开始时间</button>
       <button class="am-btn am-btn-success am-radius" id="evaluationStartButton" @click="modal2 = true" v-if="isEduAdmin">设置评教起止时间</button>
       <button class="am-btn am-btn-success am-radius" id="gradeStartButton" @click="modal3 = true" v-if="isEduAdmin">设置成绩录入时间</button>
       <Modal
@@ -32,19 +32,28 @@
         </div>
         <div style="font-size: 0.9rem;">
           <!--对话框主体-->
+          <div style="display: flex;align-items: center;justify-content: center;margin: 0.9rem 0">选择学年：
+            <select clearable  style="width: 12rem" v-model="selYear" @change="setTermStartTimeChange">
+              <option value="" selected="selected">请选择学年</option>
+              <option v-for="sem in yearSemester" :value="sem.semValue" :key="sem.semValue">{{sem.semName}}</option>
+            </select>
+          </div>
           <div style="display: flex;align-items: center;justify-content: center">第一学期：
             <Row>
               <Col span="12">
-                <Date-picker v-model="firstDate" format="yyyy年MM月dd日" type="date" placeholder="选择日期" style="width: 12rem"></Date-picker>
+                <DatePicker  v-model="firstDate" format="yyyy年MM月dd日" type="date" placeholder="选择日期" style="width: 12rem"></DatePicker >
               </Col>
             </Row>
           </div>
           <div style="display: flex;align-items: center;justify-content: center;margin-top: 1rem">第二学期：
             <Row>
               <Col span="12">
-                <Date-picker v-model="secondDate" format="yyyy年MM月dd日" type="date" placeholder="选择日期" style="width: 12rem"></Date-picker>
+                <DatePicker  v-model="secondDate" format="yyyy年MM月dd日" type="date" placeholder="选择日期" style="width: 12rem"></DatePicker >
               </Col>
             </Row>
+          </div>
+          <div style="margin-top: 1rem">
+            <span v-show="termStartTimeBool" style="margin: 1rem 1rem;color: #ff3300">{{selYear}}学年的开学时间都已设置</span>
           </div>
         </div>
         <div slot="footer" style="text-align: center">
@@ -109,7 +118,7 @@
     <div id="pageDiv">
       <div id="topFuncDiv">
         <span class="pageSpan" v-for="(authorityModel,index) in authorityModels" @click="inFuncClick(index)">
-          <Tooltip placement="top" :disabled="authorityModel.disabled">
+          <Tooltip placement="right" :disabled="authorityModel.disabled">
             <Badge :count="authorityModel.msgNum">
               <img class="modelImg" src="" :alt="authorityModel.name"><div>{{ authorityModel.name }}</div>
             </Badge>
@@ -189,6 +198,8 @@
         activeName: "",
 //        当前选中角色
         announcementList: [],
+        yearSemester:[],
+        selYear:'',
 //        公告信息
         isEduAdmin: false,
 //        时间设置功能按钮显隐
@@ -198,6 +209,9 @@
         modal3: false,
 //        对话框显隐
         errorMessage: "",
+        startSchoolTimeList:[
+        ],
+        termStartTimeBool:false,
 //        对话框内容
         firstDate: "",
 //        第一学期开始时间
@@ -216,6 +230,7 @@
       }
     },
     beforeMount: function() {
+      this.generateSemester();
       this.$http.post('./announcementManage/getAllAnnouncement',{},{
         "Content-Type":"application/json"
       }).then(function(response){
@@ -517,8 +532,10 @@
                   this.authorityModels[i].msgNumTips = "休学申请："+ response.body.applyQuitStudentNum +"<br>退学申请："+ response.body.applyDropStudentNum +"<br>复学申请："+ response.body.applyReinstatingStudentNum;
                   this.authorityModels[i].disabled = false;
                 }else if(this.authorityModels[i].name == "教务审批"){
-                  this.authorityModels[i].msgNum = response.body.makeUpAskNum + response.body.teacherApplyNumber;
-                  this.authorityModels[i].msgNumTips = "补课申请："+ response.body.makeUpAskNum +"<br>禁排申请："+ response.body.teacherApplyNumber;
+                  this.authorityModels[i].msgNum = response.body.makeupNum + response.body.teacherApplyNumber+response.body.stopCourseNum+
+                    response.body.makeUpAskNum+response.body.teachPlanNum+response.body.alternateLessionNum;
+                  this.authorityModels[i].msgNumTips = "教学计划审批："+ response.body.teachPlanNum +"<br>调课申请："+ response.body.alternateLessionNum+"<br>补课申请："+ response.body.makeupNum +
+                    "<br>停课申请："+ response.body.stopCourseNum+ "<br>禁排申请："+ response.body.teacherApplyNumber+"<br>补考申请："+ response.body.makeUpAskNum;
                   this.authorityModels[i].disabled = false;
                 }else if(this.authorityModels[i].name == "督导反馈"){
                   this.authorityModels[i].msgNum = response.body.noCheckSupNum;
@@ -576,6 +593,50 @@
       },//监听成绩录入时间设置对话框是否开启
     },//data属性变量变化监听
     methods:{
+       setTermStartTime:function () {
+         this.modal1 = true;
+         this.$http.post('./getStartSchoolTimeList',{}, {"Content-Type": "application/json"}).then(function (response) {
+           this.startSchoolTimeList = response.body.startSchoolTimeList;
+           this.selYear = "";
+         });
+       },
+      setTermStartTimeChange:function () {
+        if(this.selYear == "")
+           {
+               return;
+           }
+           this.firstDate = "";
+           this.secondDate = "";
+        this.termStartTimeBool = false;
+        for(var i=0;i<this.startSchoolTimeList.length;i++)
+        {
+          if(this.startSchoolTimeList[i].startYearSemester.split(".")[0]==this.selYear)
+          {
+              if(this.startSchoolTimeList[i].startYearSemester.split(".")[1] == "1")
+              {
+                this.firstDate = this.startSchoolTimeList[i].startTime;
+              }else if(this.startSchoolTimeList[i].startYearSemester.split(".")[1] == "2")
+              {
+                this.secondDate = this.startSchoolTimeList[i].startTime;
+              }
+          }
+        }
+        if( this.firstDate != ""&&this.secondDate != "")
+        {
+            this.termStartTimeBool = true;
+        }
+      },
+      generateSemester:function () {
+        var nDate = new Date();
+        var nYear = parseInt(nDate.getFullYear())-1;
+        var stl="";
+        var st2="";
+        for(var i=1;i<=3;i++)
+        {
+          stl = nYear+++'-'+nYear;
+          this.yearSemester.push({semName:stl ,semValue:stl});
+        }
+      },
       termStart: function () {
         var firstDate = new Date(this.firstDate);
         var secondDate = new Date(this.secondDate);
@@ -592,14 +653,25 @@
 //          验证学期间隔时间
           this.errorMessage = "学期间隔时间太短，请重试！";
           this.modal = true;
+        }else if(this.selYear=="")
+        {
+          this.errorMessage = "学年不能为空,请重试!";
+          this.modal = true;
+        }else if(firstDate.getFullYear() != this.selYear.split('-')[0])
+        {
+          this.errorMessage = '第一学期应该在'+this.selYear.split('-')[0]+'年'+',请重试！';
+          this.modal = true;
+        }else if(secondDate.getFullYear() != this.selYear.split('-')[1])
+        {
+          this.errorMessage = '第二学期应该在'+this.selYear.split('-')[1]+'年'+',请重试！';
+          this.modal = true;
         }else {
           this.dateError = "";
 //          错误提示信息初始化
-          var firstYear = firstDate.getFullYear() + "-" + (firstDate.getFullYear() + 1) + ".1";
 //          第一学期信息处理
           this.$http.post('./setSchoolStartTime', {
-            "startYearSemester": firstYear,
-            "startTime": firstDate
+            "startYearSemester": this.selYear+'.1',
+            "startTime": firstDate.getFullYear()+'-'+parseInt(firstDate.getMonth()+1)+'-'+firstDate.getDate()
           }, {
             "Content-Type": "application/json"
           }).then(function (res) {
@@ -616,12 +688,10 @@
           }, function (error) {
             this.$Message.error('连接失败，请重试！');
           });
-
-          var secondYear = (secondDate.getFullYear() - 1) + "-" + secondDate.getFullYear() + ".2";
 //          第二学期信息处理
           this.$http.post('./setSchoolStartTime', {
-            "startYearSemester": secondYear,
-            "startTime": secondDate
+            "startYearSemester": this.selYear+'.2',
+            "startTime": secondDate.getFullYear()+'-'+parseInt(secondDate.getMonth()+1)+'-'+secondDate.getDate()
           }, {
             "Content-Type": "application/json"
           }).then(function (res) {
@@ -669,6 +739,11 @@
         }
       },//评教起止时间设置
       gradeStart: function () {
+        this.$http.post('./getStartSchoolTime', {}, {
+          "Content-Type": "application/json"
+        }).then(function (res) {
+        }, function (error) {
+        });
         if(this.gradeDate[0] == "" || this.gradeDate[1] == ""){
           this.errorMessage = "时间区间不能为空,请重试!";
           this.modal = true;
@@ -973,7 +1048,7 @@
       }, //点击功能模块进行跳转
       announcementClick: function (id) {
         if(id != "null") {
-          location.href = "#/eduAdmin/information/notifyInformation?" + id;
+          location.href = "#/eduAdmin/information/notifyInformation?Id=" + id+'&Type=Tch';
         }
       }//公告点击跳转详情
     }

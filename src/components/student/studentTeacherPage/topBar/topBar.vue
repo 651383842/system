@@ -1,7 +1,7 @@
 <template>
   <div id="stdInquireGradeBar" class="topBarDiv am-btn-group">
       <a :href="studentCourseUrl">
-        <button id="manualCouButton" class="topBarButton am-btn am-btn-success  btn-active">学生课表查询</button>
+        <button id="manualCouButton" class="topBarButton am-btn am-btn-success">学生课表查询</button>
       </a>
       <a :href="studentTestUrl">
         <button  class="topBarButton am-btn am-btn-success">学生考场查询</button>
@@ -10,7 +10,7 @@
         <button  class="topBarButton am-btn am-btn-success">学生成绩查询</button>
       </a>
       <a :href="studentTeacherUrl">
-        <button  class="topBarButton am-btn am-btn-success">任课教师信息</button>
+        <button  class="topBarButton am-btn am-btn-success  btn-active">任课教师信息</button>
       </a>
     </div>
 </template>

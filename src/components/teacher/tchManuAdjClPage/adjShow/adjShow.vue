@@ -6,15 +6,15 @@
 		<span><a href="#/login/main/eduAdminHome" class="returnHome">首页</a></span>
 		<span> > 调课申请</span>
 	</div>
-	<div class="curSettings">
-      <div>
+	<div class="curSettings" >
+      <div id="adjTop1">
         <span>当前学年学期：{{year}}学年第{{semester}}学期</span>
         <span>当前周数：{{week}}</span>
         <span>请提前2天申请，若在当前时间是17：00后，则顺延一天</span>
       </div>
-      <div>
+      <div id="adjTop2">
         <span>任课教师：{{teacher}}</span>
-        <span>提示：{{teacher}}你在【{{year}}学年第{{semester}}学期】共上【{{courseNum}}】门教学课，在调/补课时，你所选上课时段已过冲突筛选，请留意。</span>
+        <span>提示：{{teacher}}你在【{{year}}学年第{{semester}}学期】共上【{{courseNum}}】门课，在调/补课时，你所选上课时段已过冲突筛选，请留意。</span>
       </div>
     </div>
 
@@ -141,7 +141,7 @@
 				</Modal>
 		    	<button class="am-btn am-btn-success am-radius" @click="modal2 = true">取消</button>
 		    	<Modal v-model="modal2" id="modalBody" :styles="{top:'10rem'}">
-					<p style="text-align:center; font-size:1.1rem;">您确定不保存并取消吗？</p>
+					<p style="text-align:center; font-size:1.1rem;">你确定取消编辑吗？</p>
 					<div slot="footer" style="text-align:center;">
 						<Button id="modalBtn" @click="ok2()">确定</Button>
 						<Button id="modalBtn" @click="cancel2()">取消</Button>
@@ -196,13 +196,22 @@
 	        <Button id="modalBtn" @click="resultOk()">确认</Button>
 	    </div>
 	</Modal>
+  <Modal v-model="modal3" id="modalBody" :styles="{top:'10rem'}">
+    <div style="text-align:center; font-size:1.1rem;">
+      <p>{{errMsg}}</p>
+    </div>
+    <div slot="footer" style="text-align:center;">
+      <Button id="modalBtn" @click="modal3 = false">确认</Button>
+    </div>
+  </Modal>
 </div>
 </template>
- 
+
 <script>
 export default {
 	data () {
 		return {
+      errMsg:'',
 			year: '',
 			semester: '',
 			week: '',
@@ -257,6 +266,7 @@ export default {
 	        adjSection: [],
 	        modal1: false,		// 提交弹出框
 	        modal2: false,		// 取消弹出框
+          modal3: false,
 	        modalResult: false,
 			remindResult: '',
 			index: ''
@@ -265,26 +275,36 @@ export default {
   	beforeMount: function() {
         this.$http.post('./alternateLessionApplication',{},{
             "Content-Type":"application/json"
-        }).then(function(response){
-            console.log("获取申请:");
-            console.log(response.body);
-            var data = response.body;
-            this.year = data.year;
-            this.semester = data.semester;
-            this.week = data.week;
-            this.teacher = data.teacher;
-            this.courseNum = data.courseNum;
-            this.courseList = data.courseList;
-            this.applicationList = data.applicationList;
+        }).then(function(response) {
+          var data = response.body;
+          this.year = data.year;
+          this.semester = data.semester;
+          this.week = data.week;
+          this.teacher = data.teacher;
+          this.courseNum = data.courseNum;
+          this.courseList = data.courseList;
+          this.applicationList = data.applicationList;
+          for (var i = 0; i < this.applicationList.length; i++)
+          {
+              switch (this.applicationList[i].auditType)
+              {
+                case 0:
+                  this.applicationList[i].auditType = '审核不通过';
+                    break;
+                case 1:
+                  this.applicationList[i].auditType = '审核通过';
+                  break;
+                case 2:
+                  this.applicationList[i].auditType = '审核中';
+                  break;
+              }
+          }
         },function(error){
             console.log("获取申请error:");
             console.log(error);
         });
     },
 	methods: {
-		// weekChange: function(){
-		// 	alert(this.selPreWeek);
-		// },
 		// 点击表格“申请调课”，显示选项内容****************************************************************************
 	    applyAdjBtn: function (index) {
 	    	// 判断是否有正在编辑调课信息的，若有，则不能点击其它申请调课
@@ -333,15 +353,13 @@ export default {
 					        this.$Message.error('操作失败！请重试');
 					    }
 			        },function(error){
-			            console.log("获取申请error:");
-			            console.log(error);
 			        });
 	    		}
 	    		else {
 	    			this.isShow = true;
 	    		}
 	    	}
-	    	
+
     	},
     	// 选择调制周数，判断所选周数是否比原周数大**********************************************************************
     	// 选择成功之后，申请获得调至星期下拉数据**********
@@ -371,7 +389,7 @@ export default {
 						"courseAssociationId": this.courseAssociationIdGet,
 						"teacherId": this.teacherIdGet,
 						"classId": this.classIdGet
-			        },{    
+			        },{
 			            "Content-Type":"application/json"
 			        }).then(function(response){
 			            console.log("获取申请:");
@@ -383,42 +401,11 @@ export default {
 					    	this.adjWeek.push(this.allWeekdaysAndLessonNumsList[i][0]);
 					    	this.adjSection.push(this.allWeekdaysAndLessonNumsList[i][1]);
 					    }
-
-
-			         //    if (this.selAdjDay == "选择星期" && this.selAdjSection == "选择节次") {
-			         //    	var a=[];
-			         //    	var b=[];
-			         //    	for (var i = 0; i < data.allWeekdaysAndLessonNumsList.length; i++) {
-			         //    		if(a.length==0){
-			         //    			a.push(data.allWeekdaysAndLessonNumsList[0][0]);
-			         //    		}
-			         //    		for(var j=0;j<a.length;j++){
-
-			         //    			if(a[j]!=data.allWeekdaysAndLessonNumsList[i][0]){
-			         //    				a.push(data.allWeekdaysAndLessonNumsList[i][0]);
-			         //    			}
-
-			         //    		}
-			         //    		if(b.length==0){
-			         //    			b.push(data.allWeekdaysAndLessonNumsList[0][1]);
-			         //    		}
-			         //    		for(var j=0;j<b.length;j++){
-			         //    			if(b[j]!=data.allWeekdaysAndLessonNumsList[i][1]){
-			         //    				b.push(data.allWeekdaysAndLessonNumsList[i][1]);
-			         //    			}
-			         //    		}
-			         //    	}
-			         //    	this.selectiveWeekday = a;
-			         //    	this.selectiveLessonNum = b;
-			        	// }
 			        },function(error){
-			            console.log("获取申请error:");
-			            console.log(error);
 		        	});
-		        // }
     		}
     	},
-    	// 选择调制上课时间之前，判断前面4个选项是否已选完 
+    	// 选择调制上课时间之前，判断前面4个选项是否已选完
     	allWeekdaysAndLessonNumsClick: function () {
     		if (this.selPreWeek=="" || this.selCourseDay=="" || this.selClassroom=="" || this.selAdjWeek=="") {
     			this.modalResult = true;
@@ -458,17 +445,14 @@ export default {
 			        },{
 			            "Content-Type":"application/json"
 			        }).then(function(response){
-			            console.log("获取申请:");
-			            console.log(response.body);
 			            var data = response.body;
 			            if (data.result == "1") {
 			            	this.applicationList = data.applicationList;
 	            			this.$Message.success('提交成功！请在下方表格中查看调课信息。');
 	            			window.location.reload();	// 页面重新加载
-			            }else if (data.result == "0") {
-					        // this.$Message.error('操作失败！请重试');
-					        this.modalResult = true;
-					        this.remindResult = '2';
+			            }else{
+					        this.modal3 = true;
+					        this.errMsg = data.result;
 					    }
 			        },function(error){
 			            console.log("获取申请error:");
@@ -482,19 +466,11 @@ export default {
         },
         cancel1 () {
             this.modal1 = false;
-                // this.$Message.error('提交失败！请重新操作。');
         },
-    	// 取消并不保存***********************************************************************************************
-    	// cancelBtn: function () {
-    	// 	this.isShow = false;
-    	// }
     	ok2 () {
-            this.modal2 = false;
+        this.modal2 = false;
 	    	var transEediting = document.getElementById("transEediting"+this.index);
 	    	transEediting.innerHTML = "申请调课";
-            this.$Message.error('保存失败！');
-            // this.modalResult = true;
-            // this.remindResult = '3';
             this.isShow = false;
         },
         cancel2 () {
@@ -508,7 +484,27 @@ export default {
 </script>
 
 <style scoped>
-.curSettings {
+  @import '../../../../assets/css/external.css';
+  #adjTop1{
+    background-color: white;
+    position: relative;
+    height:2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.3rem;
+
+  }       /*提示1*/
+  #adjTop2{
+    background-color: white;
+    position: relative;
+    height:2rem;
+    display: flex;
+    align-items: center;
+    padding: 0.3rem;
+  }
+
+  .curSettings {
   text-align: left;
   margin: 0.5rem 1rem;
 }

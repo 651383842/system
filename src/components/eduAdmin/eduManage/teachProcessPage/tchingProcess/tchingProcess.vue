@@ -224,9 +224,9 @@
                   grade:'',
                   yearType:'',
                   courseList:[
-                    {courseTypeName:'公共基础课3',courseName:'职业生涯规划',totalHours:'36',theoryHours:'32',practiceHours:'4',semesterPeriod1:'36',semesterPeriod2:'',semesterPeriod3:'',semesterPeriod4:'',semesterPeriod5:'',semesterPeriod6:'',semesterPeriod7:'',semesterPeriod8:'',semesterPeriod9:'',semesterPeriod10:'',teachStatus:0},
-                    {courseTypeName:'公共基础课3',courseName:'哲学与人生',totalHours:'36',theoryHours:'32',practiceHours:'4',semesterPeriod1:'',semesterPeriod2:'36',semesterPeriod3:'',semesterPeriod4:'',semesterPeriod5:'',semesterPeriod6:'',semesterPeriod7:'',semesterPeriod8:'',semesterPeriod9:'',semesterPeriod10:'',teachStatus:1},
-                    {courseTypeName:'公共基础课3',courseName:'经济政治与社会',totalHours:'36',theoryHours:'32',practiceHours:'4',semesterPeriod1:'',semesterPeriod2:'',semesterPeriod3:'36',semesterPeriod4:'',semesterPeriod5:'',semesterPeriod6:'',semesterPeriod7:'',semesterPeriod8:'',semesterPeriod9:'',semesterPeriod10:'',teachStatus:2}
+//                    {courseTypeName:'公共基础课3',courseName:'职业生涯规划',totalHours:'36',theoryHours:'32',practiceHours:'4',semesterPeriod1:'36',semesterPeriod2:'',semesterPeriod3:'',semesterPeriod4:'',semesterPeriod5:'',semesterPeriod6:'',semesterPeriod7:'',semesterPeriod8:'',semesterPeriod9:'',semesterPeriod10:'',teachStatus:0},
+//                    {courseTypeName:'公共基础课3',courseName:'哲学与人生',totalHours:'36',theoryHours:'32',practiceHours:'4',semesterPeriod1:'',semesterPeriod2:'36',semesterPeriod3:'',semesterPeriod4:'',semesterPeriod5:'',semesterPeriod6:'',semesterPeriod7:'',semesterPeriod8:'',semesterPeriod9:'',semesterPeriod10:'',teachStatus:1},
+//                    {courseTypeName:'公共基础课3',courseName:'经济政治与社会',totalHours:'36',theoryHours:'32',practiceHours:'4',semesterPeriod1:'',semesterPeriod2:'',semesterPeriod3:'36',semesterPeriod4:'',semesterPeriod5:'',semesterPeriod6:'',semesterPeriod7:'',semesterPeriod8:'',semesterPeriod9:'',semesterPeriod10:'',teachStatus:2}
                   ]
                 }
               ]

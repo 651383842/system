@@ -40,7 +40,7 @@
 						<td>{{data.weekdays}}</td>
 						<td>第 {{data.lessonNum}} 大节</td>
 						<td>{{data.classroomId}}</td>
-						<td>{{data.signInTime}}</td>
+						<td>{{data.signDate}}</td>
 						<td class="textBtn" :value="data.attendanceInfo">
 							<a @click="attend(index)" v-if="data.signInStatus==0">考勤</a>
 							<a @click="seeAttend(index)" v-else-if="data.signInStatus==1">查看考勤</a>
@@ -72,7 +72,7 @@
 	    	<!-- 弹窗形式编辑出勤情况并提交 -->
 	    	<div v-if="attendStatus==='0'" style="overflow: auto; height: 13rem;">
 	    		<ul>
-	    			<li v-for="stuData in studentIdAndNameList">
+	    			<li v-for="stuData in attendanceStudentList">
 	    				<input type="checkbox" :value="stuData" v-model="attendanceReturn">
 	    				<label :for="stuData">{{stuData}}</label>
 	    			</li>
@@ -140,7 +140,7 @@ export default {
 			courseName: '',
 			className: '',
 			teachJournalDetailList: [
-				// {signDate: '2016-09-06', execWeek: '1', weekdays: '2', lessonNum: '2', classroomId: '302'},
+				//{signDate: '2016-09-06', execWeek: '1', weekdays: '2', lessonNum: '2', classroomId: '302',signInStatus:'0'},
 				// {signDate: '2016-09-06', execWeek: '1', weekdays: '2', lessonNum: '2', classroomId: '302'}
 			],
 			modal1: false,		// 签到窗口
@@ -168,8 +168,8 @@ export default {
 	beforeMount: function() {
 		//分割成字符串，获取courseAssociationId
 		var thisURL = document.URL;
-        var getval =thisURL.split('?')[1];
-        var keyValue = getval.split('&'); 
+        var getval =thisURL.split('tchSignin?')[1];
+        var keyValue = getval.split('&');
         // this.courseAssociationId = getval.split("=")[1];
         this.courseAssociationId = keyValue[0].split("=")[1];
         this.courseName = decodeURIComponent(keyValue[1].split("=")[1]);
@@ -180,8 +180,6 @@ export default {
         },{
             "Content-Type":"application/json"
         }).then(function(response){
-            console.log("获取申请:");
-            console.log(response.body);
             var data = response.body;
             this.teachJournalDetailList = data.teachJournalDetailList;
             // this.teachJournalDetailList = JSON.parse(JSON.stringify(data.teachJournalDetailList));
@@ -207,7 +205,7 @@ export default {
 	            console.log("获取申请:");
 	            console.log(response.body);
 	            var data = response.body;
-	            this.attendanceStudentList = data.attendanceStudentList;
+	            this.attendanceStudentList = data.studentIdAndNameList;
 	        },function(error){
 	            console.log("获取申请error:");
 	            console.log(error);
@@ -217,23 +215,22 @@ export default {
 		seeAttend: function (index) {
 			this.modal1 = true;
 			this.attendStatus = '1';
-			if (data.teachJournalDetailList[index].attendanceInfo == null) {
-				this.getAttendanceInfo = "无";
+			if (this.teachJournalDetailList[index].attendanceInfo == "") {
+				this.getAttendanceInfo = "全勤";
 			}else {
-				this.getAttendanceInfo = data.teachJournalDetailList[index].attendanceInfo;
+				this.getAttendanceInfo = this.teachJournalDetailList[index].attendanceInfo;
 			}
 		},
 		// 编辑上课日志按钮*********************************************************
 		journal: function (index) {
 			this.modal2 = true;
 			this.journalStatus = '0';
-            // this.checkTeachJournalInFo = this.teachJournalDetailList[index].teachJournalInFo;
 		},
 		// 查看上课日志**********************************************************************************
 		seeJournal: function (index) {
 			this.modal2 = true;
 			this.journalStatus = '1';
-			this.getTeachJournalInFo = data.teachJournalDetailList[index].teachJournalInFo;
+			this.getTeachJournalInFo = this.teachJournalDetailList[index].teachJournalInFo;
 		},
 		// 签到确认按钮************************************************************************************
 		signInBtn: function (index) {
@@ -252,8 +249,6 @@ export default {
             },{
             	"Content-Type":"application/json"
             }).then(function(response){
-            	console.log("获取申请:");
-            	console.log(response.body);
             	var data = response.body;
             	var detail = response.body.teachJournalDetail;
             	this.modalSubmit = false;
@@ -269,8 +264,6 @@ export default {
             		this.reminder = data.result;
             	}
             },function(error){
-            	console.log("获取申请error:");
-				console.log(error);
             });
         },
         // 提交取消，返回签到弹窗*****************************************

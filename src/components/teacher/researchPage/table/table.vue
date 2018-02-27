@@ -11,19 +11,8 @@
      <div id="show">
         <p>编号：{{num}}</p>
        <p id="leaderP">
-         <!--keyup监听enter按键，回车触发添加-->
          组长：
-         <!--<select id="leaderSelect" value="">-->
-           <!--<option selected></option>-->
-           <!--<option v-for="option1 in options1">{{ option1.teacherName }}</option>-->
-         <!--</select>-->
-         <!--<span class="tipSpan" @click="addPerson('leader',leaders)"><img id="tipSpan" :src="imgSrc1"></span>-->
-       <!--<div class="personDiv">-->
-         <!--&lt;!&ndash;成员显示组件&ndash;&gt;-->
-         <!--<eduResGroupPerson v-for="(leader,index) in leaders" :key="leader" @remove="removePerson(index,leaders)" :person="leader"></eduResGroupPerson>-->
-       <!--</div>-->
-       <!--</p>-->
-       <span v-for="leader in leaders">{{leader}}    </span>
+       <span v-for="leader in leaders">{{leader}}</span>
        <p id="memberP">
          组员：
          <select id="memberSelect" >
@@ -38,8 +27,8 @@
 
       </div>
       <div style="text-align: center">
-      <button  class="am-btn am-btn-success am-radius" @click="saveDia">保存</button>
-      <button class="am-btn am-btn-success am-radius" @click="cancelDia">取消</button>
+      <button  v-show="exitBool" class="am-btn am-btn-success am-radius" @click="saveDia">保存</button>
+      <button v-show="exitBool" class="am-btn am-btn-success am-radius" @click="cancelDia">取消</button>
       </div>
       </div>
     <Modal
@@ -95,18 +84,17 @@
     name: 'table',
     data () {
       return {
-        title:'护理学基础',
-        num:'663321',
+        exitBool:true,
+        title:'',
+        num:'',
         imgSrc1:icon1,
         teacherId:'',
-        leaders: [ "何平", "李雷" ],
-//              当前显示的教研组信息，用于数据库查询
-        members: [ "何平", "李雷", "韩梅梅", "王小明", "吴亦凡" ],
-//              当前显示的教研组信息，用于数据库查询
-
-        teachers: [ "何平", "李雷", "韩梅梅", "王小明", "吴亦凡" , "鹿晗", "杨幂", "尚清华", "杜北大"],
-
-        teacherList: [{teacherName:"骊山",teacherId:"123"},{teacherName:"款的",teacherId:"1245"}],
+        leaders: [],
+        // 当前显示的教研组信息，用于数据库查询
+        members: [],
+        //  当前显示的教研组信息，用于数据库查询
+        teachers: [],
+        teacherList: [],
         modal1:false,
         modal2:false,
         modal3:false
@@ -118,13 +106,22 @@
     beforeMount:function(){
       var thisURL = document.URL;
       var result =thisURL.split("?")[1];
-      if(result=="0"){this.modal3=true;}else if(result=="1"){this.$Message.success('保存成功！');}
-//      this.$http.post('../jsonphp/research.php',{},
+      if(result=="0"){this.modal3=true;}else if(result=="1")
+      {
+          this.$Message.success('保存成功！');
+      }
         this.$http.post('./courseTeachPlan/setTARGroupInfo',{},
         {"Content-Type":"application/json"}).then(function (response) {
-          console.log(response);
           this.title=response.body.TARGroupName;
           this.num=response.body.TARGroupId;
+          if(this.num == 0)
+          {
+            this.exitBool=false;
+            this.$Notice.warning({
+              title:'提示',
+              desc:'没有管理的教研组！'
+            });
+          }
           this.leaders = [];
           this.members = [];
           for(var i = 0;i < response.body.tableList.length;i++){
@@ -136,18 +133,12 @@
           }
       },
         function(error){
-          console.log("获取error:");
-          console.log(error);
         });
-//      this.$http.post('../jsonphp/research.php',{},
       this.$http.post('./courseTeachPlan/selectTeacherList',{},
         {"Content-Type":"application/json"}).then(function (response) {
-          console.log(response);
           this.teacherList=response.body.teacherList;
         },
         function(error){
-          console.log("获取error:");
-          console.log(error);
         });
     },
     methods: {

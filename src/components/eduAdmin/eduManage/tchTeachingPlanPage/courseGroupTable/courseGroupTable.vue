@@ -17,7 +17,7 @@
       </select>
       <!--课程选择下拉列表-->
       <select id="courseTypeSelect" class="selectWM" v-model="teacherinfoKey.courseType">
-        <option value=2>选择类型</option>
+        <option value=2>教学计划</option>
         <option v-for="courseTypeArr in courseTypeList" :value="courseTypeArr.courseType">{{courseTypeArr.courseTypeName}}</option>
       </select>
       <!--课程选择下拉列表-->
@@ -35,7 +35,7 @@
             <th>文件类型</th>
             <th>组长</th>
             <th>导出</th>
-            <th>审核</th>
+            <th>审核/审核状态</th>
           </tr>
           </thead>
           <tbody>
@@ -57,10 +57,10 @@
             </td>
             <!--下载培养方案的按钮-->
             <td v-if="courseGroupInfo.auditStatus===0">
-              <button title="审核不通过" class="circleEnd" >×</button>
+              <span>已审核:不通过</span>
             </td>
             <td v-else-if="courseGroupInfo.auditStatus===1">
-              <button title="审核通过" class="circleEnd" >√</button>
+              <span>已审核:通过</span>
             </td>
             <td v-else-if="courseGroupInfo.auditStatus===2">
               <button :id="'buttonOne'+index" title="审核通过" @click="examineTeachingPlanInfoClick(courseGroupInfo.teacherId,courseGroupInfo.courseId,'1',index,courseGroupInfo.coursewareType)"  class="circle" >√</button>
@@ -88,10 +88,10 @@
             </td>
             <!--下载培养方案的按钮-->
             <td v-if="courseGroupInfo.auditStatus===0">
-              <button title="审核不通过" class="circleEnd" >×</button>
+              <span>已审核:不通过</span>
             </td>
             <td v-else-if="courseGroupInfo.auditStatus===1">
-              <button title="审核通过" class="circleEnd" >√</button>
+              <span>已审核:通过</span>
             </td>
             <td v-else-if="courseGroupInfo.auditStatus===2">
               <button :id="'buttonOne'+index" title="审核通过" @click="examineTeachingPlanInfoClick(courseGroupInfo.teacherId,courseGroupInfo.courseId,'1',index,courseGroupInfo.coursewareType)"  class="circle" >√</button>
@@ -142,33 +142,33 @@
                 courseType:2
               },
               groupList:[
-                {groupName:'护理组',groupId:111},
-                {groupName:'西医组',groupId:222},
-                {groupName:'临床组',groupId:333}
+//                {groupName:'护理组',groupId:111},
+//                {groupName:'西医组',groupId:222},
+//                {groupName:'临床组',groupId:333}
               ],
               teacherList:[
-                {teacherName:'何平',teacherId:'111111'},
-                {teacherName:'张继',teacherId:'222222'},
-                {teacherName:'李伟',teacherId:'333333'}
+//                {teacherName:'何平',teacherId:'111111'},
+//                {teacherName:'张继',teacherId:'222222'},
+//                {teacherName:'李伟',teacherId:'333333'}
               ],
               courseList:[
-                {courseName:'护理学基础1',courseId:'JCKC1111'},
-                {courseName:'护理学基础2',courseId:'JCKC2222'},
-                {courseName:'护理学基础3',courseId:'JCKC3333'}
+//                {courseName:'护理学基础1',courseId:'JCKC1111'},
+//                {courseName:'护理学基础2',courseId:'JCKC2222'},
+//                {courseName:'护理学基础3',courseId:'JCKC3333'}
               ],
               courseTypeList:[
-                {courseType:1,courseTypeName:'教案课件'},
-                {courseType:0,courseTypeName:'教学计划'}
+//                {courseType:1,courseTypeName:'教案课件'},
+//                {courseType:0,courseTypeName:'教学计划'}
               ],
               courseGroupInfosOne:[
-                {groupName:'临床医学1',teacherName:'李伟',teacherId:'111',courseName:'护理学基础1',courseId:'JCKC1111',headman:'何平',coursewareType:0,auditStatus:0},
-                {groupName:'临床护理1',teacherName:'张亮',teacherId:'222',courseName:'护理学基础2',courseId:'JCKC2222',headman:'张扬',coursewareType:0,auditStatus:1},
-                {groupName:'护用药理1',teacherName:'邓常',teacherId:'333',courseName:'护理学基础3',courseId:'JCKC3333',headman:'李季',coursewareType:0,auditStatus:2}
+//                {groupName:'临床医学1',teacherName:'李伟',teacherId:'111',courseName:'护理学基础1',courseId:'JCKC1111',headman:'何平',coursewareType:0,auditStatus:0},
+//                {groupName:'临床护理1',teacherName:'张亮',teacherId:'222',courseName:'护理学基础2',courseId:'JCKC2222',headman:'张扬',coursewareType:0,auditStatus:1},
+//                {groupName:'护用药理1',teacherName:'邓常',teacherId:'333',courseName:'护理学基础3',courseId:'JCKC3333',headman:'李季',coursewareType:0,auditStatus:2}
               ],
               courseGroupInfosTwo:[
-                {groupName:'临床医学2',teacherName:'李伟',teacherId:'111',courseName:'护理学基础1',courseId:'JCKC1111',headman:'何平',coursewareType:1,auditStatus:0},
-                {groupName:'临床护理2',teacherName:'张亮',teacherId:'222',courseName:'护理学基础2',courseId:'JCKC2222',headman:'张扬',coursewareType:1,auditStatus:1},
-                {groupName:'护用药理2',teacherName:'邓常',teacherId:'333',courseName:'护理学基础3',courseId:'JCKC3333',headman:'李季',coursewareType:1,auditStatus:2}
+//                {groupName:'临床医学2',teacherName:'李伟',teacherId:'111',courseName:'护理学基础1',courseId:'JCKC1111',headman:'何平',coursewareType:1,auditStatus:0},
+//                {groupName:'临床护理2',teacherName:'张亮',teacherId:'222',courseName:'护理学基础2',courseId:'JCKC2222',headman:'张扬',coursewareType:1,auditStatus:1},
+//                {groupName:'护用药理2',teacherName:'邓常',teacherId:'333',courseName:'护理学基础3',courseId:'JCKC3333',headman:'李季',coursewareType:1,auditStatus:2}
               ],
               msg:"",
               operateMsg:"",
@@ -197,7 +197,6 @@
           this.teacherList = response.body.teacherList;
           this.courseList = response.body.courseList;
         },function(error){
-          console.log("获取error");
         });
       },
 //      初始化页面，获取教学计划列表，教研组列表，教师列表，课程列表
@@ -276,7 +275,6 @@
           },{
             "Content-Type":"application/json"
           }).then(function (response) {
-            console.log(response);
             this.resultmsg=response.body.result;
             if(this.resultmsg === 1){
               this.$Message.success(this.operateMsg + "成功！");
@@ -297,7 +295,6 @@
               this.modalResultBool = true;
             }
           },function(error){
-            console.log("获取error");
           });
           this.modalOperateBool = false;
         },

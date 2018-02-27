@@ -8,8 +8,8 @@
     <div id="table">
       <div id="sel">
         <select @change="chooseTerm(option1)"  v-model="option1">
-          <option v-for="option1 in semesterList" :value="option1">
-            {{ option1}}
+          <option v-for="option1 in semesterList" :value="option1.semValue">
+            {{ option1.semName}}
           </option>
         </select>
         <!--<button class="am-btn am-btn-success am-radius">查看学生留言</button>-->
@@ -22,6 +22,7 @@
               <th>课程代码</th>
               <th>课程名称</th>
               <th>课程类型</th>
+              <th>授课班级</th>
               <th>参评人数</th>
               <th>综合得分</th>
               <th></th>
@@ -33,6 +34,7 @@
               <td v-text="data.courseId"></td>
               <td v-text="data.courseName"></td>
               <td v-text="data.courseTypeName"></td>
+              <td v-text="data.classId" ></td>
               <td v-text="data.evaStudentCount"></td>
               <td v-text="data.evaRecord"></td>
               <td><span :id="'stuMessage'+index" style="text-decoration: underline; cursor: pointer"  @click="stuMessage(index)">查看学生留言</span></td>
@@ -58,40 +60,32 @@
             }
         },
       beforeMount:function(){
-//        this.$http.post('../jsonphp/teachingEvaluate.php',{},
-        this.$http.post('./teacherCheckEvaResultNew',{},
-          {"Content-Type":"application/json"}).then(function(response){
-            console.log(response.body);
-            this.evaluationResult = response.body.evaResult;
-            this.currentSemester = response.body.currentSemester;
-            this.$http.post('./getYearTermList',{},
-              {"Content-Type":"application/json"}).then(function(response){
-                console.log(response.body);
-                for(var i=0;i<response.body.yearTerm.length;i++){
-                  this.semesterList.push(response.body.yearTerm[i].startYearSemester);
-                }
-                this.option1 = this.currentSemester;
-              },
-              function(error){
-                console.log(error);
-              });
-          },
-          function(error){
-            console.log(error);
-          });
+        this.generateSemester();
+        var url = document.URL;
+        if(url.indexOf("?") > 0)
+        {
+          this.option1 = url.split("teachingEvaluate?")[1];
+          this.chooseTerm(this.option1);
+        }else
+        {
+          this.$http.post('./teacherCheckEvaResultNew',{},
+            {"Content-Type":"application/json"}).then(function(response){
+              this.evaluationResult = response.body.evaResult;
+              this.currentSemester = response.body.currentSemester;
+              this.option1 = this.currentSemester;
+            },
+            function(error){
+            });
+        }
       },
       methods:{
         //选择学期
         chooseTerm:function(value){
-//          this.$http.post('../jsonphp/teachingEvaluate.php',{
           this.$http.post('./teacherCheckEvaResult',{
-//            "appTeacherSerial": "0301",
             "yearTerm": value
           },{"Content-Type":"application/json"}).then(function (response) {
-              console.log("结果");
-              console.log(response.body);
               if(response.body.evaResult!='')
-              { this.$Message.success('操作成功！');
+              {
                 this.evaluationResult = response.body.evaResult;}
               else
               { this.$Message.error('暂无数据！');
@@ -102,10 +96,26 @@
               console.log(error);
             });
         },
+        generateSemester:function () {
+          var nDate = new Date();
+          var nYear = parseInt(nDate.getFullYear())+1;
+          var stl="";
+          var st2="";
+          for(var i=1;i<=4;i++)
+          {
+            stl = nYear-1+'-'+nYear+'.'+'1';
+            st2 = nYear-1+'-'+nYear+'学年（上）';
+            this.semesterList.push({semName:st2,semValue:stl});
+            stl = nYear-1+'-'+nYear+'.'+'2';
+            st2 = nYear-1+'-'+nYear+'学年（下）';
+            this.semesterList.push({semName:st2,semValue:stl});
+            nYear--;
+          }
+        },
         //查看学生留言
         stuMessage:function(index){
           var id=this.evaluationResult[index].courseAssociationId;
-          location.href='#/teacher/studentMessage?'+id;
+          location.href='#/teacher/studentMessage?Id='+id+'&Sem='+this.option1;
         }
       }
     }
@@ -120,6 +130,7 @@
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
    justify-content: space-between;
+    width: 11.5rem;
   }
   #back{    background-color: #f3f3f3;}
   select{

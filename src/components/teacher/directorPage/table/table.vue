@@ -28,8 +28,11 @@
             <td v-text="data.className"></td>
             <td v-text="data.teacherName"></td>
             <!--<td v-text="data.courseTime"></td>-->
-            <td v-text="data.status" style="text-decoration:underline;cursor: pointer;" :id="'confirm'+index" @click="confirm(index)"></td>
-            <td ><span style="text-decoration: underline; cursor: pointer" @click="directorResult(index)" >在线填写</span></td>
+            <td v-text="data.status"></td>
+            <td >
+              <span v-if="data.status=='未读'" style="text-decoration: underline; cursor: pointer" @click="directorResult(index,'w')" >在线填写</span>
+              <span v-if="data.status=='已读'" style="text-decoration: underline; cursor: pointer" @click="directorResult(index,'r')" >查看</span>
+            </td>
             <!--<td v-text="data.statuss" :id="'up'+index" @click="up(index)"></td>-->
           </tr>
           </tbody>
@@ -44,8 +47,11 @@
         name: 'table',
         data () {
             return {
-//              tableList:[{courseName:"护理",className:"101",teacherName:"李华",courseTime:"201-01-02",status:"1"}]
-            tableList:''
+              tableList:[
+//                  {classId: "201451", className: "高2014级1班",
+//                courseId: "GGBX0013", courseName: "安全教育", status: "未读",
+//                teacherId: "1058", teacherName: "向国平"}
+                ],
             }
         },
       beforeMount:function(){
@@ -58,7 +64,7 @@
               if(response.body.teacherSupervision[i].status == "0"){
                 this.tableList[i].status="未读";
 //                this.tableList[i].statuss="提交";
-              }else  if(response.body.teacherSupervision[i].status == "1"){
+              }else{
                 this.tableList[i].status="已读";
 //                this.tableList[i].statuss="提交";
               }
@@ -97,16 +103,14 @@
             });
         },
         //跳转传值
-        directorResult:function(index){
-          var courseId=this.tableList[index].courseId;
-          var classId=this.tableList[index].classId;
-          var teacherId=this.tableList[index].teacherId;
-          console.log(courseId);
-          console.log("1");
-          console.log(classId);
-          console.log("2");
-          console.log(teacherId);
-          location.href='#/teacher/directorResult?'+courseId+'&'+classId+'&'+teacherId;
+        directorResult:function(index,msg){
+          if(msg=='w')
+          {
+            location.href="#/teacher/directorResult?type="+'w'+'&courseId='+this.tableList[index].courseId+'&classId='+this.tableList[index].classId+'&teacherId='+this.tableList[index].teacherId;
+          }else if(msg=='r')
+          {
+            location.href='#/teacher/directorResult?type='+'r'+'&courseId='+this.tableList[index].courseId+'&classId='+this.tableList[index].classId+'&teacherId='+this.tableList[index].teacherId;
+          }
         }
 //        up:function(index){
 //          console.log(index);

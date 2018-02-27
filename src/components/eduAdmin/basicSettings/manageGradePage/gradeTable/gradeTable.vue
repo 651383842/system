@@ -1,9 +1,15 @@
 <template>
-  <div style="padding: 0.6rem 5rem;margin-top: 3.5rem;background-color: #f3f3f3">
+  <div style="padding: 0.6rem 5rem;margin-top: 0.5rem;background-color: #f3f3f3">
     <div id="gradeManagementDiv" style="background-color: white">
       <div id="fiveYearDiv" v-show="gradeManagement">
         <button class="amButtom" @click="fiveYearClick"><img id="fiveYearArrow" class="iconImg" :src="icon2"><span class="subtitle">{{firstYearType}}年制</span></button>
         <table id="fiveYearTable" v-show="fiveYearTable"  class="operationTable" style="table-layout: fixed;">
+          <tr>
+            <td>年级</td>
+            <td>班级数</td>
+            <td>班级管理</td>
+            <td>操作</td>
+          </tr>
           <tr v-for="(fiveGrade,index) in fiveGrades" :id="'fiveInputTr'+index">
             <td><input class="gradeInput" type="text" :value="fiveGrade.gradeName" readonly="readonly"></td>
             <td><input class="gradeInput" type="text" :value="fiveGrade.studentNum" readonly="readonly"></td>
@@ -12,6 +18,13 @@
               <img :id="'fiveDeleteImg'+index" title="删除" src="./images/delete.png" @click="deleteGradeClick(firstYearType,fiveGrades[index].gradeName,'1',index)">
             </td>
           </tr>
+          <tr>
+            <td><img src="../../../../../assets/images/add.png" @click="modal1 = true" title="新增三年制"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
         </table>
       </div>
       <!--第一个年制年级基本信息表格-->
@@ -19,6 +32,12 @@
       <div id="threeYearDiv" v-show="gradeManagement">
         <button class="amButtom" @click="threeYearClick"><img id="threeYearArrow" class="iconImg" :src="icon1"><span class="subtitle">{{secondYearType}}年制</span></button>
         <table id="threeYearTable" v-show="threeYearTable"  class="operationTable" style="table-layout: fixed;">
+          <tr>
+            <td>年级</td>
+            <td>班级数</td>
+            <td>班级管理</td>
+            <td>操作</td>
+          </tr>
           <tr v-for="(threeGrade,index) in threeGrades" :id="'threeInputTr'+index">
             <td><input class="gradeInput" type="text" :value="threeGrade.gradeName" readonly="readonly"></td>
             <td><input class="gradeInput" type="text" :value="threeGrade.studentNum" readonly="readonly"></td>
@@ -26,6 +45,13 @@
             <td>
               <img :id="'threeDeleteImg'+index" title="删除" src="./images/delete.png" @click="deleteGradeClick(secondYearType,threeGrades[index].gradeName,'2',index)">
             </td>
+          </tr>
+          <tr>
+            <td><img src="../../../../../assets/images/add.png" @click="modal2 = true" title="新增五年制"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
           </tr>
         </table>
       </div>
@@ -62,6 +88,7 @@
             <th>班主任姓名</th>
             <th>学制</th>
             <th>班级人数</th>
+            <th>教室</th>
             <th>操作</th>
           </tr>
           </thead>
@@ -73,12 +100,19 @@
             <td><input id="input4" :value="classinfoStr.className" readonly="readonly" style="border: none"></td>
             <td>
               <input id="input5" :value="classinfoStr.classTeacherName" readonly="readonly" style="border: none">
-              <select :id="index + 'select'" class="selectWM" v-model="teacherIdEle" style="display: none">
+              <select :id="index + 'select1'" class="selectWM" v-model="editBuffer[index].classTeacherId" style="display: none">
                 <option v-for="teacher in teacherList" :value="teacher.teacherId">{{teacher.teacherName}}</option>
               </select>
             </td>
             <td><input id="input6" :value="classinfoStr.schoolYearType" readonly="readonly" style="border: none"></td>
             <td><input id="input7" :value="classinfoStr.classSize" readonly="readonly" style="border: none"></td>
+            <td>
+              <input id="input8" :value="classinfoStr.classroomId" readonly="readonly" style="border: none">
+              <select :id="index + 'select2'" class="selectWM" v-model="editBuffer[index].classroomId"  style="display: none">
+                <option :value="classinfoStr.classroomId">{{classinfoStr.classroomId}}</option>
+                <option v-for="room in classroomList" :value="room.classroomId">{{room.classroomId}}</option>
+              </select>
+            </td>
             <td>
               <img :id="'editImg'+index" title="修改" class="btnImg" src="./images/edit.png" @click="editClick(index)">
               <img :id="'saveImg'+index" title="保存" class="btnImg" src="./images/save.png" style="display: none" @click="saveClick(index)">
@@ -108,7 +142,7 @@
             <div style="text-align: center;font-size: 1.1rem;">
               <p v-if="operateMsg === '1'">保存修改失败</p>
               <p v-else-if="operateMsg === '3'">删除失败</p>
-              <p v-else>处理出错</p>
+              <p v-else>{{errMsg}}</p>
             </div>
             <div slot="footer" style="text-align: center">
               <button id="modalBtn" @click="resultGradeOk">确定</button>
@@ -126,7 +160,6 @@
               :max-size="2048"
               :on-format-error="handleFormatError"
               :on-exceeded-size="handleSizeError"
-              :on-progress="handleProgress"
               :on-success="handleSuccess"
               :on-error="handleError"
               action="./gradeManage/uploadClassInfo">
@@ -138,6 +171,37 @@
         </div>
       </div>
       <!--上传，下载按钮，返回按钮-->
+      <Modal
+        v-model="modal1"
+        width="250"
+        :mask-closable="false"
+        id="modalBody"
+        :styles="{top:'10rem'}" draggable="true">
+        <div style="text-align:center; font-size:1.1rem;">
+          <p>年级</p>
+          <input type="number" v-model="tGrade" style="width: 10rem">
+        </div>
+        <div slot="footer" style="text-align:center;">
+          <Button id="modalBtn" @click="addGrade('three')">添加</Button>
+          <Button id="modalBtn" @click="modal1 = false">取消</Button>
+        </div>
+      </Modal>
+
+      <Modal
+        v-model="modal2"
+        width="250"
+        :mask-closable="false"
+        id="modalBody"
+        :styles="{top:'10rem'}" draggable="true">
+        <div style="text-align:center; font-size:1.1rem;">
+          <p>年级</p>
+          <input v-model="fGrade" type="number" style="width: 10rem">
+        </div>
+        <div slot="footer" style="text-align:center;">
+          <Button id="modalBtn" @click="addGrade('five')">添加</Button>
+          <Button id="modalBtn" @click="modal2 = false">取消</Button>
+        </div>
+      </Modal>
     </div>
   </div>
 </template>
@@ -161,43 +225,55 @@
         modalOperateBool:false,
         modalResultBool:false,
         gradeTable: false,
+        modal1:false,
+        modal2:false,
         teacherIdEle:'',
         yearTypeEle:'',
+        fGrade:'',
+        tGrade:'',
+        opengrade:'',
+        opentype:'',
         gradeNameEle:'',
         indexEle:'',
         gradeNum:'',
+        errMsg:'出错啦!',
+        editBuffer:[
+            //{classroomId:'201',classTeacherId:'67843'},{classroomId:'121',classTeacherId:'453453'},{classroomId:'102',classTeacherId:'4965'},
+        ],
         fiveGrades: [
-          { gradeName:"2014", studentNum:"167" },
-          { gradeName:"2013", studentNum:"167" },
-          { gradeName:"2012", studentNum:"167" }
+//          { gradeName:"2014", studentNum:"167" },
+//          { gradeName:"2013", studentNum:"167" },
+//          { gradeName:"2012", studentNum:"167" }
         ],
         threeGrades: [
-          { gradeName:"2016", studentNum:"167" },
-          { gradeName:"2015", studentNum:"167" },
-          { gradeName:"2014", studentNum:"167" }
+//          { gradeName:"2016", studentNum:"167" },
+//          { gradeName:"2015", studentNum:"167" },
+//          { gradeName:"2014", studentNum:"167" }
         ],
-        classinfoStrList:[
-          {gradeName:'04',specialityName:'护理',classId:'03',className:'护理3班',classTeacherName:'何平',schoolYearType:'五年制',classSize:'43'},
-          {gradeName:'04',specialityName:'临床医学',classId:'05',className:'临床医学5班',classTeacherName:'季军',schoolYearType:'五年制',classSize:'54'},
-          {gradeName:'04',specialityName:'护理',classId:'01',className:'护理1班',classTeacherName:'李磊',schoolYearType:'五年制',classSize:'31'}
+       classinfoStrList:[
+//          {classroomId:'201',gradeName:'04',specialityName:'护理',classId:'03',className:'护理3班',classTeacherId:'67843',classTeacherName:'何平',schoolYearType:'五年制',classSize:'43'},
+//          {classroomId:'121',gradeName:'04',specialityName:'临床医学',classId:'05',className:'临床医学5班',classTeacherId:'453453',classTeacherName:'季军',schoolYearType:'五年制',classSize:'54'},
+//          {classroomId:'102',gradeName:'04',specialityName:'护理',classId:'01',className:'护理1班',classTeacherId:'4965',classTeacherName:'李磊',schoolYearType:'五年制',classSize:'31'}
         ],
         teacherList:[
-          {teacherName:'何平',teacherId:'123456'},
-          {teacherName:'季军',teacherId:'223456'},
-          {teacherName:'李磊',teacherId:'323456'}
+//          {teacherName:'何平',teacherId:'67843'},
+//          {teacherName:'季军',teacherId:'453453'},
+//          {teacherName:'李磊',teacherId:'4965'}
         ],
         index:"",
         modalGradeOperateBool:false,
         modalGradeResultBool:false,
         operateMsg:"",
-        resultMsg:"1"
+        resultMsg:"1",
+        classroomList:[
+            //{classroomId:'101'},{classroomId:'211'},{classroomId:'104'},{classroomId:'122'}
+            ]
       }
     },
     beforeMount:function() {
       this.$http.post('./gradeManage/getGradeInfo',{},{
         "Content-Type":"application/json"
       }).then(function (response) {
-        console.log(response);
         this.firstYearType = response.body.yearList[0].yearType;
         this.secondYearType = response.body.yearList[1].yearType;
         this.fiveGrades = response.body.yearList[0].gradeList;
@@ -208,6 +284,65 @@
     },
 //    初始化页面时，获取3年制和5年制年级信息
     methods: {
+      addGrade:function (type) {
+          switch (type)
+          {
+            case "three":
+            {
+                if(this.tGrade != "")
+                {
+                  this.$http.post('./gradeManage/addGrade',{
+                      "gradeName":this.tGrade+3,
+                      "yearType":'3'
+                  },{
+                    "Content-Type":"application/json"
+                  }).then(function (response) {
+                      if(response.body.result == "1")
+                      {
+                        this.$Message.success("添加成功,2s后刷新！");
+                        setTimeout("window.location.reload()",2000)
+                      }else
+                      {
+                        this.$Message.warning("添加失败！");
+                      }
+                  },function(error){
+                    this.$Message.warning("添加失败！");
+                  });
+                }else
+                {
+                    this.$Message.warning("年级不能为空！");
+                }
+            }
+            break;
+            case "five":
+            {
+              if(this.fGrade != "")
+              {
+                this.$http.post('./gradeManage/addGrade',{
+                  "gradeName":this.fGrade+5,
+                  "yearType":'5'
+                },{
+                  "Content-Type":"application/json"
+                }).then(function (response) {
+                  if(response.body.result == "1")
+                  {
+                    this.$Message.success("添加成功,2s后刷新！");
+                    setTimeout("window.location.reload()",2000)
+                  }else
+                  {
+                    this.$Message.warning("添加失败！");
+                  }
+                },function(error){
+                  this.$Message.warning("添加失败！");
+                });
+              }else
+              {
+                this.$Message.warning("年级不能为空！");
+              }
+            }
+            break;
+          }
+      },
       fiveYearClick: function () {
         var fiveYearArrow = document.getElementById("fiveYearArrow");
         if (!this.fiveArrow) {
@@ -280,17 +415,23 @@
       },
 //      确认删除年级信息操作结果
       checkGradeInfoClick: function(yearType,gradeName){
+          this.opengrade = gradeName;
+          this.opentype = yearType;
         this.$http.post('./gradeManage/getGradeDetail',{
           "yearType":yearType,
           "gradeName":gradeName
         },{
           "Content-Type":"application/json"
         }).then(function (response) {
-          console.log(response);
+          this.editBuffer.splice(0,this.editBuffer.length );
           this.classinfoStrList = response.body.classAndTeacherList.classinfoStrList;
+          for(var i=0;i<this.classinfoStrList.length;i++)
+          {
+            this.editBuffer.push({classroomId:this.classinfoStrList[i].classroomId,classTeacherId:this.classinfoStrList[i].classTeacherId});
+          }
           this.teacherList = response.body.classAndTeacherList.teacherList;
+          this.classroomList = response.body.classAndTeacherList.classroomList;
         },function(error){
-          console.log("获取error");
         });
         this.gradeTable = true;
         this.gradeManagement = false;
@@ -299,7 +440,8 @@
       editClick: function(index){
         var inputTable = document.getElementById("inputTable"+index);
         var input = inputTable.getElementsByTagName("input");
-        var select = document.getElementById(index + "select");
+        var select1 = document.getElementById(index + "select1");
+        var select2 = document.getElementById(index + "select2");
         var editImg = document.getElementById("editImg"+index);
         var saveImg = document.getElementById("saveImg"+index);
         var deleteImg = document.getElementById("deleteImg"+index);
@@ -310,7 +452,9 @@
           }
         }
         input[4].style.display = "none";
-        select.style.display = "inline";
+        input[7].style.display = "none";
+        select1.style.display = "inline";
+        select2.style.display = "inline";
         editImg.style.display = "none";
         saveImg.style.display = "inline";
         deleteImg.style.display = "none";
@@ -338,14 +482,16 @@
       saveGradeOk: function(){
         var inputTable = document.getElementById("inputTable"+this.index);
         var input = inputTable.getElementsByTagName("input");
-        var select = document.getElementById(this.index + "select");
+        var select1 = document.getElementById(this.index + "select1");
+        var select2 = document.getElementById(this.index + "select2");
         var editImg = document.getElementById("editImg"+this.index);
         var saveImg = document.getElementById("saveImg"+this.index);
         var deleteImg = document.getElementById("deleteImg"+this.index);
         var restoreImg = document.getElementById("restoreImg"+this.index);
         this.$http.post('./gradeManage/editClassInfo',{
           "classId":this.classinfoStrList[this.index].classId,
-          "classTeacherId":this.teacherIdEle
+          "classTeacherId":this.editBuffer[this.index].classTeacherId,
+          "classroomId":this.editBuffer[this.index].classroomId
         },{
           "Content-Type":"application/json"
         }).then(function (response) {
@@ -353,43 +499,45 @@
           this.resultMsg=response.body.result;
           if(this.resultMsg==="1"){
             for(var i=0;i<this.teacherList.length;i++){
-              if(this.teacherIdEle === this.teacherList[i].teacherId){
+              this.classinfoStrList[this.index].classTeacherId = this.editBuffer[this.index].classTeacherId;
+              this.classinfoStrList[this.index].classroomId = this.editBuffer[this.index].classroomId;
+              if(this.editBuffer[this.index].classTeacherId === this.teacherList[i].teacherId){
                 this.classinfoStrList[this.index].classTeacherName = this.teacherList[i].teacherName;
               }
             }
             this.modalGradeOperateBool=false;
             this.$Message.success("保存成功！");
             input[4].style.display = "inline";
-            select.style.display = "none";
+            input[7].style.display = "inline";
+            select1.style.display = "none";
+            select2.style.display = "none";
             editImg.style.display = "inline";
             saveImg.style.display = "none";
             deleteImg.style.display = "inline";
             restoreImg.style.display = "none";
+            this.checkGradeInfoClick(this.opentype,this.opengrade);
           }else{
             this.modalGradeOperateBool=false;
             this.modalGradeResultBool=true;
           }
         },function(error){
-          console.log("获取error");
         });
       },
 //      保存对班级信息的修改
       cancelGradeOk: function(){
         var inputTable = document.getElementById("inputTable"+this.index);
         var input = inputTable.getElementsByTagName("input");
-        var select = document.getElementById(this.index + "select");
+        var select1 = document.getElementById(this.index + "select1");
+        var select2 = document.getElementById(this.index + "select2");
         var editImg = document.getElementById("editImg"+this.index);
         var saveImg = document.getElementById("saveImg"+this.index);
         var deleteImg = document.getElementById("deleteImg"+this.index);
         var restoreImg = document.getElementById("restoreImg"+this.index);
-//        var i = null;
-//        for(i = 0;i<input.length;i++){
-//          input[i].readOnly = true;
-//          input[i].style.border = "none";
-//        }
         this.modalGradeOperateBool=false;
         input[4].style.display = "inline";
-        select.style.display = "none";
+        input[7].style.display = "inline";
+        select1.style.display = "none";
+        select2.style.display = "none";
         editImg.style.display = "inline";
         saveImg.style.display = "none";
         deleteImg.style.display = "inline";
@@ -402,14 +550,15 @@
         },{
           "Content-Type":"application/json"
         }).then(function (response) {
-          console.log(response);
           this.resultMsg=response.body.result;
-          if(this.resultMsg==="1"){
+          if(this.resultMsg==="0"){
             this.$Message.success("删除成功！");
             this.classinfoStrList.splice(this.index,1);
             this.modalGradeOperateBool=false;
           }else{
             this.modalGradeOperateBool=false;
+            this.errMsg = this.resultMsg;
+            this.operateMsg = "99";
             this.modalGradeResultBool=true;
           }
         },function(error){

@@ -26,7 +26,6 @@
                 :on-format-error="handleFormatError"
                 :on-exceeded-size="handleSize"
                 :on-success="handleSuccess"
-                :on-progress="handleProgress"
                 :on-error="handleError"
                 action="./courseAssociationManege/import.action">
               <i-button type="ghost" id="importButton1">导入</i-button>
@@ -106,7 +105,6 @@
                 :on-format-error="handleFormatError"
                 :on-exceeded-size="handleSize"
                 :on-success="handleSuccess"
-                :on-progress="handleProgress"
                 :on-error="handleError"
                 action="./courseAssociationManege/import.action">
                 <i-button type="ghost" id="importButton2">导入</i-button>
@@ -305,8 +303,6 @@
 //      this.$http.post('../testPhp/courseArrangeSetting.php',{},{
         "Content-Type":"application/json"
       }).then(function(response){
-        console.log("获取:");
-        console.log(response.body);
         var data = response.body.courseTeacherList;
         this.fiveCourses = [];
         this.threeCourses = [];
@@ -346,7 +342,6 @@
             });
           }
         }
-        console.log();
       },function(error){
         console.log("获取error:");
         console.log(error);
@@ -636,8 +631,6 @@
               "Content-Type": "application/json"
             }).then(function (response) {
               this.modal3 = false;
-              console.log("保存课程:");
-              console.log(response.body);
               var data = response.body;
               if (data.result == 1) {
                 for (i = 0; i < select.length; i++) {
@@ -693,10 +686,10 @@
           this.$Loading.error();
 //            移除“正在上传……”的msg
           if(!!window.ActiveXObject || "ActiveXObject" in window){
-            msg[0].parentNode.innerHTML = "";
+            //msg[0].parentNode.innerHTML = "";
 //                IE浏览器对removeChild实现有问题
           }else{
-            msg[0].parentNode.removeChild(msg[0]);
+           // msg[0].parentNode.removeChild(msg[0]);
           }
         }
 //        this.$Message.error('文件上传失败！'+res,3);
@@ -713,9 +706,9 @@
         this.$Loading.finish();
         var msg = document.getElementsByClassName("ivu-message-notice");
         if(!!window.ActiveXObject || "ActiveXObject" in window){
-          msg[0].parentNode.innerHTML = "";
+          //msg[0].parentNode.innerHTML = "";
         }else{
-          msg[0].parentNode.removeChild(msg[0]);
+         // msg[0].parentNode.removeChild(msg[0]);
         }
         this.$Message.success('上传成功！3s后自动刷新页面！',3);
         console.log(res);

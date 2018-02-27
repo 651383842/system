@@ -206,7 +206,7 @@
     methods: {
       announcementClick: function (id) {
         if(id != "null") {
-          location.href = "#/eduAdmin/information/notifyInformation?" + id;
+          location.href = "#/eduAdmin/information/notifyInformation?Id=" + id+'&Type=Stu';
         }
       },//公告点击跳转详情
       back: function () {
@@ -259,7 +259,7 @@
   .pageDiv{
     /*功能块区域*/
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-start;
     margin: 1rem 0;
   }
   .pageSpan{

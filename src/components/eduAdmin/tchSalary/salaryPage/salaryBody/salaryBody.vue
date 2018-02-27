@@ -26,7 +26,7 @@
 					<tr>
 						<th width="">教师编码</th>
 						<th width="">教师姓名</th>
-						<th width="">职称</th>
+						<th width="">职称(职务)</th>
 						<th width="">所授课程</th>
 						<th width="">授课班级</th>
 						<th width="">计划课时</th>
@@ -38,7 +38,7 @@
 					<tr v-for="data in teacherPayrollList">
 						<td v-text="data.teacherId"></td>
 						<td v-text="data.teacherName"></td>
-						<td>{{data.workUnit}}  {{data.workDuty}}</td>
+						<td>{{data.workDuty}}({{data.workTitle}})</td>
 						<td>{{data.courseName}}({{data.courseId}})</td>
 						<td>{{data.className}}</td>
 						<td v-text="data.courseHours"></td>
@@ -126,11 +126,7 @@ export default {
 	    },
 	    // 下载按钮
 	    exportBtn: function () {
-	    	if (this.selTeacher == '') {
-	    		this.modalResult = true;
-	    	}else {
-	    		location.href = "./downloadallSalaryList"
-	    	}
+        location.href = "./downloadallSalaryList"
 	    },
 	    // 弹窗提示确认，点击消失
 	    resultOk: function () {

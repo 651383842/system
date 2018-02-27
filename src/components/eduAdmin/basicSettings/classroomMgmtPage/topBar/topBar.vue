@@ -3,7 +3,7 @@
     <button id="topBarButton" class="am-btn am-btn-success" @click="hrefClick(1)">教材管理</button>
     <button class="am-btn am-btn-success" @click="hrefClick(2)">年级管理</button>
     <button class="am-btn am-btn-success" @click="hrefClick(3)">课程类型管理</button>
-    <button class="am-btn am-btn-success btn-active" @click="hrefClick(3)">教室管理</button>
+    <button class="am-btn am-btn-success btn-active" @click="hrefClick(4)">教室管理</button>
   </div>
 </template>
 

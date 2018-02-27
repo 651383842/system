@@ -22,7 +22,7 @@
 				<tbody>
 					<tr v-for="(notice, index) in announcementList" :key="notice">
 						<td :value="notice.announcementId">
-							<a id="signIn" :href="'#/eduAdmin/information/notifyInformation?'+notice.announcementId">{{notice.announcementName}}</a>
+							<a id="signIn" :href="'#/eduAdmin/information/notifyInformation?Id='+notice.announcementId+'&Type=Tch'">{{notice.announcementName}}</a>
 						</td>
 						<td>{{notice.announcementType}}</td>
 						<td>{{notice.announcementTime}}</td>
@@ -95,8 +95,6 @@ export default {
 	    this.$http.post('./announcementManage/getAllAnnouncement',{},{
             "Content-Type":"application/json"
         }).then(function(response){
-            console.log("获取申请:");
-            console.log(response.body);
             var data = response.body;
             this.announcementList = data.announcementList;
         },function(error){
@@ -133,8 +131,6 @@ export default {
     		},{
 	            "Content-Type":"application/json"
 	        }).then(function(response){
-	            console.log("获取申请:");
-	            console.log(response.body);
 	            var data = response.body;
 	            this.modal1 = false;
 	            if (data.result == 1) {

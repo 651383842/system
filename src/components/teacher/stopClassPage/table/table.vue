@@ -12,7 +12,7 @@
         <span>请提前2天申请，若当前时间是17：00后，则顺延一天</span>
       </div>
       <div id="adjTop2">
-        <span>{{teacher}}老师，您在【{{presentYear}}】共上【{{presentClass}}】个班的课，在调课补课时您所选上课时已过冲突筛选请留意。</span>
+        <span>{{teacher}}老师，您在【{{presentYear}}】共上【{{presentClass}}】门课，在调课补课时您所选上课时已过冲突筛选请留意。</span>
       </div>
       <div class="adjShowDiv">
         <table class="table table-hover table-bordered" cellspacing="1">
@@ -33,26 +33,12 @@
               <span :id="'show'+index" @click="show(index)" style="text-decoration:underline;cursor: pointer;" >申请停课</span>
             </td>
             <td v-text="index+1"></td>
-            <td  v-text="data.className+data.classSerial"></td>
+            <td  v-text="data.className"></td>
             <td  v-text="data.courseName"></td>
-            <td  v-text="data.courseSerial"></td>
-            <td  v-text="data.teacherName+data.teacherSerial"></td>
-            <!--<td  v-text="data.courseDetail"></td>-->
+            <td  v-text="data.courseId"></td>
+            <td  v-text="data.teacherName+data.teacherId"></td>
           </tr>
           </tbody>
-          <!-- 			<tfoot>
-                            <tr>
-                                <td colspan="4">
-                                    <div class="pull-left">
-                                        <button class="btn btn-default" v-on:click="refresh">刷新</button>
-                                    </div>
-                                    <div class="pull-right">
-                                        <boot-page v-ref:page :async="false", :data="lists" :lens="lenArr", :page-len="pageLen", :param="param"></boot-page>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tfoot>
-             -->
         </table>
       </div>
     </div>
@@ -66,7 +52,7 @@
           </td>
           <td class="choice" width="24%">
             <select v-model="selected1">
-              <option>选择天数</option>
+              <option disabled>选择天数</option>
               <option v-for="option1 in options1" :value="option1.originWeek+'-'+option1.originWeekDay+'-'+option1.originSection">
                 第{{option1.originWeek}}周-第{{option1.originWeekDay}}天-第{{option1.originSection}}节
               </option>
@@ -84,7 +70,7 @@
         </tbody>
       </table>
       <div style="text-align: center">
-      <button   class="am-btn am-btn-success am-radius"  @click="saveDia(selected1,message2)">保存</button>
+      <button   class="am-btn am-btn-success am-radius"  @click="saveDia(selected1,message2)">提交</button>
       <button class="am-btn am-btn-success am-radius" @click="cancel">取消</button></div>
     </div>
     <div class="adjShowDiv">
@@ -129,6 +115,20 @@
         <button id="modalBtn" @click="modal1 = false">取消</button>
       </div>
     </Modal>
+    <Modal
+      v-model="modal2"
+      width="400"
+      :mask-closable="false"
+      id="modalBody"
+      :styles="{top:'10rem'}">
+      <div style="font-size: 1.1rem;text-align: center;">
+        <p>你确定取消编辑吗？</p>
+      </div>
+      <div slot="footer" style="text-align: center">
+        <button id="modalBtn" @click="cancelOK">确定</button>
+        <button id="modalBtn" @click="modal2 = false">取消</button>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -141,9 +141,9 @@
       return {
         applicationList:'',
         teacher:'',
-        presentYear:'2016-2017年第一学期',
-        presentWeek:'21',
-        presentClass:'3',
+        presentYear:'',
+        presentWeek:'',
+        presentClass:'',
         seenS:false,
         tableList: [],
         message2:'',
@@ -151,6 +151,7 @@
         options1: [{},{}],
         change:'',
         modal1:false,
+        modal2:false,
         oselected1:'',
         omessage2:''
       }
@@ -170,11 +171,11 @@
           this.options1 = response.body.options1;
         },
         function(error){
-          console.log("获取error:");
-          console.log(error);
         });
 
-      this.$http.post('./makeUpLessionApplication.action',{},
+      this.$http.post('./makeUpLessionApplication.action',{
+          flag:1
+        },
           {"Content-Type":"application/json"}).then(function (response) {
             this.applicationList = response.body.applicationList;
             for(var i=0;i<response.body.applicationList.length;i++){
@@ -197,42 +198,27 @@
       },
       //展示申请停课的申请内容
       show:function(index){
+        if(this.seenS)
+        {
+          this.$Message.warning("正在编辑中！");
+          return;
+        }
+          var txt = document.getElementById('show'+index);
+          txt.innerHTML = "编辑中...";
           this.seenS=true;
           this.change=index;
-//          this.$http.post('../jsonphp/stopClass.php',{
           this.$http.post('./teacherCloseCourseApplyReturn',{
-            "classSerial": this.tableList[index].classSerial,
-            "courseplanId":this.tableList[index].courseplanId,
-            "teacherSerial":this.tableList[index].teacherSerial
+            "classSerial": this.tableList[index].classId,
+            "courseplanId":this.tableList[index].courseAssociationId,
+            "teacherSerial":this.tableList[index].teacherId
         },{"Content-Type":"application/json"}).then(function (response) {
-            console.log("传递:");
-            console.log(response.body);
             this.options1=response.body.options1;
-//            options1.originWeek=response.body.options1.originWeek;
-//            var list=[];
-//            list = options1.originWeek;
-//            var i, j,n;
-//            for(i=0;i<options1.originWeek.length;i++){
-//              for(j=i;i<options1.originWeek.length;j++){
-//                if(list[i]==list[j]){
-//                  list[j]=-1;
-//                }
-//              }
-//            }
-//            for(n;n<options1.options1.originWeek.length;n++){
-//             if(list[n]!="-1"){
-//               options1.originWeek=list[n];
-//             }
-//            }
         },
           function(error){
-            console.log("传递error:");
-            console.log(error);
           });
       },
       //保存申请
       saveSel:function(value,message){
-          console.log(message);
           this.modal1=false;
           var originWeek = value.split("-")[0];
           var originWeekDay = value.split("-")[1];
@@ -251,23 +237,26 @@
             "originWeek": originWeek,
             "originWeekDay":originWeekDay,
           "originSection":originSection,
+            "courseAssociationId":this.tableList[this.change].courseAssociationId,
             "appReason":message
           },{"Content-Type":"application/json"}).then(function (response) {
              if(response.body.result=="1")
              {this.$Message.success('操作成功！');
                var t=setTimeout(" location.reload();",3000);}
-              console.log("保存:");
-              console.log(response.body);
             },
             function(error){
-              console.log("保存error:");
-              console.log(error);
             });
         this.seenS=false;
 
         },
       cancel:function(){
-        location.reload();
+        this.modal2 = true;
+      },
+      cancelOK:function () {
+        this.modal2 = false;
+        this.seenS=false;
+        var txt = document.getElementById('show'+this.change);
+        txt.innerHTML = "申请停课";
       }
       }
   }

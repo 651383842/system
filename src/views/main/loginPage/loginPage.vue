@@ -1,6 +1,6 @@
 <template>
   <!--登录页面-->
-  <div id="login" :style="{ backgroundImage: 'url(' + img1 + ')' }">
+  <div id="login" :style="{ backgroundImage: 'url(' + img1 + ')' }" >
     <!--背景图片地址不能在css中设置，否则可能导致打包图片失败，这是因为vue会解析图片路径，在加载的时候使用解析过的路径，如果设置在css中,路径并不会被解析。在data中定义地址是最稳妥的。-->
     <div id="loginDiv" :style="{ backgroundImage: 'url(' + img2 + ')' }">
       <a href="http://www.samsph.com/hsxx/1092/1/"><img id="schoolImg" src="../../../assets/images/title.png" :alt="imgAlt" ></a>

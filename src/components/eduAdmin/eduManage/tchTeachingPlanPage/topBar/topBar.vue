@@ -49,33 +49,39 @@
 </script>
 
 <style scoped>
-    html {
-        font-size: 100%;
+  .am-btn-group button{
+    width: 12rem;
+  }
+  #topBarButton{
+    margin-left: 5rem;
+  }
+  @media screen and (max-width: 1000px) {
+    /*由于导航栏按钮过多，需要媒体查询修改导航栏宽度*/
+    .am-btn-group button{
+      width: 10rem;
     }
+  }
+  @media screen and (min-width: 1000px) and (max-width: 1025px) {
+    /*由于默认媒体查询会在1024缩放56%，所以需要再次增大宽度*/
+    .am-btn-group button{
+      width: 13rem;
+    }
+  }
+  @media screen and (min-width: 1025px) and (max-width: 1152px) {
+    /*一般情况下屏幕越小，按钮宽度越小*/
+    .am-btn-group button{
+      width: 7.7rem;
+    }
+  }
+  @media screen and (min-width: 1152px) and (max-width: 1281px) {
+    .am-btn-group button{
+      width: 8.8rem;
+    }
+  }
+  @media screen and (min-width: 1281px) and (max-width: 1440px) {
+    .am-btn-group button{
+      width: 10rem;
+    }
+  }
 
-    @media screen and (max-width: 1025px) {
-      html {
-        font-size: 56%;
-      }
-    }
-    @media screen and (max-width: 1025px) {
-      .am-btn-group button{
-        width: 13rem;
-      }
-    }
-    @media screen and (min-width: 1025px) and (max-width: 1152px) {
-      .am-btn-group button{
-        width: 7.7rem;
-      }
-    }
-    @media screen and (min-width: 1152px) and (max-width: 1281px) {
-      .am-btn-group button{
-        width: 8.8rem;
-      }
-    }
-    @media screen and (min-width: 1281px) and (max-width: 1440px) {
-      .am-btn-group button{
-        width: 10rem;
-      }
-    }
 </style>

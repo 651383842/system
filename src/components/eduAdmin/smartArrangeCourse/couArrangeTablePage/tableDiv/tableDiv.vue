@@ -1,97 +1,147 @@
 <template>
     <div id="couArrangeTable_tableDiv">
-        <!--<button id="exchangeButton" @click="modal1 = true" class="am-btn am-btn-success am-radius">确认调课</button>-->
-        <!--调课预留功能，由于需求问题暂时搁置-->
-        <table id="checkCourseTable">
-            <tr class="headTr">
-                <td id="headTdTime">时间</td>
-                <td class="weekTd" colspan="3">星期一</td>
-                <td class="weekTd" colspan="3">星期二</td>
-                <td class="weekTd" colspan="3">星期三</td>
-                <td class="weekTd" colspan="3">星期四</td>
-                <td class="weekTd" colspan="3">星期五</td>
-                <td rowspan="3">教室安排</td>
-                <td rowspan="3">班主任</td>
-            </tr>
-            <tr class="headTr">
-                <td id="headTdCourse">科目</td>
-                <td class="" colspan="2">上午</td>
-                <td class="">下午</td>
-                <td class="" colspan="2">上午</td>
-                <td class="">下午</td>
-                <td class="" colspan="2">上午</td>
-                <td class="">下午</td>
-                <td class="" colspan="2">上午</td>
-                <td class="">下午</td>
-                <td class="" colspan="2">上午</td>
-                <td class="">下午</td>
-            </tr>
-            <tr class="headTr">
-                <td id="headTdClass">班级</td>
-                <td>1-2</td>
-                <td>3-4</td>
-                <td>5-6</td>
-                <td>1-2</td>
-                <td>3-4</td>
-                <td>5-6</td>
-                <td>1-2</td>
-                <td>3-4</td>
-                <td>5-6</td>
-                <td>1-2</td>
-                <td>3-4</td>
-                <td>5-6</td>
-                <td>1-2</td>
-                <td>3-4</td>
-                <td>5-6</td>
-            </tr>
-            <tr  v-for="(item,index) in items" id="courseTr">
-                <td class="sectionTd" v-html="item.className"></td>
-                <td :id="'first'+index" @click="courseClick('first',index)" v-html="item.firstCourse"></td>
-                <td :id="'second'+index" @click="courseClick('second',index)" v-html="item.secondCourse"></td>
-                <td :id="'third'+index" @click="courseClick('third',index)" v-html="item.thirdCourse"></td>
-                <!--<td :id="index" @click="courseClick('third',index)"></td>-->
-                <td :id="'fourth'+index" @click="courseClick('fourth',index)" v-html="item.fourthCourse"></td>
-                <td :id="'fifth'+index" @click="courseClick('fifth',index)" v-html="item.fifthCourse"></td>
-                <td :id="'sixth'+index" @click="courseClick('sixth',index)" v-html="item.sixthCourse"></td>
-                <!--<td :id="index" @click="courseClick('third',index)"></td>-->
-                <td :id="'seventh'+index" @click="courseClick('seventh',index)" v-html="item.seventhCourse"></td>
-                <td :id="'eighth'+index" @click="courseClick('eighth',index)" v-html="item.eighthCourse"></td>
-                <td :id="'ninth'+index" @click="courseClick('ninth',index)" v-html="item.ninthCourse"></td>
-                <!--<td :id="index" @click="courseClick('third',index)"></td>-->
-                <td :id="'tenth'+index" @click="courseClick('tenth',index)" v-html="item.tenthCourse"></td>
-                <td :id="'eleventh'+index" @click="courseClick('eleventh',index)" v-html="item.eleventhCourse"></td>
-                <td :id="'twelfth'+index" @click="courseClick('twelfth',index)" v-html="item.twelfthCourse"></td>
-                <!--<td :id="index" @click="courseClick('third',index)"></td>-->
-                <td :id="'thirteenth'+index" @click="courseClick('thirteenth',index)" v-html="item.thirteenthCourse"></td>
-                <td :id="'fourteenth'+index" @click="courseClick('fourteenth',index)" v-html="item.fourteenthCourse"></td>
-                <td :id="'fifteenth'+index" @click="courseClick('fifteenth',index)">班会</td>
-                <td :id="'classroomName'+index"  v-html="item.classroomName"></td>
-                <td :id="'classHeadmaster'+index" v-html="item.classHeadmaster"></td>
-            </tr>
-        </table>
-        <!--<p id="courseDetailP">尚未排课的课程（请确保排课课程数量设置不超出限制）：</p>-->
-        <!--<table id="courseDetailTable" class="normalTable">
-            <thead>
+      <div>
+        <button class="amButtom" @click="DivCtl('five')"><img id="fiveArrow" class="iconImg" :src="arrowright"><span class="subtitle">五年制</span></button>
+        <div id="fiveDiv">
+        <div v-for="(item,index) in classList" v-if="item.yearType=='5'">
+          <div v-if="item.yearType=='5'" :id="'5Div' + index" class="gradePlanDiv">
+            <span><img :id="'Arrow' + index" class="gradePlanImg" @click="tableSlideToggle(index)" :src="arrowright"></span>
+            <span class="gradePlanTitle1">{{item.className}}</span>
+            <span class="gradePlanTitle2">班主任：{{item.classHeadmaster}}</span>
+            <span class="gradePlanTitle3">教室：{{item.classroom}}</span>
+            <span><button class="gradeButton" @click="save(index)" :id="'save'+index" style="display: none">保存</button></span>
+            <span><button class="gradeButton" @click="reset(index)" :id="'reset'+index" style="display: none">重置</button></span>
+          </div>
+          <div v-if="item.yearType=='5'" :id="'Table'+index" style="display: none">
+              <table class="arrangeTable">
+              <thead>
+              <tr>
+                <th width="10%">节次/周次</th>
+                <th width="14.8%">星期一</th>
+                <th width="14.8%">星期二</th>
+                <th width="14.8%">星期三</th>
+                <th width="14.8%">星期四</th>
+                <th width="14.8%">星期五</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>第一~二节<br>8:30-10:00</td>
+                <td id="1-1@firstCourse@5" v-html="courseList[index].firstCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="1-2@secondCourse@5" v-html="courseList[index].secondCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="1-3@thirdCourse@5" v-html="courseList[index].thirdCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="1-4@fourthCourse@5" v-html="courseList[index].fourthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="1-5@fifthCourse@5" v-html="courseList[index].fifthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+              </tr>
+              <tr>
+                <td>第三~四节<br>10:20-11:50</td>
+                <td id="2-1@sixthCourse@5" v-html="courseList[index].sixthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="2-2@seventhCourse@5" v-html="courseList[index].seventhCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="2-3@eightCourse@5" v-html="courseList[index].eightCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="2-4@ninthCourse@5" v-html="courseList[index].ninthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="2-5@tenthCourse@5" v-html="courseList[index].tenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+              </tr>
+              <tr>
+                <td>第五~六节<br>14:30-16:00</td>
+                <td id="3-1@eleventhCourse@5" v-html="courseList[index].eleventhCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="3-2@twelfthCourse@5" v-html="courseList[index].twelfthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="3-3@thirteenthCourse@5" v-html="courseList[index].thirteenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="3-4@fourteenthCourse@5" v-html="courseList[index].fourteenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td v-html="">安全教育</td>
+              </tr>
+              <tr>
+                <td>第八~九节<br>17:30-19:05</td>
+                <td id="4-1@fifteenthCourse@5" v-html="courseList[index].fifteenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="4-2@sixteenthCourse@5" v-html="courseList[index].sixteenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="4-3@seventeenthCourse@5" v-html="courseList[index].seventeenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="4-4@eighteenthCourse@5" v-html="courseList[index].eighteenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>第十~十一节<br>19:20-20:55</td>
+                <td id="5-1@nineteenthCourse@5" v-html="courseList[index].nineteenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="5-2@twentiethCourse@5" v-html="courseList[index].twentiethCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="5-3@twentyfirstCourse@5" v-html="courseList[index].twentyfirstCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td id="5-4@twentytwoCourse@5" v-html="courseList[index].twentytwoCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                <td></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        </div>
+      </div>
+      <div>
+        <button class="amButtom" @click="DivCtl('three')"><img id="threeArrow" class="iconImg" :src="arrowright"><span class="subtitle">三年制</span></button>
+        <div id="threeDiv">
+          <div v-for="(item,index) in classList" v-if="item.yearType=='3'">
+            <div v-if="item.yearType=='3'" :id="'3Div' + index" class="gradePlanDiv">
+              <span><img :id="'Arrow' + index" class="gradePlanImg" @click="tableSlideToggle(index)" :src="arrowright"></span>
+              <span class="gradePlanTitle1">{{item.className}}</span>
+              <span class="gradePlanTitle2">班主任：{{item.classHeadmaster}}</span>
+              <span class="gradePlanTitle3">教室：{{item.classroom}}</span>
+              <span><button class="gradeButton" @click="save(index)" :id="'save'+index" style="display: none">保存</button></span>
+              <span><button class="gradeButton" @click="reset(index)" :id="'reset'+index" style="display: none">重置</button></span>
+            </div>
+            <div v-if="item.yearType=='3'" :id="'Table'+index" style="display: none">
+              <table class="arrangeTable">
+                <thead>
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                  <th width="10%">节次/周次</th>
+                  <th width="14.8%">星期一</th>
+                  <th width="14.8%">星期二</th>
+                  <th width="14.8%">星期三</th>
+                  <th width="14.8%">星期四</th>
+                  <th width="14.8%">星期五</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                  <td>第一~二节<br>8:30-10:00</td>
+                  <td id="1-1@firstCourse@3" v-html="courseList[index].firstCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="1-2@secondCourse@3" v-html="courseList[index].secondCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="1-3@thirdCourse@3" v-html="courseList[index].thirdCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="1-4@fourthCourse@3" v-html="courseList[index].fourthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="1-5@fifthCourse@3" v-html="courseList[index].fifthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
                 </tr>
-            </tbody>
-        </table>-->
+                <tr>
+                  <td>第三~四节<br>10:20-11:50</td>
+                  <td id="2-1@sixthCourse@3" v-html="courseList[index].sixthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="2-2@seventhCourse@3" v-html="courseList[index].seventhCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="2-3@eightCourse@3" v-html="courseList[index].eightCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="2-4@ninthCourse@3" v-html="courseList[index].ninthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="2-5@tenthCourse@3" v-html="courseList[index].tenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                </tr>
+                <tr>
+                  <td>第五~六节<br>14:30-16:00</td>
+                  <td id="3-1@eleventhCourse@3" v-html="courseList[index].eleventhCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="3-2@twelfthCourse@3" v-html="courseList[index].twelfthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="3-3@thirteenthCourse@3" v-html="courseList[index].thirteenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="3-4@fourteenthCourse@3" v-html="courseList[index].fourteenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td v-html="">安全教育</td>
+                </tr>
+                <tr>
+                  <td>第八~九节<br>17:30-19:05</td>
+                  <td id="4-1@fifteenthCourse@3" v-html="courseList[index].fifteenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="4-2@sixteenthCourse@3" v-html="courseList[index].sixteenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="4-3@seventeenthCourse@3" v-html="courseList[index].seventeenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="4-4@eighteenthCourse@3" v-html="courseList[index].eighteenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>第十~十一节<br>19:20-20:55</td>
+                  <td id="5-1@nineteenthCourse@3" v-html="courseList[index].nineteenthCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="5-2@twentiethCourse@3" v-html="courseList[index].twentiethCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="5-3@twentyfirstCourse@3" v-html="courseList[index].twentyfirstCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td id="5-4@twentytwoCourse@3" v-html="courseList[index].twentytwoCourse" draggable="true" @drop="drop($event,index)" @dragover="allowdrop($event)" @dragstart="drag($event,index)"></td>
+                  <td></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
         <Modal
             v-model="modal1"
             width="400"
@@ -100,413 +150,762 @@
             :styles="{top:'10rem'}">
             <!--对话框宽400px，显示隐藏绑定属性变量，不允许点击遮罩层关闭对话框，对话框距离页面顶端10rem-->
             <div style="font-size: 1.1rem;text-align: center;">
-                <p>您确定调换该两门课程吗?</p>
+                <p>确定重置已做的调整吗？</p>
             </div>
             <div slot="footer" style="text-align: center">
-                <button id="modalBtn" @click="exchangeClick()">确定</button>
-                <button id="modalBtn" @click="modal1 = false">取消</button>
+              <button id="modalBtn" @click="resetOK()">确定</button>
+              <button id="modalBtn" @click="modal1 = false">取消</button>
             </div>
         </Modal>
-        <Modal
-            v-model="modal2"
-            width="400"
-            :mask-closable="false"
-            id="modalBody"
-            :styles="{top:'10rem'}">
-            <!--对话框宽400px，显示隐藏绑定属性变量，不允许点击遮罩层关闭对话框，对话框距离页面顶端10rem-->
-            <div style="font-size: 1.1rem;text-align: center;">
-                <p>{{ errorMessage }}</p>
-            </div>
-            <div slot="footer" style="text-align: center">
-                <button id="modalBtn" @click="modal2 = false">确定</button>
-            </div>
-        </Modal>
+      <Modal
+        v-model="modal2"
+        width="400"
+        :mask-closable="false"
+        id="modalBody"
+        :styles="{top:'10rem'}">
+        <!--对话框宽400px，显示隐藏绑定属性变量，不允许点击遮罩层关闭对话框，对话框距离页面顶端10rem-->
+        <div style="font-size: 1.1rem;text-align: center;">
+          <p>确定保存已做的调整吗？</p>
+        </div>
+        <div slot="footer" style="text-align: center">
+          <button id="modalBtn" @click="saveOK()">确定</button>
+          <button id="modalBtn" @click="modal2 = false">取消</button>
+        </div>
+      </Modal>
     </div>
 
 </template>
 
 <script>
+  import arrowright from "./images/arrowright.png"
+  import arrowdown from "./images/arrowdown.png"
     export default {
         name: 'couArrangeTable_tableDiv',
         data () {
             return {
-                checked: 0,
-//                纪录选择的课程数量
-                modal1: false,
-//                对话框显隐
-                modal2: false,
-                errorMessage: "",
-//                复用对话框内容
-                items:[
-                    /*{   "className": '高职2013级1班（45人）', "firstCourse":'语文+教师姓名+（教室）+（时间）',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"
-                    },
-                    {   "className": '高职2013级2班（47人）', "firstCourse":'2',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '高职2014级1班（57人）', "firstCourse":'3',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '高职2014级2班（54人）', "firstCourse":'4',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '高职2015级1班（52人）', "firstCourse":'5',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '高职2015级2班（53人）', "firstCourse":'6',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '高职2016级1班（55人）', "firstCourse":'7',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '高职2016级2班（54人）', "firstCourse":'8',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '中职2015级1班（55人）', "firstCourse":'9',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '中职2015级2班（59人）', "firstCourse":'10',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '中职2015级3班（63人）', "firstCourse":'11',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '中职2015级4班（57人）', "firstCourse":'12',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '中职2015级5班（57人）', "firstCourse":'13',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '中职2016级1班（71人）', "firstCourse":'14',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '中职2016级2班（73人）', "firstCourse":'15',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '中职2016级3班（74人）', "firstCourse":'16',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"},
-                    {   "className": '中职2016级4班（74人）', "firstCourse":'17',
-                        "secondCourse": "数学",
-                        "thirdCourse": "英语",
-                        "fourthCourse": "英语",
-                        "fifthCourse": "英语",
-                        "sixthCourse": "英语",
-                        "seventhCourse": "英语",
-                        "eighthCourse": "英语",
-                        "ninthCourse": "英语",
-                        "tenthCourse": "英语",
-                        "eleventhCourse": "英语",
-                        "twelfthCourse": "英语",
-                        "thirteenthCourse": "英语",
-                        "fourteenthCourse": "英语",
-                        "fifteenthCourse": "英语",
-                        "classroomName": "C105",
-                        "classHeadmaster": "张三"}*/
-                ]
-//                排课结果课表
-            }
+              resetIndex:'',
+              saveIndex:'',
+              dragIndex:'',
+              srcev:'',
+              arrowright:arrowright,
+              arrowdown:arrowdown,
+              modal1: false,
+              modal2: false,
+              classList:[
+//                 {classId:'8222',yearType:'5',className:'高2015级4班',classHeadmaster:'高老师',classroom:'1-205'},
+//                {classId:'8222',yearType:'3',className:'高2015',classHeadmaster:'高老师',classroom:'1-205'},
+//                {classId:'8222',yearType:'3',className:'高2015',classHeadmaster:'高老师',classroom:'1-205'},
+//                {classId:'8222',yearType:'5',className:'高2015',classHeadmaster:'高老师',classroom:'1-205'},
+//                {classId:'8222',yearType:'5',className:'高2015',classHeadmaster:'高老师',classroom:'1-205'},
+//                {classId:'8222',yearType:'5',className:'高2015',classHeadmaster:'高老师',classroom:'1-205'},
+//                {classId:'8222',yearType:'5',className:'高2015',classHeadmaster:'高老师',classroom:'1-205'}
+              ],
+              courseList:[
+                  { firstCourse: '', secondCourse: '', thirdCourse: '', fourthCourse: '', fifthCourse: '', sixthCourse: '', seventhCourse: '',
+                eightCourse: '', ninthCourse: '', tenthCourse: '', eleventhCourse: '', twelfthCourse: '', thirteenthCourse: '', fourteenthCourse: '',
+                fifteenthCourse:'', sixteenthCourse:'', seventeenthCourse:'', eighteenthCourse:'', nineteenthCourse:'', twentiethCourse:'',
+                twentyfirstCourse:'', twentytwoCourse:''},
+                { firstCourse: '', secondCourse: '', thirdCourse: '', fourthCourse: '', fifthCourse: '', sixthCourse: '', seventhCourse: '',
+                  eightCourse: '', ninthCourse: '', tenthCourse: '', eleventhCourse: '', twelfthCourse: '', thirteenthCourse: '', fourteenthCourse: '',
+                  fifteenthCourse:'', sixteenthCourse:'', seventeenthCourse:'', eighteenthCourse:'', nineteenthCourse:'', twentiethCourse:'',
+                  twentyfirstCourse:'', twentytwoCourse:''}
+                ],//存放处理后的课程
+              classcourseList:[
+//                  {courses:[
+//                    {classroomID: "2-202", courseId: "02017-201810121.2-202", courseLinkId: "5-2", courseName: "哲学与人生", isBigclass: 1, teacher: "罗晋", weeks: "1-9"},
+//                    {classroomID: "2-202", courseId: "02017-201810121.2-202", courseLinkId: "1-5", courseName: "哲学与人生", isBigclass: 1, teacher: "罗晋", weeks: "1-9"},
+//                    {classroomID: "2-202", courseId: "02017-201810121.2-202", courseLinkId: "5-3", courseName: "营养与健康", isBigclass: 1, teacher: "东坡", weeks: "11-19"}
+//                ]}
+                ],//存放原始课程以供还原和保存
+              oindex:'',
+              changeCourseList: []
+        }
         },
         beforeMount: function() {
-            this.$http.post('./autoArrangeSeeCurriculum',{
-                "yearSemester": "",
-                "week": ""
-            },{
+            this.$http.post('./autoArrangeSeeCurriculum',{},{
                 "Content-Type":"application/json"
             }).then(function(response){
-                this.items = response.body;
-//                获取课表
+                this.classList = response.body;
+                for(var i=0;i<this.classList.length;i++)
+                {
+                    this.courseList.push({ firstCourse: '', secondCourse: '', thirdCourse: '', fourthCourse: '', fifthCourse: '', sixthCourse: '', seventhCourse: '',
+                      eightCourse: '', ninthCourse: '', tenthCourse: '', eleventhCourse: '', twelfthCourse: '', thirteenthCourse: '', fourteenthCourse: '',
+                      fifteenthCourse:'', sixteenthCourse:'', seventeenthCourse:'', eighteenthCourse:'', nineteenthCourse:'', twentiethCourse:'',
+                      twentyfirstCourse:'', twentytwoCourse:''});
+                    this.classcourseList.push({courses:[]});
+                }
             },function(error){
                 this.$Message.error("连接失败，请重试！");
             });
-        }, //页面dom加载前获取后端数据
-        methods: {
-//        调课预留功能，由于需求问题暂时搁置，以下为纯前端交换代码无后端交互
-            exchangeClick: function(){
-                var td = document.getElementsByTagName("td");
-                var td1 = null;
-                var td2 = null;
-                var tdNum = 0;
-//                纪录选中课程数量
-                var buffer = null;
-                for(var i = 0;i < td.length;i++){
-                    if((td[i].style.backgroundColor == "lightskyblue" || td[i].style.backgroundColor == "rgb(135, 206, 250)") && tdNum == 0){
-//                    根据背景色获取选中课程
-                        td1 = td[i];
-                        tdNum = 1;
-                    }else if((td[i].style.backgroundColor == "lightskyblue" || td[i].style.backgroundColor == "rgb(135, 206, 250)") && tdNum == 1){
-                        td2 = td[i];
-                        tdNum = 2;
+        },
+        methods:
+          {
+            DivCtl:function (msg) {//年级div折叠
+              var div = document.getElementById(msg+'Div');
+              var img = document.getElementById(msg+'Arrow');
+              if(div.style.display == "none")
+              {
+                img.src = this.arrowdown;
+                div.style.display = "inline";
+              }else{
+                img.src = this.arrowright;
+                div.style.display = "none";
+              }
+            },
+            tableSlideToggle:function (index) {//课表折叠
+              this.oindex = index;
+              this.generateClass();
+              var table = document.getElementById('Table'+index);
+              var tables = table.getElementsByTagName("table");
+              var img = document.getElementById('Arrow'+index);
+              if(table.style.display == "none")
+              {
+                for(var i = 1;i<=5;i++)
+                {
+                  for(var j=1;j<=5;j++)
+                  {
+                    if(tables[0].rows[i].cells[j].style.backgroundColor !="")
+                    {
+                      img.src = this.arrowdown;
+                      table.style.display = "inline";
+                      return;
+                    }
+                  }
+                }
+                this.$Loading.start();
+                this.$http.post('./getNextSemesterClassCourse',this.classList[index].classId,{
+                }).then(function(response){
+                  //this.courseList[index].courses = response.body;
+                  this.classcourseList[index].courses = response.body;
+                  this.oindex = index;
+                  this.generateClass();
+                  this.$Loading.finish();
+                },function(error){
+                  this.$Loading.error();
+                  this.$Message.error("网络错误,请稍后重试！");
+                });
+                img.src = this.arrowdown;
+                table.style.display = "inline";
+              }else{
+                img.src = this.arrowright;
+                table.style.display = "none";
+              }
+            },
+            drop:function (event,index) {//课程单元格拖动结束
+              event.preventDefault();
+              if(this.dragIndex != index)
+              {
+                this.$Message.warning("不同班级之间不能调整！");
+                return;
+              }
+              if(event.target.innerHTML == event.dataTransfer.getData("text/html"))
+              {
+                this.$Message.warning("相同的课程无需调整！");
+                return;
+              }
+              if(this.srcev.target.innerHTML.split("<br>").length % 4 == 0)
+              {
+                  if(event.target.id.split("-")[0] == '2'||event.target.id.split("-")[0] == '4'||event.target.id.split("-")[0] == '5')
+                  {
+                      this.$Message.error("大课只能调整到一~二或五~六节！");
+                      return;
+                  }
+              }else if(event.target.innerHTML.split("<br>").length %4 ==0)
+              {
+                if(this.srcev.target.id.split("-")[0] == '2'||this.srcev.target.id.split("-")[0] == '4'||this.srcev.target.id.split("-")[0] == '5')
+                {
+                  this.$Message.error("大课只能被调整到一~二或五~六节！");
+                  return;
+                }
+              }
+              if(event.target.id != this.srcev.target.id)
+              {
+                var idn1 = this.srcev.target.id.split("@")[1];
+                var idn2 = event.target.id.split("@")[1];
+                this.changeLinkId(index,this.srcev.target.id.split("@")[0],event.target.id.split("@")[0]);
+                this.courseList[index][idn1] = event.target.innerHTML;
+                this.srcev.target.innerHTML = event.target.innerHTML;
+                event.target.innerHTML = event.dataTransfer.getData("text/html");
+                this.courseList[index][idn2] = event.target.innerHTML;
+                event.target.style.backgroundColor = "#1fa573";
+                event.target.style.color = "white";
+                this.srcev.target.style.backgroundColor = "#1fa573";
+                this.srcev.target.style.color = "white";
+                var buttonr = document.getElementById('reset'+index);
+                var buttons = document.getElementById('save'+index);
+                buttonr.style.display = "inline";
+                buttons.style.display = "inline";
+              }
+            },
+            allowdrop:function (event) {//拖动中
+                event.preventDefault();
+            },
+            drag:function (event,index) {//拖动开始
+              this.dragIndex = index;
+              this.srcev = event;
+              event.dataTransfer.setData("text/html", event.target.innerHTML);
+            },
+            reset:function (index) {
+              this.resetIndex = index;
+              this.modal1 = true;
+            },
+            resetOK:function () {//重置拖动结果
+              var div = document.getElementById('Table'+this.resetIndex);
+              var table = div.getElementsByTagName("table");
+              this.$http.post('./getNextSemesterClassCourse',this.classList[this.resetIndex].classId,{
+              }).then(function(response){
+                this.classcourseList[this.resetIndex].courses.splice(0,this.classcourseList[this.resetIndex].courses.length);
+                for(var i = 1;i<=5;i++)
+                {
+                  for(var j=1;j<=5;j++)
+                  {
+                    if(table[0].rows[i].cells[j].style.backgroundColor !="")
+                    {
+                      //table[0].rows[i].cells[j].innerHTML = "";
+                      table[0].rows[i].cells[j].style.backgroundColor = "";
+                      table[0].rows[i].cells[j].style.color = "black";
+                    }
+                  }
+                }
+                this.classcourseList[this.resetIndex].courses = response.body;
+                this.oindex = this.resetIndex;
+                this.generateClass();
+                this.modal1 = false;
+                var buttonr = document.getElementById('reset'+this.resetIndex);
+                var buttons = document.getElementById('save'+this.resetIndex);
+                buttonr.style.display = "none";
+                buttons.style.display = "none";
+                this.$Message.success("已成功重置！");
+              },function(error){
+                this.$Message.error("网络错误,重置失败！");
+              });
+            },
+            save:function (index) {
+              this.saveIndex = index;
+              this.modal2 = true;
+            },
+            saveOK:function () {//保存排课结果
+              var div = document.getElementById('Table'+this.saveIndex);
+              var table = div.getElementsByTagName("table");
+              if(table.length == 1)
+              {
+                  this.changeCourseList.splice(0,this.changeCourseList.length);
+              }else
+              {
+                this.$Message.error("发生未知错误，请刷新重试！");
+                return;
+              }
+              for(var i = 1;i<=5;i++)
+              {
+                for(var j=1;j<=5;j++)
+                {
+                  if(table[0].rows[i].cells[j].style.backgroundColor !="") {
+                    for(var k=0;k<this.classcourseList[this.saveIndex].courses.length;k++)
+                    {
+                        if(this.classcourseList[this.saveIndex].courses[k].courseLinkId == table[0].rows[i].cells[j].id.split("@")[0])
+                        {
+                          this.changeCourseList.push(this.classcourseList[this.saveIndex].courses[k]);
+                        }
+                    }
+                  }
+                }
+              }
+              this.$http.post('./arrangedCourseAdjust',
+                this.changeCourseList
+              ,{//调整保存
+                "Content-Type":"application/json"
+              }).then(function(response){
+                  if(response.body.result!=1)
+                  {
+                    this.modal2 = false;
+                    this.$Message.error("保存失败，请重试！");
+                    return;
+                  }
+                for(var i = 1;i<=5;i++)
+                {
+                  for(var j=1;j<=5;j++)
+                  {
+                    if(table[0].rows[i].cells[j].style.backgroundColor !="") {
+                      table[0].rows[i].cells[j].style.backgroundColor = "";
+                      table[0].rows[i].cells[j].style.color = "black";
+                    }}}
+                var buttonr = document.getElementById('reset'+this.saveIndex);
+                var buttons = document.getElementById('save'+this.saveIndex);
+                buttonr.style.display = "none";
+                buttons.style.display = "none";
+                this.modal2 = false;
+                this.$Message.success("保存成功！");
+              },function(error){
+                this.$Message.error("连接失败，请重试！");
+              });
+            },
+            changeLinkId:function (index,id1,id2) {
+                for(var i=0;i<this.classcourseList[index].courses.length;i++)
+                {
+                    if(this.classcourseList[index].courses[i].courseLinkId == id1)
+                    {
+                      this.classcourseList[index].courses[i].courseLinkId = id2;
+                    }else if(this.classcourseList[index].courses[i].courseLinkId == id2)
+                    {
+                      this.classcourseList[index].courses[i].courseLinkId = id1;
                     }
                 }
-                if(tdNum < 2 ){
-//                    验证选中课程数量
-                    this.modal1 = false;
-//                    关闭原有对话框
-                    this.errorMessage = "请选择需要调换的两门课程！";
-                    this.modal2 = true;
-//                    打开错误提示
-                }else {
-                    buffer = td1.innerHTML;
-                    td1.innerHTML = td2.innerHTML;
-                    td2.innerHTML = buffer;
-//                    交换课程
-                    for (var i = 0; i < td.length; i++) {
-                        td[i].style.background = "white";
+            },
+            classClear:function () {
+              this.courseList[this.oindex].firstCourse='';
+              this.courseList[this.oindex].secondCourse= '';
+              this.courseList[this.oindex].thirdCourse= '';
+              this.courseList[this.oindex].fourthCourse= '';
+              this.courseList[this.oindex].fifthCourse= '';
+              this.courseList[this.oindex].sixthCourse= '';
+              this.courseList[this.oindex].seventhCourse= '';
+              this.courseList[this.oindex].eightCourse='';
+              this.courseList[this.oindex].ninthCourse= '';
+              this.courseList[this.oindex].tenthCourse= '';
+              this.courseList[this.oindex].eleventhCourse= '';
+              this.courseList[this.oindex].twelfthCourse= '';
+              this.courseList[this.oindex].thirteenthCourse= '';
+              this.courseList[this.oindex].fourteenthCourse= '';
+              this.courseList[this.oindex].fifteenthCourse='';
+              this.courseList[this.oindex].sixteenthCourse='';
+              this.courseList[this.oindex].seventeenthCourse='';
+              this.courseList[this.oindex].eighteenthCourse='';
+              this.courseList[this.oindex].nineteenthCourse='';
+              this.courseList[this.oindex].twentiethCourse='';
+              this.courseList[this.oindex].twentyfirstCourse='';
+              this.courseList[this.oindex].twentytwoCourse='';
+            },
+            generateClass:function () {
+              this.classClear();
+              for(var i=0;i <this.classcourseList[this.oindex].courses.length;i++)
+              {
+                var Course = this.classcourseList[this.oindex].courses[i];
+                switch (Course.courseLinkId)
+                {
+                  case "1-1":
+                    if(this.courseList[this.oindex].firstCourse !=""&&Course.weeks != this.courseList[this.oindex].firstCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].firstCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].firstCourse = this.courseList[this.oindex].firstCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].firstCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].firstCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
                     }
-//                    恢复背景色
-                    this.checked = 0;
-//                    选中课程数量归零
-                    this.$Message.success("调换成功！",2);
-                    this.modal1 = false;
-//                    关闭原有对话框
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].firstCourse = this.courseList[this.oindex].firstCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "1-2":
+                    if(this.courseList[this.oindex].secondCourse !=""&&Course.weeks != this.courseList[this.oindex].secondCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].secondCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].secondCourse = this.courseList[this.oindex].secondCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].secondCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].secondCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].secondCourse = this.courseList[this.oindex].secondCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "1-3":
+                    if(this.courseList[this.oindex].thirdCourse !=""&&Course.weeks != this.courseList[this.oindex].thirdCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].thirdCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].thirdCourse = this.courseList[this.oindex].thirdCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].thirdCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].thirdCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].thirdCourse = this.courseList[this.oindex].thirdCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "1-4":
+                    if(this.courseList[this.oindex].fourthCourse !=""&&Course.weeks != this.courseList[this.oindex].fourthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].fourthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].fourthCourse = this.courseList[this.oindex].fourthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].fourthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].fourthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].fourthCourse = this.courseList[this.oindex].fourthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "1-5":
+                    if(this.courseList[this.oindex].fifthCourse !=""&&Course.weeks != this.courseList[this.oindex].fifthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].fifthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].fifthCourse = this.courseList[this.oindex].fifthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].fifthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].fifthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].fifthCourse = this.courseList[this.oindex].fifthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "2-1":
+                    if(this.courseList[this.oindex].sixthCourse !=""&&Course.weeks != this.courseList[this.oindex].sixthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].sixthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].sixthCourse = this.courseList[this.oindex].sixthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].sixthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].sixthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].sixthCourse = this.courseList[this.oindex].sixthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "2-2":
+                    if(this.courseList[this.oindex].seventhCourse !=""&&Course.weeks != this.courseList[this.oindex].seventhCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].seventhCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].seventhCourse = this.courseList[this.oindex].seventhCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].seventhCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].seventhCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].seventhCourse = this.courseList[this.oindex].seventhCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "2-3":
+                    if(this.courseList[this.oindex].eightCourse !=""&&Course.weeks != this.courseList[this.oindex].eightCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].eightCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].eightCourse = this.courseList[this.oindex].eightCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].eightCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].eightCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].eightCourse = this.courseList[this.oindex].eightCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "2-4":
+                    if(this.courseList[this.oindex].ninthCourse !=""&&Course.weeks != this.courseList[this.oindex].ninthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].ninthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].ninthCourse = this.courseList[this.oindex].ninthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].ninthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].ninthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].ninthCourse = this.courseList[this.oindex].ninthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "2-5":
+                    if(this.courseList[this.oindex].tenthCourse !=""&&Course.weeks != this.courseList[this.oindex].tenthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].tenthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].tenthCourse = this.courseList[this.oindex].tenthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].tenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].tenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].tenthCourse = this.courseList[this.oindex].tenthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "3-1":
+                    if(this.courseList[this.oindex].eleventhCourse !=""&&Course.weeks != this.courseList[this.oindex].eleventhCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].eleventhCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].eleventhCourse = this.courseList[this.oindex].eleventhCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].eleventhCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].eleventhCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].eleventhCourse = this.courseList[this.oindex].eleventhCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "3-2":
+                    if(this.courseList[this.oindex].twelfthCourse !=""&&Course.weeks != this.courseList[this.oindex].twelfthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].twelfthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].twelfthCourse = this.courseList[this.oindex].twelfthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].twelfthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].twelfthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].twelfthCourse = this.courseList[this.oindex].twelfthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "3-3":
+                    if(this.courseList[this.oindex].thirteenthCourse !=""&&Course.weeks != this.courseList[this.oindex].thirteenthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].thirteenthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].thirteenthCourse = this.courseList[this.oindex].thirteenthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].thirteenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].thirteenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].thirteenthCourse = this.courseList[this.oindex].thirteenthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "3-4":
+                    if(this.courseList[this.oindex].fourteenthCourse !=""&&Course.weeks != this.courseList[this.oindex].fourteenthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].fourteenthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].fourteenthCourse = this.courseList[this.oindex].fourteenthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].fourteenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].fourteenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].fourteenthCourse = this.courseList[this.oindex].fourteenthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "4-1":
+                    if(this.courseList[this.oindex].fifteenthCourse !=""&&Course.weeks != this.courseList[this.oindex].fifteenthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].fifteenthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].fifteenthCourse = this.courseList[this.oindex].fifteenthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].fifteenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].fifteenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].fifteenthCourse = this.courseList[this.oindex].fifteenthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "4-2":
+                    if(this.courseList[this.oindex].sixteenthCourse !=""&&Course.weeks != this.courseList[this.oindex].sixteenthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].sixteenthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].sixteenthCourse = this.courseList[this.oindex].sixteenthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].sixteenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].sixteenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].sixteenthCourse = this.courseList[this.oindex].sixteenthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "4-3":
+                    if(this.courseList[this.oindex].seventeenthCourse !=""&&Course.weeks != this.courseList[this.oindex].seventeenthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].seventeenthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].seventeenthCourse = this.courseList[this.oindex].seventeenthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].seventeenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].seventeenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].seventeenthCourse = this.courseList[this.oindex].seventeenthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "4-4":
+                    if(this.courseList[this.oindex].eighteenthCourse !=""&&Course.weeks != this.courseList[this.oindex].eighteenthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].eighteenthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].eighteenthCourse = this.courseList[this.oindex].eighteenthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].eighteenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].eighteenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].eighteenthCourse = this.courseList[this.oindex].eighteenthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "5-1":
+                    if(this.courseList[this.oindex].nineteenthCourse !=""&&Course.weeks != this.courseList[this.oindex].nineteenthCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].nineteenthCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].nineteenthCourse = this.courseList[this.oindex].nineteenthCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].nineteenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].nineteenthCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].nineteenthCourse = this.courseList[this.oindex].nineteenthCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "5-2":
+                    if(this.courseList[this.oindex].twentiethCourse !=""&&Course.weeks != this.courseList[this.oindex].twentiethCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].twentiethCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].twentiethCourse = this.courseList[this.oindex].twentiethCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].twentiethCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].twentiethCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].twentiethCourse = this.courseList[this.oindex].twentiethCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "5-3":
+                    if(this.courseList[this.oindex].twentyfirstCourse !=""&&Course.weeks != this.courseList[this.oindex].twentyfirstCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].twentyfirstCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].twentyfirstCourse = this.courseList[this.oindex].twentyfirstCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].twentyfirstCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].twentyfirstCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].twentyfirstCourse = this.courseList[this.oindex].twentyfirstCourse+'<br>'+'大课';
+                    }
+                    break;
+                  case "5-4":
+                    if(this.courseList[this.oindex].twentytwoCourse !=""&&Course.weeks != this.courseList[this.oindex].twentytwoCourse.split("<br>")[2].split(",")[0])
+                    {
+                      if(Course.courseName != this.courseList[this.oindex].twentytwoCourse.split("<br>")[0])
+                      {
+                        this.courseList[this.oindex].twentytwoCourse = this.courseList[this.oindex].twentytwoCourse+'<br>'+Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                      }else
+                      {
+                        this.courseList[this.oindex].twentytwoCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+'1-19,'+Course.classroomID;
+                      }
+                    }else
+                    {
+                      this.courseList[this.oindex].twentytwoCourse = Course.courseName+'<br>'+Course.teacher+'<br>'+Course.weeks+','+Course.classroomID;
+                    }
+                    if(Course.isBigclass == 1)
+                    {
+                      this.courseList[this.oindex].twentytwoCourse = this.courseList[this.oindex].twentytwoCourse+'<br>'+'大课';
+                    }
+                    break;
+                  default:
+                    break;
                 }
-            }, //提交调课
-            courseClick: function(name,index){
-                /*var td = document.getElementById(name+index);
-                console.log(td.style.backgroundColor);
-                if (td.style.backgroundColor == "lightskyblue" || td.style.backgroundColor == "rgb(135, 206, 250)") {
-//                取消选中课程，恢复背景色，选中课程数量减一
-                    td.style.backgroundColor = "white";
-                    this.checked--;
-                } else {
-                    if(this.checked < 2) {
-//                    选中课程，改变背景色，选中课程数量加一
-                        td.style.backgroundColor = "lightskyblue";
-                        this.checked++;
-                    }else{
-                        this.errorMessage = "已选择了需要调换的两门课程！";
-                        this.modal2 = true;
-//                        打开错误提示
-                    }
-                }*/
-            }//选择需要调换的课程
-        }
+              }
+            }
+          },
     }
 </script>
 

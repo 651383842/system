@@ -20,61 +20,65 @@
             <div id="tableRight">
                 <span id="subtitle2">{{subtitle2}}</span>
                 <div id="tableDiv">
-                  <table id="certificateTable">
-                    <tr class="headTr">
-                      <td>证书类型</td>
-                      <td>证书编号</td>
-                      <td>证书名称</td>
-                      <td>证书等级</td>
-                      <td>评审机构</td>
-                      <td>评审时间</td>
-                      <td>操作</td>
-                    </tr>
-                    <!--循环生成信息，index作为data数组的下标索引，将index用作id的一部分，便于准确定位操作DOM，key用于绑定课程信息，保证索引不随着数组元素增删自动发生变化-->
-                    <tr v-for="(certificate,index) in certificates" :id="'InputTr'+index" :key="certificate.certificateId">
-                      <td>
-                        <select :id="'certificateSelect'+index" v-model="certificate.certificateType" disabled="disabled">
-                          <!--<option>请选择证书类型</option>-->
-                          <option v-for="certificateType in certificateTypes">{{ certificateType }}</option>
-                        </select>
-                      </td>
-                      <td><input onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" v-model.lazy="certificate.certificateNum" readonly></td>
-                      <td><input v-model.lazy="certificate.certificateName" onkeyup="this.value=this.value.replace(/\s+/g,'')"  readonly></td>
-                      <td>
-                        <!--<input v-model.lazy="certificate.certificateLevel" onkeyup="this.value=this.value.replace(/\s+/g,'')"  readonly>-->
-                        <select :id="'certificateSelect2'+index" v-model="certificate.certificateLevel" disabled="disabled">
-                          <!--<option>请选择证书等级</option>-->
-                          <option v-for="certificateLevel in certificateLevels">{{ certificateLevel }}</option>
-                        </select>
-                      </td>
-                      <td><input v-model.lazy="certificate.reviewIstitution" onkeyup="this.value=this.value.replace(/\s+/g,'')"  readonly></td>
-                      <td>
-                        <!--<input v-model.lazy="certificate.reviewTime" onkeyup="this.value=this.value.replace(/\s+/g,'')"  readonly>-->
-                        <Date-picker  v-model.lazy="certificate.reviewTime" type="date" placeholder="选择日期" style="width: 6rem;margin-left: 1rem;"></Date-picker>
-                      </td>
+                    <table class="headTr">
+                      <thead>
+                      <tr>
+                        <th width="%20">证书类型</th>
+                        <th width="%20">证书编号</th>
+                        <th width="%15">证书名称</th>
+                        <th width="%15">证书等级</th>
+                        <th width="%10">评审机构</th>
+                        <th width="%10">评审时间</th>
+                        <th width="%10">操作</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <!--循环生成信息，index作为data数组的下标索引，将index用作id的一部分，便于准确定位操作DOM，key用于绑定课程信息，保证索引不随着数组元素增删自动发生变化-->
+                      <tr v-for="(certificate,index) in certificates" :id="'InputTr'+index" :key="certificate.certificateId">
+                        <td>
+                          <select :id="'certificateSelect'+index" v-model="certificate.certificateType" disabled="disabled">
+                            <!--<option>请选择证书类型</option>-->
+                            <option v-for="certificateType in certificateTypes">{{ certificateType }}</option>
+                          </select>
+                        </td>
+                        <td><input onkeyup="value=value.replace(/[^\w\.\/]/ig,'')" v-model.lazy="certificate.certificateNum" readonly></td>
+                        <td><input v-model.lazy="certificate.certificateName" onkeyup="this.value=this.value.replace(/\s+/g,'')"  readonly></td>
+                        <td>
+                          <!--<input v-model.lazy="certificate.certificateLevel" onkeyup="this.value=this.value.replace(/\s+/g,'')"  readonly>-->
+                          <select :id="'certificateSelect2'+index" v-model="certificate.certificateLevel" disabled="disabled">
+                            <!--<option>请选择证书等级</option>-->
+                            <option v-for="certificateLevel in certificateLevels">{{ certificateLevel }}</option>
+                          </select>
+                        </td>
+                        <td><input v-model.lazy="certificate.reviewIstitution" onkeyup="this.value=this.value.replace(/\s+/g,'')"  readonly></td>
+                        <td>
+                          <!--<input v-model.lazy="certificate.reviewTime" onkeyup="this.value=this.value.replace(/\s+/g,'')"  readonly>-->
+                          <Date-picker  v-model.lazy="certificate.reviewTime" type="date" placeholder="选择日期" style="width: 6rem;margin-left: 1rem;"></Date-picker>
+                        </td>
 
-                      <td class="operationTd">
-                        <!--编辑功能，初始显示，编辑时隐藏-->
-                        <img title="编辑" :id="'EditImg'+index" src="./images/edit.png" @click="editClick(index)">
-                        <!--保存功能，初始隐藏，编辑时显示-->
-                        <img title="保存" :id="'SaveImg'+index" class="saveImg" src="./images/save.png" @click="operationClick(index,'save')">
-                        <!--取消编辑并重置，初始隐藏，编辑时显示-->
-                        <img title="取消" :id="'RestoreImg'+index" class="restoreImg" src="./images/restore.png" @click="operationClick(index,'restore')">
-                        <!--删除功能，初始显示，编辑时隐藏-->
-                        <img title="删除" :id="'DeleteImg'+index" src="./images/delete.png" @click="operationClick(index,'delete')">
-                      </td>
-                    </tr>
-                    <tr>
-                      <!--增加功能，通过vue增加循环数组元素，但input DOM不会即时创建，所以暂时无法增加的同时处于编辑状态-->
-                      <td><img title="添加" src="./images/add.png" @click="addClick(certificates)"></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                  </table>
+                        <td class="operationTd">
+                          <!--编辑功能，初始显示，编辑时隐藏-->
+                          <img title="编辑" :id="'EditImg'+index" src="./images/edit.png" @click="editClick(index)">
+                          <!--保存功能，初始隐藏，编辑时显示-->
+                          <img title="保存" :id="'SaveImg'+index" class="saveImg" src="./images/save.png" @click="operationClick(index,'save')">
+                          <!--取消编辑并重置，初始隐藏，编辑时显示-->
+                          <img title="取消" :id="'RestoreImg'+index" class="restoreImg" src="./images/restore.png" @click="operationClick(index,'restore')">
+                          <!--删除功能，初始显示，编辑时隐藏-->
+                          <img title="删除" :id="'DeleteImg'+index" src="./images/delete.png" @click="operationClick(index,'delete')">
+                        </td>
+                      </tr>
+                      <tr>
+                        <!--增加功能，通过vue增加循环数组元素，但input DOM不会即时创建，所以暂时无法增加的同时处于编辑状态-->
+                        <td><img title="添加" src="./images/add.png" @click="addClick(certificates)"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                      </tbody>
+                    </table>
                 </div>
          </div>
             <Modal
@@ -98,7 +102,7 @@
         id="modalBody"
         :styles="{top:'10rem'}">
         <div style="font-size: 1.1rem;text-align: center;">
-          <p>您确定删除该课程吗？?</p>
+          <p>您确定要删除该资格证书吗？</p>
         </div>
         <div slot="footer" style="text-align: center">
           <button id="modalBtn" @click="deleteClick(operationIndex)">确定</button>
@@ -230,36 +234,15 @@
 //        取消修改,重置数据,退出编辑
           restoreClick: function(index){
             location.reload();
-//            if(confirm("您确定取消编辑并重置该课程信息吗？")){
-//              var inputTr = document.getElementById("InputTr"+index);
-//              var input = inputTr.getElementsByTagName("input");
-//              var select = document.getElementById("certificateSelect"+index);
-//              var editImg = document.getElementById("EditImg"+index);
-//              var saveImg = document.getElementById("SaveImg"+index);
-//              var restoreImg = document.getElementById("RestoreImg"+index);
-//              var deleteImg = document.getElementById("DeleteImg"+index);
-//              var i = null;
-////            重置数据到value，需要后端返回原始数据，处理回调
-////              this.certificates.splice(index, 1, JSON.parse(JSON.stringify(this.buffer_classrooms[index])));
-////            使课程信息的输入标签变为不可输入，隐藏边框
-//              for(i = 0;i<input.length;i++){
-//                select.disabled = true;
-//                input[i].readOnly = true;
-//                input[i].style.border = "none";
-//              }
-//              editImg.style.display = "inline";
-//              saveImg.style.display = "none";
-//              deleteImg.style.display = "inline";
-//              restoreImg  .style.display = "none";
-//              this.modal1 = false;
-////            }
           },
           deleteClick: function(index){
-//          从data中的课程信息数组中删除
-//          预留功能,将data提交到后端,实现删除数据,处理回调
-//            if(confirm("您确定要删除该奖项吗？")){
-              console.log(this.certificates[index].certificateId);
-//              this.$http.post('../jsonphp/certificate.php',{
+            this.modal2 = false;
+            if(this.certificates[index].certificateType =="")
+            {
+              this.certificates.splice(index, 1);
+              this.$Message.success('操作成功！');
+              return;
+            }
               this.$http.post('./teacherManage/deleteTeacherCertInfo',{
                 "certificateId":this.certificates[index].certificateId
               },{"Content-Type":"application/json"}).then(function (response){
@@ -391,19 +374,19 @@
         text-align: center;
         border:0.15rem solid lightgrey;
     }/*左侧的CSS*/
-    #tableRight{
-        position: relative;
-        float:right;
-        top:2rem;
-        margin-left:7rem;
-        height:30rem;
-        width:65%;
-        background-color: white;
-        text-align: left;
-        border:0.15rem solid lightgrey;
-        padding-left:1rem;
-        padding-right:1rem;
-    }/*右侧的CSS*/
+  #tableRight{
+    position: relative;
+    float:right;
+    top:2rem;
+    margin-left:7rem;
+    height:30rem;
+    width:65%;
+    background-color: white;
+    text-align: left;
+    border:0.15rem solid lightgrey;
+    padding-left:1rem;
+    padding-right:1rem;
+  }/*右侧的CSS*/
     #tableDiv{
         border-top: 0.15rem solid #158064;
         position: relative;
@@ -505,6 +488,32 @@
       width:7rem;
       font-size: 0.6rem;
     }
+  table{
+    margin-top: 0.5rem;
+    width: 100%;
+    table-layout: fixed;
+    border: thin solid #E3E3E3;
+    border-collapse: collapse;
+
+  }
+  tr{
+    height:2.5rem;
+  }
+  thead{
+    border-bottom: thin solid #E3E3E3;
+    height: 2.5rem;
+    text-align: center;
+
+  }
+  td{
+    border-bottom: thin solid #E3E3E3;
+    height: 2.5rem;
+    text-align: center;
+
+  }
+  th{
+    font-size: 0.9rem;
+  }
   /*  input{
       border: 0.1rem solid #d4d4d9;
       border-radius: 0.3rem;

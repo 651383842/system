@@ -8,162 +8,129 @@
       </div>
     </div>
     <div class="dropDown">
-      <div id="fiveYearDiv">
-        <button class="amButtom" @click="fiveYearClick"><img id="fiveYearArrow" class="iconImg" :src="icon2"><span class="subtitle">五年制</span></button>
-        <!--按钮实现点击显示或隐藏-->
-        <table id="fiveYearTable" v-show="fiveYearTable">
-          <thead>
-            <tr class="headTr">
-            <td class="courseTd" style="cursor: pointer" @click="sortInfo('five','course')" title="排序">课程名称<span class="sortSpan">↓</span></td>
-              <!--点击按照拼音首字母a-z排序-->
-            <td>课程编号</td>
-            <td class="teacherTd" style="cursor: pointer" @click="sortInfo('five','teacher')" title="排序">任课教师<span class="sortSpan">↓</span></td>
-            <td>教师编号</td>
-            <td>班级</td>
-            <td class="portTd">
-              <button id="downloadButton" class="am-btn am-btn-success am-radius" @click="downloadClick">下载模版</button>
-              <Upload
-                id="upload"
-                ref="uploadForTextbook"
-                :data = "{ 'schoolYearType':'5'}"
-                :show-upload-list="false"
-                :format="['xls','xlsx']"
-                :max-size="2048"
-                :on-format-error="handleFormatError"
-                :on-exceeded-size="handleSize"
-                :on-success="handleSuccess"
-                :on-progress="handleProgress"
-                :on-error="handleError"
-                action="./courseAssociationManege/import">
-              <i-button type="ghost" id="importButton1">导入</i-button>
-              </Upload>
-            </td>
-          </tr>
-          </thead>
-          <tbody>
-            <!--循环生成课程信息，index作为data数组的下标索引，将index用作id的一部分，便于准确定位操作DOM，key用于绑定课程信息，保证索引不随着数组元素增删自动发生变化-->
-            <tr v-for="(fiveCourse,index) in fiveCourses" :id="'fiveInputTr'+index" :key="fiveCourse.id">
-              <td>
-                <select v-model="fiveCourse.number" disabled @change="courseChange(fiveCourses,index,'five')">
-                  <option disabled value="">选择课程</option>
-                  <option v-for="course in course5s" :value="course.id">{{ course.name }}</option>
-                </select>
-              </td>
-              <td><input type="text" v-model="fiveCourse.number" readonly="readonly"></td>
-              <td>
-                <select v-model="fiveCourse.teacherId" disabled @change="teacherChange(fiveCourses,index)">
-                  <option disabled value="">选择教师</option>
-                  <option v-for="teacher in teachers" :value="teacher.id">{{ teacher.name }}</option>
-                </select>
-              </td>
-              <td><input type="text" v-model="fiveCourse.teacherId" readonly="readonly"></td>
-              <td class="classTd">
-                <select v-model="fiveCourse.classId" disabled @change="classChange(fiveCourses,index,'five')">
-                  <option disabled value="">选择班级</option>
-                  <option v-for="className in className5s" :value="className.id">{{ className.name }}</option>
-                </select>
-              </td>
-              <td class="operationTd">
-                <img :id="'fiveEditImg'+index" src="../../../../../assets/images/edit.png" @click="editClick('five',index)" title="编辑">
-                <!--编辑功能，初始显示，编辑时隐藏-->
-                <img :id="'fiveSaveImg'+index" class="saveImg" src="../../../../../assets/images/save.png" @click="operationClick('five',index,'save')" title="保存">
-                <!--保存功能，初始隐藏，编辑时显示-->
-                <img :id="'fiveRestoreImg'+index" class="restoreImg" src="../../../../../assets/images/restore.png" @click="operationClick('five',index,'restore')" title="取消">
-                <!--取消编辑并重置，初始隐藏，编辑时显示-->
-                <img :id="'fiveDeleteImg'+index" src="../../../../../assets/images/delete.png" @click="operationClick('five',index,'delete')" title="删除">
-                <!--删除功能，初始显示，编辑时隐藏-->
-              </td>
-            </tr>
-            <tr>
-              <!--增加功能，通过vue增加循环数组元素，但input DOM不会即时创建，所以需要视图更新回调函数触发编辑状态-->
-              <td><img src="../../../../../assets/images/add.png" @click="addClick(fiveCourses,'five')" title="添加"></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+      <div>
+        <button class="amButtom" @click="DivCtl('five')"><img id="fiveArrow" class="iconImg" :src="arrowright"><span class="subtitle">五年制</span></button>
+        <div id="fiveDiv">
+        <div v-for="(item,index) in classList" v-if="item.studyMode=='5'">
+          <div v-if="item.studyMode=='5'" :id="'5Div' + index" class="gradePlanDiv">
+            <span><img :id="'Arrow' + index" class="gradePlanImg" @click="tableSlideToggle(index)" :src="arrowright"></span>
+            <span class="gradePlanP">{{item.className}}</span>
+            <span><button class="gradeButton" @click="cancelallEdit(index)" :id="'cancelallEdit'+index" style="display: none">取消全部编辑</button></span>
+            <span><button class="gradeButton" @click="allEdit(index,index)" :id="'allEdit'+index" style="display: none">编辑全部</button></span>
+            <span><button class="gradeButton" @click="allSave(index)" :id="'allSave'+index" style="display: none">全部保存</button></span>
+            <span><button class="gradeButton" @click="cVclick(index)" :id="'cV'+index">粘贴</button></span>
+            <span><button class="gradeButton" @click="cCclick(index)" :id="'cC'+index">复制</button></span>
+          </div>
+          <div v-if="item.studyMode=='5'" :id="'Table'+index" style="display: none">
+            <table :id="index+'Table'">
+              <thead>
+              <tr class="headTr">
+                <td>课程名称</td>
+                <td>课程编号</td>
+                <td>前9周课时</td>
+                <td>后9周课时</td>
+                <td>任课教师</td>
+                <td>教师编号</td>
+                <td>是否合课</td>
+                <td>操作</td>
+              </tr>
+              </thead>
+              <tbody v-for="(items,Index) in courseList[index].courses">
+              <tr>
+                <td v-html="items.courseName"></td>
+                <td v-html="items.courseId"></td>
+                <td v-html="items.execWeekPeriod"></td>
+                <td v-html="items.execBackWeekPeriod"></td>
+                <td>
+                  <select :id="index+'sel1'+Index" v-model="items.teacherId" disabled>
+                    <option value="" disabled>选择老师</option>
+                    <option v-for="tea in teacherList" :value="tea.teacherId">{{tea.teacherName}}</option>
+                  </select>
+                </td>
+                <td v-html="items.teacherId"></td>
+                <td>
+                  <select :id="index+'sel2'+Index" v-model="items.allowCombineLesson" disabled>
+                    <option disabled value="">是否合课</option>
+                    <option value="否">否</option>
+                    <option value="是">是</option>
+                  </select>
+                </td>
+                <td class="operationTd">
+                  <img :id="index+'EdImg'+Index" src="../../../../../assets/images/edit.png" @click="edit(index,Index)" title="编辑">
+                  <!--编辑功能，初始显示，编辑时隐藏-->
+                  <img :id="index+'SaImg'+Index" class="saveImg" src="../../../../../assets/images/save.png" @click="saveClick(index,Index)" title="保存">
+                  <!--保存功能，初始隐藏，编辑时显示-->
+                  <img :id="index+'ReImg'+Index" class="restoreImg" src="../../../../../assets/images/restore.png" @click="recoveryClick(index,Index)" title="取消">
+                  <!--取消编辑并重置，初始隐藏，编辑时显示-->
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        </div>
       </div>
-      <div id="threeYearDiv">
-        <button class="amButtom" @click="threeYearClick"><img id="threeYearArrow" class="iconImg" :src="icon1"><span class="subtitle">三年制</span></button>
-        <!--按钮实现点击显示或隐藏-->
-        <table id="threeYearTable" v-show="threeYearTable">
-          <thead>
-            <tr class="headTr">
-            <td class="courseTd" style="cursor: pointer" @click="sortInfo('three','course')" title="排序">课程名称<span class="sortSpan">↓</span></td>
-              <!--点击按照拼音首字母a-z排序-->
-            <td>课程编号</td>
-            <td class="teacherTd" style="cursor: pointer" @click="sortInfo('three','teacher')" title="排序">任课教师<span class="sortSpan">↓</span></td>
-            <td >教师编号</td>
-            <td>班级</td>
-            <td class="portTd">
-              <button id="downloadButton3" class="am-btn am-btn-success am-radius" @click="downloadClick">下载模版</button>
-              <Upload
-                id="upload"
-                ref="uploadForTextbook"
-                :data = "{ 'schoolYearType':'3'}"
-                :show-upload-list="false"
-                :format="['xls','xlsx']"
-                :max-size="2048"
-                :on-format-error="handleFormatError"
-                :on-exceeded-size="handleSize"
-                :on-success="handleSuccess"
-                :on-progress="handleProgress"
-                :on-error="handleError"
-                action="./courseAssociationManege/import">
-                <i-button type="ghost" id="importButton2">导入</i-button>
-              </Upload>
-              <!--操作-->
-            </td>
-          </tr>
-          </thead>
-          <tbody>
-          <!--循环生成课程信息，index作为data数组的下标索引，将index用作id的一部分，便于准确定位操作DOM，key用于绑定课程信息，保证索引不随着数组元素增删自动发生变化-->
-            <tr v-for="(threeCourse,index) in threeCourses" :id="'threeInputTr'+index" :key="threeCourse.id">
-              <td>
-                <select v-model="threeCourse.number" disabled @change="courseChange(threeCourses,index,'three')">
-                  <option disabled value="">选择课程</option>
-                  <option v-for="course in course3s"  :value="course.id">{{ course.name }}</option>
-                </select>
-              </td>
-              <td><input type="text" v-model="threeCourse.number" readonly="readonly"></td>
-              <td>
-                <select v-model="threeCourse.teacherId" disabled @change="teacherChange(threeCourses,index)">
-                  <option disabled value="">选择教师</option>
-                  <option v-for="teacher in teachers"  :value="teacher.id">{{ teacher.name }}</option>
-                </select>
-              </td>
-              <td><input type="text" v-model="threeCourse.teacherId" readonly="readonly"></td>
-              <td class="classTd">
-                <select v-model="threeCourse.classId" disabled @change="classChange(threeCourses,index,'three')">
-                  <option disabled>选择班级</option>
-                  <option v-for="className in className3s" :value="className.id">{{ className.name }}</option>
-                </select>
-              </td>
-              <td class="operationTd">
-                <img :id="'threeEditImg'+index" src="../../../../../assets/images/edit.png" @click="editClick('three',index)" title="编辑">
-                <!--编辑功能，初始显示，编辑时隐藏-->
-                <img :id="'threeSaveImg'+index" class="saveImg" src="../../../../../assets/images/save.png" @click="operationClick('three',index,'save')" title="保存">
-                <!--保存功能，初始隐藏，编辑时显示-->
-                <img :id="'threeRestoreImg'+index" class="restoreImg" src="../../../../../assets/images/restore.png" @click="operationClick('three',index,'restore')" title="取消">
-                <!--取消编辑并重置，初始隐藏，编辑时显示-->
-                <img :id="'threeDeleteImg'+index" src="../../../../../assets/images/delete.png" @click="operationClick('three',index,'delete')" title="删除">
-                <!--删除功能，初始显示，编辑时隐藏-->
-              </td>
-            </tr>
-            <tr>
-              <td><img src="../../../../../assets/images/add.png" @click="addClick(threeCourses,'three')" title="添加"></td>
-              <!--增加功能，通过vue增加循环数组元素，但input DOM不会即时创建，所以需要视图更新回调函数触发编辑状态-->
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
+      <div>
+        <button class="amButtom" @click="DivCtl('three')"><img id="threeArrow" class="iconImg" :src="arrowright"><span class="subtitle">三年制</span></button>
+        <div id="threeDiv">
+        <div v-for="(item,index) in classList" v-if="item.studyMode=='3'" >
+          <div v-if="item.studyMode=='3'" :id="'3Div' + index" class="gradePlanDiv">
+            <span><img :id="'Arrow' + index" class="gradePlanImg" @click="tableSlideToggle(index)" :src="arrowright"></span>
+            <span class="gradePlanP">{{item.className}}</span>
+            <span><button class="gradeButton" @click="cancelallEdit(index)" :id="'cancelallEdit'+index" style="display: none">取消全部编辑</button></span>
+            <span><button class="gradeButton" @click="allEdit(index,index)" :id="'allEdit'+index" style="display: none">编辑全部</button></span>
+            <span><button class="gradeButton" @click="allSave(index,index)" :id="'allSave'+index" style="display: none">全部保存</button></span>
+            <span><button class="gradeButton" @click="cVclick(index)" :id="'cV'+index">粘贴</button></span>
+            <span><button class="gradeButton" @click="cCclick(index)" :id="'cC'+index">复制</button></span>
+          </div>
+          <div v-if="item.studyMode=='3'" :id="'Table'+index" style="display: none">
+            <table :id="index+'Table'">
+              <thead>
+              <tr class="headTr">
+                <td>课程名称</td>
+                <td>课程编号</td>
+                <td>前9周课时</td>
+                <td>后9周课时</td>
+                <td>任课教师</td>
+                <td>教师编号</td>
+                <td>是否合课</td>
+                <td>操作</td>
+              </tr>
+              </thead>
+              <tbody v-for="(items,Index) in courseList[index].courses">
+              <tr>
+                <td v-html="items.courseName"></td>
+                <td v-html="items.courseId"></td>
+                <td v-html="items.execWeekPeriod"></td>
+                <td v-html="items.execBackWeekPeriod"></td>
+                <td>
+                  <select :id="index+'sel1'+Index" v-model="items.teacherId" disabled>
+                    <option value="" disabled>选择老师</option>
+                    <option v-for="tea in teacherList" :value="tea.teacherId">{{tea.teacherName}}</option>
+                  </select>
+                </td>
+                <td v-html="items.teacherId"></td>
+                <td>
+                  <select :id="index+'sel2'+Index" v-model="items.allowCombineLesson" disabled>
+                    <option disabled value="">是否合课</option>
+                    <option value="否">否</option>
+                    <option value="是">是</option>
+                  </select>
+                </td>
+                <td class="operationTd">
+                  <img :id="index+'EdImg'+Index" src="../../../../../assets/images/edit.png" @click="edit(index,Index)" title="编辑">
+                  <!--编辑功能，初始显示，编辑时隐藏-->
+                  <img :id="index+'SaImg'+Index" class="saveImg" src="../../../../../assets/images/save.png" @click="saveClick(index,Index)" title="保存">
+                  <!--保存功能，初始隐藏，编辑时显示-->
+                  <img :id="index+'ReImg'+Index" class="restoreImg" src="../../../../../assets/images/restore.png" @click="recoveryClick(index,Index)" title="取消">
+                  <!--取消编辑并重置，初始隐藏，编辑时显示-->
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        </div>
       </div>
     </div>
     <Modal
@@ -177,7 +144,7 @@
         <p>您确定取消编辑并重置该课程信息吗?</p>
       </div>
       <div slot="footer" style="text-align: center">
-        <button id="modalBtn" @click="restoreClick(operationYear,operationIndex)">确定</button>
+        <button id="modalBtn" @click="recoveryOK()">确定</button>
         <button id="modalBtn" @click="modal1 = false">取消</button>
       </div>
     </Modal>
@@ -189,664 +156,498 @@
         :styles="{top:'10rem'}">
       <!--对话框宽400px，显示隐藏绑定属性变量，不允许点击遮罩层关闭对话框，对话框距离页面顶端10rem-->
       <div style="font-size: 1.1rem;text-align: center;">
-        <p>您确定删除该课程吗？</p>
+        <p>您确定提交保存该课程信息吗？</p>
       </div>
       <div slot="footer" style="text-align: center">
-        <button id="modalBtn" @click="deleteClick(operationYear,operationIndex)">确定</button>
+        <button id="modalBtn" @click="saveOK()">确定</button>
         <button id="modalBtn" @click="modal2 = false">取消</button>
       </div>
     </Modal>
     <Modal
-        v-model="modal3"
-        width="400"
-        :mask-closable="false"
-        id="modalBody"
-        :styles="{top:'10rem'}">
+      v-model="modal3"
+      width="400"
+      :mask-closable="false"
+      id="modalBody"
+      :styles="{top:'10rem'}">
       <!--对话框宽400px，显示隐藏绑定属性变量，不允许点击遮罩层关闭对话框，对话框距离页面顶端10rem-->
       <div style="font-size: 1.1rem;text-align: center;">
-        <p>您确定提交保存该课程信息吗？</p>
+        <p>您确定保存所有编辑项吗？</p>
       </div>
       <div slot="footer" style="text-align: center">
-        <button id="modalBtn" @click="saveClick(operationYear,operationIndex)">确定</button>
+        <button id="modalBtn" @click="allsaveOK()">确定</button>
         <button id="modalBtn" @click="modal3 = false">取消</button>
       </div>
     </Modal>
     <Modal
-        v-model="modal4"
-        width="400"
-        :mask-closable="false"
-        id="modalBody"
-        :styles="{top:'10rem'}">
+      v-model="modal5"
+      width="400"
+      :mask-closable="false"
+      id="modalBody"
+      :styles="{top:'10rem'}">
       <!--对话框宽400px，显示隐藏绑定属性变量，不允许点击遮罩层关闭对话框，对话框距离页面顶端10rem-->
       <div style="font-size: 1.1rem;text-align: center;">
-        <p>{{ errorMessage }}</p>
+        <p>您确定要取消所有编辑并还原已编辑项吗？</p>
       </div>
       <div slot="footer" style="text-align: center">
-        <button id="modalBtn" @click="modal4 = false">确定</button>
+        <button id="modalBtn" @click="cancelallEditOK()">确定</button>
+        <button id="modalBtn" @click="modal5 = false">取消</button>
+      </div>
+    </Modal>
+    <Modal
+      v-model="modal4"
+      width="400"
+      :mask-closable="false"
+      id="modalBody"
+      :styles="{top:'10rem'}">
+      <!--对话框宽400px，显示隐藏绑定属性变量，不允许点击遮罩层关闭对话框，对话框距离页面顶端10rem-->
+      <div style="font-size: 1.1rem;text-align: center;">
+        <p>{{msgcV}}？</p>
+      </div>
+      <div slot="footer" style="text-align: center">
+        <button id="modalBtn" @click="cVclickOK()">确定</button>
+        <button id="modalBtn" @click="modal4 = false">取消</button>
       </div>
     </Modal>
   </div>
 </template>
 
 <script>
+  import arrowright from "./images/arrowright.png"
+  import arrowdown from "./images/arrowdown.png"
   export default {
     name: 'courseArrangeSettingDiv',
     data () {
       return {
-        icon1:require('../../../../../assets/images/icon1.png'),
-//        箭头图标
-        icon2:require('../../../../../assets/images/icon2.png'),
-        fiveArrow: true,
-//        五年制课程下拉箭头，初始为下拉显示
-        threeArrow: false,
-//        三年制课程下拉箭头，初始为下拉隐藏
-        fiveYearTable: true,
-//        五年制课程下拉内容，初始为下拉显示
-        threeYearTable: false,
-//        三年制课程下拉内容，初始为下拉隐藏
-        fiveCourses: [],
-//              五年制课程信息
-        threeCourses: [],
-//              三年制课程信息
-        course3s:[],
-//              五年制课程下拉选择
-        course5s:[],
-//              三年制课程下拉选择
-        teachers:[],
-//              教师下拉选择
-        className3s: [],
-//              五年制班级下拉选择
-        className5s: [],
-//              五年制班级下拉选择
-        buffer_fiveCourses: [],
-//              五年制课程信息缓存
-        buffer_threeCourses: [],
-//              三年制课程信息缓存
+        arrowright:arrowright,
+        arrowdown:arrowdown,
+        cVindex:'',
+        cCindex:'null',
+        classList:[
+//          {classId:'85114',className:'高2015级4班',studyMode:'5'},
+//          {classId:'85114',className:'高2015级5班',studyMode:'5'}
+              ],
+        teacherList:[
+//            {teacherId:'0110',teacherName:'李桂'},
+//          {teacherId:'0111',teacherName:'谭咏麟'},
+//          {teacherId:'0114',teacherName:'别越塔'}
+          ],
+        courseList:[
+//          {courses:[
+//            {courseName:'1',courseId:'3',teacherName:'李桂园',teacherId:'0110',allowCombineLesson:'否'},
+//            {courseName:'2',courseId:'3',teacherName:'谭咏麟',teacherId:'0111',allowCombineLesson:'否'},
+//            ]
+//          },
+//          {courses:[
+//            {courseName:'1',courseId:'3',teacherName:'',teacherId:null,allowCombineLesson:''},
+//            {courseName:'2',courseId:'3',teacherName:'',teacherId:'',allowCombineLesson:''},
+//            {courseName:'2',courseId:'3',teacherName:'',teacherId:'',allowCombineLesson:''}
+//            ]
+//          },
+        ],
         modal1: false,
-//        对话框显隐
         modal2: false,
         modal3: false,
         modal4: false,
-        operationYear: "",
-        operationIndex: "",
-//        对话框传递参数
-        errorMessage:"",
-//        复用对话框内容
-        loadingMsg: false,
-//        是否处于上传状态
+        modal5: false,
+        msgcV:'',
+        eindex:'',
+        aindex:'',
+        eIndex:'',
+        cancelIndex:'',
+        ebuffer:[]
       }
     },
-    mounted: function(){
-      var importButton1 = document.getElementById("importButton1");
-      var importButton2 = document.getElementById("importButton2");
-      importButton1.className = "am-btn am-btn-success am-radius";
-      importButton2.className = "am-btn am-btn-success am-radius";
-    }, //dom加载后修改上传按钮样式
     beforeMount: function() {
+      this.$Loading.start();
       this.$http.post('./courseAssociationManege',{},{
         "Content-Type":"application/json"
       }).then(function(response){
-        var data = response.body.courseTeacherList;
-        this.fiveCourses = [];
-        this.threeCourses = [];
-        for(var i = 0;i < data.length;i++){
-//          循环保存课程信息
-          if(data[i].schoolYearType == 5){
-            this.fiveCourses.push({ "id":data[i].courseAssociationId, "name":data[i].courseName, "number":data[i].courseId, "teacher":data[i].teacherName, "teacherId":data[i].teacherId, "classId":data[i].classId, "className": data[i].className, "coursePlanId":data[i].coursePlanId });
-          }else if(data[i].schoolYearType == 3){
-            this.threeCourses.push({ "id":data[i].courseAssociationId, "name":data[i].courseName, "number":data[i].courseId, "teacher":data[i].teacherName, "teacherId":data[i].teacherId, "classId":data[i].classId, "className": data[i].className, "coursePlanId":data[i].coursePlanId });
-            }
-        }
-        for(var i = 0;i < this.fiveCourses.length;i++){
-//          循环生成缓存数组
-          this.buffer_fiveCourses.push({ id:"", name:"", number:"", teacher:"", teacherId:"", classId:"", className:"", coursePlanId:"" });
-        }
-        for(var i = 0;i < this.threeCourses.length;i++){
-          this.buffer_threeCourses.push({ id:"", name:"", number:"", teacher:"", teacherId:"", classId:"", className:"", coursePlanId:"" });
-        }
-
-        for(var i = 0;i < response.body.course3List.length;i++){
-//          循环分割下拉选择并保存
-          this.course3s.push({ id:response.body.course3List[i].split("(")[0], name:response.body.course3List[i].split("(")[1].split(")")[0]})
-        }
-        for(var i = 0;i < response.body.course5List.length;i++){
-//          循环分割下拉选择并保存
-          this.course5s.push({ id:response.body.course5List[i].split("(")[0], name:response.body.course5List[i].split("(")[1].split(")")[0]})
-        }
-        for(var i = 0;i < response.body.teacherList.length;i++){
-//          循环分割下拉选择并保存
-          this.teachers.push({ id:response.body.teacherList[i].split("(")[0], name:response.body.teacherList[i].split("(")[1].split(")")[0]})
-        }
-        for(var i = 0;i < response.body.classList.length;i++){
-//          循环分割下拉选择并分类保存
-          if(response.body.classList[i].split("(")[0].substring(4,5) == "5") {
-            this.className5s.push({
-              id: response.body.classList[i].split("(")[0],
-              name: response.body.classList[i].split("(")[1].split(")")[0]
-            });
-          }else if(response.body.classList[i].split("(")[0].substring(4,5) == "3") {
-            this.className3s.push({
-              id: response.body.classList[i].split("(")[0],
-              name: response.body.classList[i].split("(")[1].split(")")[0]
-            });
+          this.classList = response.body.classList;
+          this.teacherList = response.body.teacherList;
+          for(var i=0;i <this.classList.length;i++)
+          {
+             this.courseList.push({courses:[]});
           }
-        }
-        console.log();
-      },function(error){});
-    }, //页面dom加载前获取后端数据
-    methods: {
-      sortInfo: function (year,type) {
-        var courses = null;
-        if(year == "five"){
-          courses = JSON.parse(JSON.stringify(this.fiveCourses));
-        }else if(year == "three"){
-          courses = JSON.parse(JSON.stringify(this.threeCourses));
-        }
-//        通过JSON的转解进行深复制
-        try {
-          var saveImgs = document.getElementsByClassName("saveImg");
-          for (var i = 0; i < saveImgs.length; i++) {
-            if (saveImgs[i].style.display == "inline") {
-//              判断是否有处于编辑状态的数据
-              this.errorMessage = "有处于编辑状态或新增未保存的数据，无法进行排序!";
-              this.modal4 = true;
-              return;
-            }
-          }
-          for (var i = 0; i < courses.length; i++) {
-            if(courses[i].id == ""){
-//              判断是否有新增未保存的数据
-              this.errorMessage = "有处于编辑状态或新增未保存的数据，无法进行排序!";
-              this.modal4 = true;
-              return;
-            }
-          }
-        }catch (e){}
-
-        if (type == "course") {
-          var a = [];
-//          a存放排序依据课程名称
-          var b = [];
-//          b存放根据a进行排序的课程信息
-          for (var i = 0; i < courses.length; i++) {
-            var isExist = false;
-            for (var n = 0; n < a.length; n++) {
-              if(a[n] == courses[i].name){
-//                防止重复放入
-                isExist = true;
-              }
-            }
-            if(!isExist){
-              a.push(JSON.parse(JSON.stringify(courses[i].name)));
-//              深复制
-            }
-          }
-          console.log(a);
-          a = a .sort (function(a,b){return a.localeCompare(b)});
-//        按拼音首字母a-z排序
-
-          for (var i = 0; i < a.length; i++) {
-            for (var n = 0; n < courses.length; n++) {
-              if(courses[n].name == a[i]){
-//          b存放根据a进行排序的课程信息
-                b.push(JSON.parse(JSON.stringify(courses[n])));
-              }
-            }
-          }
-          if(year == "five"){
-            this.fiveCourses = JSON.parse(JSON.stringify(b));
-          }else if(year == "three"){
-            this.threeCourses = JSON.parse(JSON.stringify(b));
-          }
-//          深复制保存排序结果
-        } else if (type == "teacher") {
-          var a = [];
-//          a存放排序依据教师名称
-          var b = [];
-//          b存放根据a进行排序的课程信息
-          for (var i = 0; i < courses.length; i++) {
-            var isExist = false;
-            for (var n = 0; n < a.length; n++) {
-              if(a[n] == courses[i].teacher){
-//                防止重复放入
-                isExist = true;
-              }
-            }
-            if(!isExist){
-              a.push(JSON.parse(JSON.stringify(courses[i].teacher)));
-//              深复制
-            }
-          }
-          console.log(a);
-          a = a .sort (function(a,b){return a.localeCompare(b)});
-//        按拼音首字母a-z排序
-
-          for (var i = 0; i < a.length; i++) {
-            for (var n = 0; n < courses.length; n++) {
-              if(courses[n].teacher == a[i]){
-//          b存放根据a进行排序的课程信息
-                b.push(JSON.parse(JSON.stringify(courses[n])));
-              }
-            }
-          }
-          if(year == "five"){
-            this.fiveCourses = JSON.parse(JSON.stringify(b));
-          }else if(year == "three"){
-            this.threeCourses = JSON.parse(JSON.stringify(b));
-          }
-//          深复制保存排序结果
-        }
-      },
-      operationClick: function(year,operationIndex,operation){
-        this.operationYear = year;
-        this.operationIndex = operationIndex;
-//        保存数据索引和年制类型
-        if(operation == "restore"){
-          this.modal1 = true;
-//          打开重置对话框
-        }else if(operation == "delete"){
-          this.modal2 = true;
-//          打开删除对话框
-        }else if(operation == "save"){
-          this.modal3 = true;
-//          打开保存对话框
-        }
-      }, //对话框参数传递，触发对应对话框
-      downloadClick: function(){
-        location.href = "./courseAssociationManege/download";
-//        通过跳转实现get方法请求接口，接口返回文件，浏览器识别后自动下载，和不传参的form表单达到一样的下载效果
-      }, //下载模版
-      fiveYearClick: function(){
-        var fiveYearArrow = document.getElementById("fiveYearArrow");
-        if(!this.fiveArrow){
-//              显示下拉课程信息
-          this.fiveArrow = true;
-          this.fiveYearTable = true;
-          fiveYearArrow.src = this.icon2;
-        }else{
-//              隐藏下拉课程信息
-          this.fiveArrow = false;
-          this.fiveYearTable = false;
-          fiveYearArrow.src = this.icon1;
-        }
-      }, //点击显示或隐藏五年制下拉课程信息
-      threeYearClick: function(){
-        var threeYearArrow = document.getElementById("threeYearArrow");
-        if(!this.threeArrow){
-//              显示下拉课程信息
-          this.threeArrow = true;
-          this.threeYearTable = true;
-          threeYearArrow.src = this.icon2;
-        }else{
-//              隐藏下拉课程信息
-          this.threeArrow = false;
-          this.threeYearTable = false;
-          threeYearArrow.src = this.icon1;
-        }
-      },//点击显示或隐藏三年制下拉课程信息
-//        编辑功能
-      courseChange: function(courses,index,year){
-        if(year == "five") {
-          for (var i = 0; i < this.course5s.length; i++) {
-            if (this.course5s[i].id == courses[index].number) {
-              courses[index].name = this.course5s[i].name;
-              break;
-            }
-          }
-//          课程选择后，该数据信息中的课程id会发生修改，但课程名称并未修改，所以需要遍历数据，通过id找到数据修改名称
-        }else if(year == "three"){
-          for (var i = 0; i < this.course3s.length; i++) {
-            if (this.course3s[i].id == courses[index].number) {
-              courses[index].name = this.course3s[i].name;
-              break;
-            }
-          }
-        }
-      }, //课程选择后id变化显示，保存选择
-      teacherChange: function(courses,index){
-        for(var i = 0;i < this.teachers.length;i++){
-          if(this.teachers[i].id == courses[index].teacherId){
-            courses[index].teacher = this.teachers[i].name;
-            break;
-          }
-//          教师选择后，该数据信息中的教师id会发生修改，但教师名称并未修改，所以需要遍历数据，通过id找到数据修改名称
-        }
-      }, //教师选择后id变化显示，保存选择
-      classChange: function(courses,index,year){
-       if(year == "five") {
-         for (var i = 0; i < this.className5s.length; i++) {
-           if (this.className5s[i].id == courses[index].classId) {
-             courses[index].className = this.className5s[i].name;
-             break;
-           }
-         }
-//          班级选择后，该数据信息中的班级id会发生修改，但班级名称并未修改，所以需要遍历数据，通过id找到数据修改名称
-       }else if(year == "three"){
-         for (var i = 0; i < this.className3s.length; i++) {
-           if (this.className3s[i].id == courses[index].classId) {
-             courses[index].className = this.className3s[i].name;
-             break;
-           }
-         }
-       }
-      }, //班级选择后id变化显示，保存选择
-      editClick: function(year,index){
-        var inputTr = document.getElementById(year+"InputTr"+index);
-        var select = inputTr.getElementsByTagName("select");
-        var editImg = document.getElementById(year+"EditImg"+index);
-        var saveImg = document.getElementById(year+"SaveImg"+index);
-        var restoreImg = document.getElementById(year+"RestoreImg"+index);
-        var deleteImg = document.getElementById(year+"DeleteImg"+index);
-        for(var i = 0;i<select.length;i++){
-          select[i].removeAttribute("disabled");
-        }
-//        使对应数据的选择框变为可操作状态
-        if(year == "five"){
-          this.buffer_fiveCourses.splice(index, 1, JSON.parse(JSON.stringify(this.fiveCourses[index])));
-//          缓存数据以备重置
-        }
-        if(year == "three"){
-          this.buffer_threeCourses.splice(index, 1, JSON.parse(JSON.stringify(this.threeCourses[index])));
-//          缓存数据以备重置
-        }
-        editImg.style.display = "none";
-        saveImg.style.display = "inline";
-        deleteImg.style.display = "none";
-        restoreImg.style.display = "inline";
-//        隐藏编辑和删除功能图标,显示保存和重置功能图标
-      }, //保存修改
-      restoreClick: function(year,index){
-//        if(confirm("您确定取消编辑并重置该课程信息吗？")){
-          var inputTr = document.getElementById(year+"InputTr"+index);
-          var select = inputTr.getElementsByTagName("select");
-          var editImg = document.getElementById(year+"EditImg"+index);
-          var saveImg = document.getElementById(year+"SaveImg"+index);
-          var restoreImg = document.getElementById(year+"RestoreImg"+index);
-          var deleteImg = document.getElementById(year+"DeleteImg"+index);
-          var i = null;
-//            重置数据
-          if(year == "five"){
-            this.fiveCourses.splice(index, 1, JSON.parse(JSON.stringify(this.buffer_fiveCourses[index])));
-            if(this.fiveCourses[index].coursePlanId == ""){
-              this.fiveCourses.splice(index, 1);
-              this.buffer_fiveCourses.splice(index, 1);
-            }else{
-              for(i = 0;i<select.length;i++){
-                select[i].disabled = true;
-              }
-              editImg.style.display = "inline";
-              saveImg.style.display = "none";
-              deleteImg.style.display = "inline";
-              restoreImg.style.display = "none";
-            }
-          }
-          if(year == "three"){
-            this.threeCourses.splice(index, 1, JSON.parse(JSON.stringify(this.buffer_threeCourses[index])));
-            if(this.threeCourses[index].coursePlanId == ""){
-              this.threeCourses.splice(index, 1);
-              this.buffer_threeCourses.splice(index, 1);
-            }else{
-              for(i = 0;i<select.length;i++){
-                select[i].disabled = true;
-              }
-              editImg.style.display = "inline";
-              saveImg.style.display = "none";
-              deleteImg.style.display = "inline";
-              restoreImg.style.display = "none";
-            }
-          }
-//        }
-          this.modal1 = false;
-      },//取消修改,重置数据,退出编辑
-      deleteClick: function(year,index){
-        var courses = null;
-        if (year == "five") {
-          courses = this.fiveCourses;
-        }else if (year == "three") {
-          courses = this.threeCourses;
-        }
-//        判断年制，确定操作数据
-        if(courses[index].id == ""){
-//          判断是否为未保存的新增课程
-          if (year == "five") {
-            this.fiveCourses.splice(index, 1);
-            this.buffer_fiveCourses.splice(index, 1);
-          }else if (year == "three") {
-            this.threeCourses.splice(index, 1);
-            this.buffer_threeCourses.splice(index, 1);
-          }
-//          如果为新增数据，直接从数据数组中移除，不需要前后端交互
-          this.$Message.success('删除成功！');
-          this.modal2 = false;
-//          关闭对话框
-        }else {
-          this.$http.post('./courseAssociationManege/delete',{
-            "courseAssociationId": courses[index].id
-          }, {
-            "Content-Type": "application/json"
-          }).then(function (response) {
-            this.modal2 = false;
-//            关闭原对话框
-            if (response.body.result == 1) {
-              if (year == "five") {
-                this.fiveCourses.splice(index, 1);
-                this.buffer_fiveCourses.splice(index, 1);
-              }else if (year == "three") {
-                this.threeCourses.splice(index, 1);
-                this.buffer_threeCourses.splice(index, 1);
-              }
-//              从前端数据数组中删除
-              this.$Message.success('删除成功！');
-            }else{
-              this.errorMessage = "操作失败,请重试!";
-              this.modal4 = true;
-//              打开错误提示
-            }
-          }, function (error) {
-            this.modal2 = false;
-            this.$Message.error("连接失败,请重试!");
-          });
-        }
-      },
-      saveClick: function(year,index){
-        var courses = null;
-        if(year == "five"){
-          courses = this.fiveCourses;
-        }else if(year == "three"){
-          courses = this.threeCourses;
-        }
-//        判断操作数据的年制
-        console.log(courses[index]);
-        if(courses[index].name == "" || courses[index].number == "" || courses[index].teacher == "" || courses[index].teacherId == "" || courses[index].classId == "" || courses[index].className == ""){
-//          判断数据内容非空
-          this.modal3 = false;
-//          关闭原对话框
-          this.errorMessage = "编辑内容不能为空!";
-          this.modal4 = true;
-//          打开错误提示
-        }else {
-          var isExist = true;
-          if(courses.length < 2){
-            isExist = false;
-//            当课程数量大于1时，判断修改是否重复
-          }else if(year == "five"){
-            for(var i = 0;i < courses.length;i++){
-              if(courses[index].name != courses[i].name){
-                isExist = false;
-              }else if(courses[index].number != courses[i].number){
-                isExist = false;
-              }else if(courses[index].teacher != courses[i].teacher){
-                isExist = false;
-              }else if(courses[index].teacherId != courses[i].teacherId){
-                isExist = false;
-              }else if(courses[index].classId != courses[i].classId){
-                isExist = false;
-              }else if(courses[index].className != courses[i].className){
-                isExist = false;
-              }
-            }
-          }else if(year == "three"){
-            for(var i = 0;i < courses.length;i++){
-              if(courses[index].name != courses[i].name){
-                isExist = false;
-              }else if(courses[index].number != courses[i].number){
-                isExist = false;
-              }else if(courses[index].teacher != courses[i].teacher){
-                isExist = false;
-              }else if(courses[index].teacherId != courses[i].teacherId){
-                isExist = false;
-              }else if(courses[index].classId != courses[i].classId){
-                isExist = false;
-              }else if(courses[index].className != courses[i].className){
-                isExist = false;
-              }
-            }
-          }
-          if(isExist) {
-//            判断课程重复
-            this.modal3 = false;
-            this.errorMessage = "请不要重复设置相同的课程!";
-            this.modal4 = true;
-//            打开错误提示
-          }else{
-            var inputTr = document.getElementById(year + "InputTr" + index);
-            var select = inputTr.getElementsByTagName("select");
-            var editImg = document.getElementById(year + "EditImg" + index);
-            var saveImg = document.getElementById(year + "SaveImg" + index);
-            var restoreImg = document.getElementById(year + "RestoreImg" + index);
-            var deleteImg = document.getElementById(year + "DeleteImg" + index);
-            var i = null;
-            var url = null;
-            var schoolYearType = null;
-            if (year == "five") {
-              schoolYearType = 5;
-            } else if (year == "three") {
-              schoolYearType = 3;
-            }
-            if(courses[index].id == ""){
-//          判断是否为未保存的新增课程，调用不同接口
-              url = "./courseAssociationManege/addOne"
-            }else{
-              url = "./courseAssociationManege/update"
-            }
-            this.$http.post(url,{
-              "courseAssociationId": courses[index].id,
-              "courseName": courses[index].name,
-              "courseId": courses[index].number,
-              "teacherName": courses[index].teacher,
-              "teacherId": courses[index].teacherId,
-              "schoolYearType": schoolYearType,
-              "classId": courses[index].classId,
-              "coursePlanId": courses[index].coursePlanId,
-              "className": courses[index].className
-            }, {
-              "Content-Type": "application/json"
-            }).then(function (response) {
-              this.modal3 = false;
-//              关闭原对话框
-              var data = response.body;
-              if (data.result == 1) {
-                for (i = 0; i < select.length; i++) {
-                  select[i].disabled = true;
-                }
-//                选择框变为不可操作状态
-                editImg.style.display = "inline";
-                saveImg.style.display = "none";
-                deleteImg.style.display = "inline";
-                restoreImg.style.display = "none";
-//                显示编辑和删除图标，隐藏保存和取消图标
-                this.$Message.success('保存成功！');
-              } else {
-                this.errorMessage = "操作失败，请重试!";
-                this.modal4 = true;
-//                打开错误提示
-              }
-            }, function (error) {
-              this.modal3 = false;
-              this.$Message.error('连接失败，请重试！');
-            });
-          }
-        }
-      }, //保存功能
-      addClick: function (courses,year){
-//        添加未保存的新增课程，添加对应缓存
-        courses.push(
-            { id:"",name:"", "number":"", "teacher":"", "teacherId":"", "classId":"选择班级", className:"", coursePlanId:""}
-        );
-        this.$nextTick(function () {
-//          视图更新后触发回调
-          var editImg = null;
-          if (year == "five") {
-            editImg = document.getElementById("fiveEditImg" + (courses.length - 1));
-          }else if (year == "three") {
-            editImg = document.getElementById("threeEditImg" + (courses.length - 1));
-          }
-//          获取新增数据的编辑图标DOM
-          editImg.click();
-//          触发编辑状态
-        });
-        if (year == "five") {
-          this.buffer_fiveCourses.push(
-              { id:"",name:"", "number":"", "teacher":"", "teacherId":"", "classId":"选择班级", className:"", coursePlanId:""}
-          );
-        }else if (year == "three") {
-          this.buffer_threeCourses.push(
-              { id:"",name:"", "number":"", "teacher":"", "teacherId":"", "classId":"选择班级", className:"", coursePlanId:""}
-          );
-        }
-//        添加缓存数据
-      }, //增加功能
-      handleFormatError: function(){
-        this.errorMessage = "文件格式错误！限制格式为"+this.$refs.uploadForTextbook.format;
-        this.modal4 = true;
-//        打开错误提示
-      },//文件格式验证
-      handleSize: function(){
-        this.errorMessage = "文件大小超出范围！限制最大（KB）为"+this.$refs.uploadForTextbook.maxSize;
-        this.modal4 = true;
-//        打开错误提示
-      },//文件大小验证
-      handleError: function(res){
-        var msg = document.getElementsByClassName("ivu-message-notice");
-        if(this.loadingMsg){
-          this.$Loading.error();
-//            结束进度条
-          if(!!window.ActiveXObject || "ActiveXObject" in window){
-            msg[0].parentNode.innerHTML = "";
-//            IE浏览器对removeChild实现有问题
-          }else{
-            msg[0].parentNode.removeChild(msg[0]);
-          }
-//            移除“正在上传……”的msg
-        }
-        this.errorMessage = "文件上传失败"+res;
-        this.modal4 = true;
-//        打开错误提示
-        this.loadingMsg = false;
-      },//文件上传失败回调
-      handleProgress: function(){
-        this.$Loading.start();
-        this.$Message.loading('正在上传中……', 0);
-        this.loadingMsg = true;
-//        设置上传状态
-      },//上传过程回调
-      handleSuccess: function(res){
         this.$Loading.finish();
-//            结束进度条
-        var msg = document.getElementsByClassName("ivu-message-notice");
-        if(!!window.ActiveXObject || "ActiveXObject" in window){
-          msg[0].parentNode.innerHTML = "";
-//            IE浏览器对removeChild实现有问题
+      },function(error){
+        this.$Loading.error();
+        this.$Message.error("网络错误,请稍后重试！");
+      });
+    },
+    methods:{
+      DivCtl:function (msg) {
+        var div = document.getElementById(msg+'Div');
+        var img = document.getElementById(msg+'Arrow');
+        //console.log(msg+'Div');
+        if(div.style.display == "none")
+          {
+            img.src = this.arrowdown;
+            div.style.display = "inline";
+          }else{
+          img.src = this.arrowright;
+          div.style.display = "none";
+          }
+      },
+      tableSlideToggle:function (index) {
+        var table = document.getElementById('Table'+index);
+        var img = document.getElementById('Arrow'+index);
+        var edit = document.getElementById('allEdit'+index);
+        var cancel = document.getElementById('cancelallEdit'+index);
+        if(table.style.display == "none")
+        {
+          this.$Loading.start();
+          this.$http.post('./courseAssociationManege/showLessons',{
+            classId:this.classList[index].classId
+          },{
+            "Content-Type":"application/json"
+          }).then(function(response){
+            this.courseList[index].courses = response.body;
+            if(response.body.length==0)
+            {
+                this.$Message.warning("没有查询到数据！");
+            }
+            this.$Loading.finish();
+          },function(error){
+            this.$Loading.error();
+            this.$Message.error("网络错误,请稍后重试！");
+          });
+          img.src = this.arrowdown;
+          table.style.display = "inline";
+          if(cancel.style.display == "none")
+            edit.style.display = "inline";
         }else{
-          msg[0].parentNode.removeChild(msg[0]);
+          img.src = this.arrowright;
+          table.style.display = "none";
+          edit.style.display = "none";
         }
-//            移除“正在上传……”的msg
-        this.$Message.success('上传成功！3s后自动刷新页面！',3);
-        console.log(res);
-        this.loadingMsg = false;
-//        设置上传状态
-        setTimeout("location.reload()",4000);
-//        定时4s后刷新页面
+      },
+      cCclick:function (index) {
+        if(this.courseList[index].courses.length==0)
+        {
+          this.$http.post('./courseAssociationManege/showLessons',{
+            classId:this.classList[index].classId
+          },{
+            "Content-Type":"application/json"
+          }).then(function(response){
+            this.courseList[index].courses = response.body;
+            if(response.body.length==0)
+            {
+              this.$Message.warning("复制失败，目标班级为空！");
+              this.cCindex = null;
+            }else
+            {
+              var msg = this.classList[index].className+"的信息已复制！";
+              this.$Message.success(msg);
+              this.cCindex = index;
+            }
+          },function(error){
+            this.$Message.error("复制失败，目标班级为空！");
+            this.cCindex = null;
+          });
+        }else
+        {
+          var msg = this.classList[index].className+"的信息已复制！";
+          this.$Message.success(msg);
+          this.cCindex = index;
+        }
+      },
+      cVclick:function (index) {
+        if(this.cCindex == "null")
+        {
+          this.$Message.error("没有已复制的班级信息，无法粘贴！");
+          return;
+        }else if(this.cCindex == index)
+        {
+          this.$Message.error("同一个班级无需粘贴！");
+          return;
+        }
+        this.cVindex = index;
+        this.msgcV = "你确定要将*"+this.classList[this.cCindex].className+"*的信息粘贴到*"+
+          this.classList[this.cVindex].className+"*吗？";
+        this.modal4 = true;
+      },
+      getCourses:function (index) {
+        this.$http.post('./courseAssociationManege/showLessons',{
+          classId:this.classList[index].classId
+        },{
+          "Content-Type":"application/json"
+        }).then(function(response){
+          this.courseList[index].courses = response.body;
+        },function(error){});
+      },
+      cVclickOK:function () {
+          var table = document.getElementById('Table'+this.cVindex);
+          if(table.style.display == "none")
+          {
+            this.$Message.error("复制失败，请展开目标班级再复制！");
+            return;
+          }
+          if(this.courseList[this.cCindex].courses.length==0)
+          {
+            this.getCourses(this.cCindex);
+          }
+          if(this.courseList[this.cVindex].courses.length==0||this.courseList[this.cCindex].courses.length==0)
+          {
+            this.$Message.error("复制失败，目标班级或源班级列表为空！");
+            return;
+          }
+          try
+          {
+            for(var Index = 0;Index < this.courseList[this.cCindex].courses.length;Index++)
+            {
+              var sel1 = document.getElementById(this.cCindex+'sel1'+Index);
+              var sel2 = document.getElementById(this.cCindex+'sel2'+Index);
+              if(sel1.value == "")
+              {
+                this.courseList[this.cVindex].courses[Index].teacherId = null;
+              }else
+              {
+                this.courseList[this.cVindex].courses[Index].teacherId = sel1.value;
+              }
+              this.courseList[this.cVindex].courses[Index].allowCombineLesson = sel2.value;
+            }
+          }catch (err)
+          {
+            this.allEdit(this.cVindex,this.cCindex);
+            var button = document.getElementById('allSave'+this.cVindex);
+            button.style.display = "inline";
+            this.modal4 = false;
+            this.$Message.warning("匹配部分已复制，请及时保存！");
+            return;
+          }
+        this.allEdit(this.cVindex,this.cCindex);
+        var button = document.getElementById('allSave'+this.cVindex);
+        button.style.display = "inline";
+        this.modal4 = false;
+        this.$Message.success("复制成功，请及时保存!");
+      },
+      edit:function (index,Index) {
+        var EdImg = document.getElementById(index+'EdImg'+Index);
+        var SaImg = document.getElementById(index+'SaImg'+Index);
+        var ReImg = document.getElementById(index+'ReImg'+Index);
+        var sel1 = document.getElementById(index+'sel1'+Index);
+        var sel2 = document.getElementById(index+'sel2'+Index);
+        var button = document.getElementById('allSave'+index);
+        var head = index+'@'+Index;
+        EdImg.style.display = "none";
+        SaImg.style.display = "inline";
+        ReImg.style.display = "inline";
+        sel1.removeAttribute("disabled");
+        sel2.removeAttribute("disabled");
+        button.style.display = "inline";
+        for(var i=0;i<this.ebuffer.length;i++)
+        {
+            if( this.ebuffer[i].head == head)
+            {
+              this.ebuffer[i].teacherId = sel1.value;
+              this.ebuffer[i].allowCombineLesson = sel2.value;
+              return;
+            }
+        }
+        this.ebuffer.push({head:head,teacherId:sel1.value,allowCombineLesson:sel2.value});
+      },
+      allEdit:function (index,Indexx) {
+        var button1 = document.getElementById('allSave'+index);
+        var button2 = document.getElementById('cancelallEdit'+index);
+        var button3 = document.getElementById('allEdit'+index);
+        button1.style.display = "inline";
+        button2.style.display = "inline";
+        button3.style.display = "none";
+        var length = this.courseList[Indexx].courses.length;
+        if(length > this.courseList[index].courses.length)
+          length = this.courseList[index].courses.length;
+        for(var Index=0;Index<length;Index++)
+        {
+          var EdImg = document.getElementById(index+'EdImg'+Index);
+          var SaImg = document.getElementById(index+'SaImg'+Index);
+          var ReImg = document.getElementById(index+'ReImg'+Index);
+          var sel1 = document.getElementById(index+'sel1'+Index);
+          var sel2 = document.getElementById(index+'sel2'+Index);
+          var head = index+'@'+Index;
+          var exit = false;
+          EdImg.style.display = "none";
+          SaImg.style.display = "inline";
+          ReImg.style.display = "inline";
+          sel1.removeAttribute("disabled");
+          sel2.removeAttribute("disabled");
+          for(var i=0;i<this.ebuffer.length;i++)
+          {
+            if( this.ebuffer[i].head == head)
+            {
+              this.ebuffer[i].teacherId = sel1.value;
+              this.ebuffer[i].allowCombineLesson = sel2.value;
+              exit = true;
+              break;
+            }
+          }
+          if(!exit)
+          {
+            this.ebuffer.push({head:head,teacherId:sel1.value,allowCombineLesson:sel2.value});
+          }
+        }
+      },
+      saveClick:function (index,Index) {
+        this.eindex = index;
+        this.eIndex = Index;
+        this.modal2 = true;
+      },
+      saveOK:function () {
+        this.$http.post('./courseAssociationManege/update', this.courseList[this.eindex].courses[this.eIndex]
+        ,{
+          "Content-Type":"application/json"
+        }).then(function(response){
+            if(response.body.result == 1)
+            {
+              var EdImg = document.getElementById(this.eindex+'EdImg'+this.eIndex);
+              var SaImg = document.getElementById(this.eindex+'SaImg'+this.eIndex);
+              var ReImg = document.getElementById(this.eindex+'ReImg'+this.eIndex);
+              var sel1 = document.getElementById(this.eindex+'sel1'+this.eIndex);
+              var sel2 = document.getElementById(this.eindex+'sel2'+this.eIndex);
+              EdImg.style.display = "inline";
+              SaImg.style.display = "none";
+              ReImg.style.display = "none";
+              sel1.disabled="true";
+              sel2.disabled="true";
+              this.modal2 = false;
+              this.$Message.success("保存成功！");
+            }else
+            {
+                this.$Message.error("保存失败,请稍后重试！");
+            }
+        },function(error){
+          this.$Message.error("网络错误,请稍后重试！");
+        });
+      },
+      recoveryClick:function (index,Index) {
+        this.eindex = index;
+        this.eIndex = Index;
+        this.modal1 = true;
+      },
+      recoveryOK:function () {
+        var heads = this.eindex+'@'+this.eIndex;
+        for(var i=0;i<this.ebuffer.length;i++)
+        {
+            if(this.ebuffer[i].head == heads)
+            {
+                if(this.ebuffer[i].teacherId == "")
+                {
+                  this.courseList[this.eindex].courses[this.eIndex].teacherId = null;
+                }else
+                {
+                  this.courseList[this.eindex].courses[this.eIndex].teacherId = this.ebuffer[i].teacherId;
+                }
+              this.courseList[this.eindex].courses[this.eIndex].allowCombineLesson = this.ebuffer[i].allowCombineLesson;
+              var EdImg = document.getElementById(this.eindex+'EdImg'+this.eIndex);
+              var SaImg = document.getElementById(this.eindex+'SaImg'+this.eIndex);
+              var ReImg = document.getElementById(this.eindex+'ReImg'+this.eIndex);
+              var sel1 = document.getElementById(this.eindex+'sel1'+this.eIndex);
+              var sel2 = document.getElementById(this.eindex+'sel2'+this.eIndex);
+              EdImg.style.display = "inline";
+              SaImg.style.display = "none";
+              ReImg.style.display = "none";
+              sel1.disabled="true";
+              sel2.disabled="true";
+              this.modal1 = false;
+              this.$Message.success("编辑项已还原！");
+              break;
+            }
+        }
+      },
+      cancelallEdit:function (index) {
+        this.cancelIndex = index;
+        this.modal5 = true;
+      },
+      cancelallEditOK:function () {
+        for (var eIndex = 0;eIndex<this.courseList[this.cancelIndex].courses.length;eIndex++)
+        {
+          var heads = this.cancelIndex+'@'+eIndex;
+          for(var i=0;i<this.ebuffer.length;i++)
+          {
+            if(this.ebuffer[i].head == heads)
+            {
+                if(this.ebuffer[i].teacherId == "")
+                {
+                  this.courseList[this.cancelIndex].courses[eIndex].teacherId = null;
+                }else
+                {
+                  this.courseList[this.cancelIndex].courses[eIndex].teacherId = this.ebuffer[i].teacherId;
+                }
+              this.courseList[this.cancelIndex].courses[eIndex].allowCombineLesson = this.ebuffer[i].allowCombineLesson;
+              var EdImg = document.getElementById(this.cancelIndex+'EdImg'+eIndex);
+              var SaImg = document.getElementById(this.cancelIndex+'SaImg'+eIndex);
+              var ReImg = document.getElementById(this.cancelIndex+'ReImg'+eIndex);
+              var sel1 = document.getElementById(this.cancelIndex+'sel1'+eIndex);
+              var sel2 = document.getElementById(this.cancelIndex+'sel2'+eIndex);
+              EdImg.style.display = "inline";
+              SaImg.style.display = "none";
+              ReImg.style.display = "none";
+              sel1.disabled="true";
+              sel2.disabled="true";
+              this.modal1 = false;
+              break;
+            }
+          }
+        }
+        var edit = document.getElementById('allEdit'+this.cancelIndex);
+        var cancel = document.getElementById('cancelallEdit'+this.cancelIndex);
+        edit.style.display = "inline";
+        cancel.style.display = "none";
+        this.$Message.success("所有编辑项已还原！");
+        this.modal5 = false;
+      },
+      allSave:function (index) {
+        this.aindex = index;
+        this.modal3 = true;
+      },
+      allsaveOK:function () {
+        var list = [];
+        for(var i= 0;i < this.courseList[this.aindex].courses.length;i++)
+        {
+          var EdImg = document.getElementById(this.aindex+'EdImg'+i);
+          if(EdImg.style.display == "none")
+          {
+              list.push(this.courseList[this.aindex].courses[i]);
+          }
+        }
+        this.$http.post('./courseAssociationManege/updateAll',{
+          courseAssociationList:list
+        },{
+          "Content-Type":"application/json"
+        }).then(function(response){
+            if(response.body.result == 1)
+            {
+                this.statusRecovery();
+                this.modal3 = false;
+                this.$Message.success("保存成功！");
+            }else
+            {
+              this.$Message.error("保存失败,请稍后重试！");
+            }
+        },function(error){
+          this.$Message.error("网络错误,请稍后重试！");
+        });
+      },
+      statusRecovery:function () {
+        var edit = document.getElementById('allEdit'+this.aindex);
+        var cancel = document.getElementById('cancelallEdit'+this.aindex);
+        edit.style.display = "inline";
+        cancel.style.display = "none";
+        for(var i= 0;i < this.courseList[this.aindex].courses.length;i++)
+        {
+          var EdImg = document.getElementById(this.aindex+'EdImg'+i);
+          if(EdImg.style.display == "none")
+          {
+            var SaImg = document.getElementById(this.aindex+'SaImg'+i);
+            var ReImg = document.getElementById(this.aindex+'ReImg'+i);
+            var sel1 = document.getElementById(this.aindex+'sel1'+i);
+            var sel2 = document.getElementById(this.aindex+'sel2'+i);
+            EdImg.style.display = "inline";
+            SaImg.style.display = "none";
+            ReImg.style.display = "none";
+            sel1.disabled="true";
+            sel2.disabled="true";
+          }
+        }
       }
     }
   }
@@ -862,10 +663,6 @@
   .dropDown{
     /*页面主要内容*/
     margin: 0.5rem 5rem;
-  }
-  .amButtom{
-    /*折叠按钮*/
-    cursor: pointer;
   }
   table{
     width: 100%;
